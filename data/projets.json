@@ -1,0 +1,21 @@
+[
+    {
+        "id": 1,
+        "slug": "portfolio-personnel",
+        "titre": "Portfolio Personnel",
+        "description": "Un site web personnel moderne et élégant pour présenter mes projets et compétences. Développé avec Next.js et Tailwind CSS, ce portfolio met en avant mes réalisations avec un design soigné et des animations fluides. L'objectif était de créer une vitrine professionnelle qui reflète mon approche du développement web : allier performance technique et esthétique.",
+        "estPublie": true,
+        "lien": "https://monportfolio.com",
+        "image": "/images/projets/portfolio.png",
+        "stack": [
+            {
+                "name": "Next.js",
+                "icon": "/images/stack/nextjs.png"
+            },
+            {
+                "name": "Tailwind CSS",
+                "icon": "/images/stack/tailwind.png"
+            }
+        ]
+    }
+]

@@ -1,0 +1,14 @@
+{
+    "nom": "OURO-BANG'NA",
+    "prenom": "Taoufik",
+    "email": "ourotaoufik1@gmail.com",
+    "titreProfessionnel": "Développeur Web & Etudiant en Master d'IA & Big Data",
+    "bio": "J'insuffle à la technologie une part d'humanité, pour transformer vos idées en expériences web vivantes et harmonieuses.",
+    "aPropos": "Je suis Taoufik OURO-BANG'NA, explorateur du web et artisan du code. Guidé par la passion de l'innovation digitale, j'unis logique et créativité pour donner vie à des applications élégantes, performantes et durables. Chaque projet est pour moi une œuvre en mouvement — une rencontre entre la précision du code et l'émotion du design.",
+    "liens": {
+        "github": "https://github.com/taoufikOURO",
+        "linkedin": "www.linkedin.com/in/taoufik-ouro-bang-na"
+    },
+    "photo": "/images/profile/taoufik.jpg",
+    "cv": "https://cvdesignr.com/p/68fbb22240300"
+}

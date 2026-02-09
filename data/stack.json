@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Angular",
+        "icon": "/images/stack/angular.png"
+    },
+    {
+        "name": "Laravel",
+        "icon": "/images/stack/laravel.png"
+    },
+    {
+        "name": "PostgreSQL",
+        "icon": "/images/stack/postgresql.png"
+    },
+    {
+        "name": "Python",
+        "icon": "/images/stack/python.png"
+    },
+    {
+        "name": "Supabase",
+        "icon": "/images/stack/supabase.png"
+    },
+    {
+        "name": "Tailwind CSS",
+        "icon": "/images/stack/tailwind.png"
+    }
+]
