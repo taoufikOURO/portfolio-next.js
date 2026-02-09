@@ -39,6 +39,7 @@ export default function RootLayout({
                     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
                     rel="stylesheet"
                 />
+                <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
             </head>
             <body
                 className={`${instrumentSans.variable} min-h-screen bg-white text-[#14213d] antialiased`}
