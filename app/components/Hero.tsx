@@ -39,7 +39,7 @@ export default function Hero() {
 
                     {/* Titre principal */}
                     <div className="space-y-4">
-                        <h1 className="text-4xl font-bold text-[#14213d] leading-tight">
+                        <h1 className="text-3xl font-bold text-[#14213d] leading-tight">
                             {profile.prenom}{" "}
                             <span className="text-[#14213d]">
                                 {profile.nom}
@@ -145,7 +145,7 @@ export default function Hero() {
 
                         {/* Titre principal */}
                         <div className="space-y-4">
-                            <h1 className="text-5xl lg:text-6xl font-bold text-[#14213d] leading-tight">
+                            <h1 className="text-4xl lg:text-5xl font-bold text-[#14213d] leading-tight">
                                 {profile.prenom}{" "}
                                 <span className="text-[#14213d]">
                                     {profile.nom}
