@@ -83,9 +83,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Contenu principal */}
                     <div className="lg:col-span-2 space-y-12">
-                        {/* Image principale */}
-                        <div className="border border-[#14213d]/10 overflow-hidden">
-                            {projet.image ? (
+                        {/* Image principale - seulement si elle existe */}
+                        {projet.image && (
+                            <div className="border border-[#14213d]/10 overflow-hidden">
                                 <div className="relative h-100 lg:h-125 bg-gray-100">
                                     <Image
                                         src={projet.image}
@@ -94,12 +94,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                         className="object-cover"
                                     />
                                 </div>
-                            ) : (
-                                <div className="h-100 lg:h-125 bg-gray-50 flex items-center justify-center text-[#14213d]/20">
-                                    <i className="fa fa-image text-6xl"></i>
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         {/* Description */}
                         <div className="relative bg-white border border-[#14213d]/10 p-8">

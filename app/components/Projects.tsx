@@ -10,7 +10,6 @@ export default function Projects() {
             <div className="max-w-6xl mx-auto px-6">
                 {/* Header épuré */}
                 <div className="text-center mb-16">
-
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#14213d] mb-6 leading-tight">
                         Projets <span className="text-[#14213d]">récents</span>
                     </h2>
@@ -37,24 +36,19 @@ export default function Projects() {
                                     >
                                         {/* Image du projet */}
                                         <div className="relative h-48 bg-gray-100 overflow-hidden">
-                                            {projet.image ? (
-                                                <>
-                                                    <Image
-                                                        src={projet.image}
-                                                        alt={projet.titre}
-                                                        fill
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                                                    />
-                                                    {/* Badge en overlay */}
-                                                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 text-xs font-semibold text-[#14213d] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                        Voir le projet
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-[#14213d]/20">
-                                                    <i className="fas fa-image text-5xl"></i>
-                                                </div>
-                                            )}
+                                            <Image
+                                                src={
+                                                    projet.image ||
+                                                    "/images/projets/default-project.svg"
+                                                }
+                                                alt={projet.titre}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-200"
+                                            />
+                                            {/* Badge en overlay */}
+                                            <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 text-xs font-semibold text-[#14213d] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                Voir le projet
+                                            </div>
                                         </div>
 
                                         {/* Contenu de la carte */}

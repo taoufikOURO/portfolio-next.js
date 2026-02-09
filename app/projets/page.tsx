@@ -38,9 +38,9 @@ export default function ProjectsPage() {
                     <div className="w-16 h-1 bg-[#fca311] mx-auto mb-6"></div>
 
                     <p className="text-lg text-[#14213d]/70 max-w-2xl mx-auto font-light">
-                        Découvrez l&apos;ensemble de mes réalisations et explorez les
-                        technologies que j&apos;utilise pour créer des expériences
-                        web uniques.
+                        Découvrez l&apos;ensemble de mes réalisations et
+                        explorez les technologies que j&apos;utilise pour créer
+                        des expériences web uniques.
                     </p>
                 </div>
 
@@ -58,25 +58,20 @@ export default function ProjectsPage() {
                                     >
                                         {/* Image du projet */}
                                         <div className="relative h-56 bg-gray-100 overflow-hidden">
-                                            {projet.image ? (
-                                                <>
-                                                    <Image
-                                                        src={projet.image}
-                                                        alt={projet.titre}
-                                                        fill
-                                                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                                                    />
+                                            <Image
+                                                src={
+                                                    projet.image ||
+                                                    "/images/projets/default-project.svg"
+                                                }
+                                                alt={projet.titre}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-200"
+                                            />
 
-                                                    {/* Badge en overlay */}
-                                                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 text-xs font-semibold text-[#14213d] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                        Voir le projet
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-[#14213d]/20">
-                                                    <i className="fas fa-image text-5xl"></i>
-                                                </div>
-                                            )}
+                                            {/* Badge en overlay */}
+                                            <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 text-xs font-semibold text-[#14213d] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                Voir le projet
+                                            </div>
                                         </div>
 
                                         {/* Contenu de la carte */}
