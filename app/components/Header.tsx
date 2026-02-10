@@ -107,7 +107,7 @@ export default function Header() {
                             href="/"
                             className="group flex items-center gap-3 relative z-10"
                         >
-                            <div className="hidden sm:block">
+                            <div>
                                 <span className="font-bold text-[#14213d] group-hover:text-[#fca311] transition-colors duration-200">
                                     {profile.prenom} {profile.nom}
                                 </span>
