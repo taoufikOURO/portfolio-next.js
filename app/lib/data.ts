@@ -1,4 +1,5 @@
-import type { Profile, Project, Technology } from "@/app/types/data";
+import type { Formation, Profile, Project, Technology } from "@/app/types/data";
+import formationsData from "@/data/formations.json";
 import profileData from "@/data/profile.json";
 import projectsData from "@/data/projets.json";
 import stackData from "@/data/stack.json";
@@ -33,4 +34,8 @@ export function getProjectBySlug(slug: string): Project | undefined {
     const projects = getAllProjects();
     const projet = projects.find((p) => p.slug === slug);
     return projet;
+}
+
+export function getAllFormations(): Formation[] {
+    return formationsData as Formation[];
 }

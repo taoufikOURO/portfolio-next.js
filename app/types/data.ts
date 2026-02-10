@@ -29,3 +29,15 @@ export interface Project {
     slug?: string;
     github?: string;
 }
+
+export interface Formation {
+    intitule: string;
+    description: string;
+    debut: string;
+    fin?: string;
+    etablissement: string;
+    lieu: string;
+    mention?: string;
+    moyenne?: string;
+    competences: string[];
+}

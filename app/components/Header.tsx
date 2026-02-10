@@ -2,37 +2,91 @@
 
 import profile from "@/data/profile.json";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Header() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("");
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
 
-            // Detect active section
-            const sections = ["about", "stack", "projets", "contact"];
+            // If we're on a dedicated page, set active section based on pathname
+            if (pathname === "/formations") {
+                setActiveSection("formations");
+                return;
+            }
+
+            // Only run section detection on home page (/)
+            if (pathname !== "/") {
+                setActiveSection("");
+                return;
+            }
+
+            // Detect active section - improved logic for home page
+            const sections = [
+                "about",
+                "stack",
+                "formations",
+                "projets",
+                "contact",
+            ];
+            let activeSection = "";
+            let maxVisibility = 0;
+
             for (const section of sections) {
                 const element = document.getElementById(section);
                 if (element) {
                     const rect = element.getBoundingClientRect();
-                    if (rect.top <= 100 && rect.bottom >= 100) {
-                        setActiveSection(section);
-                        break;
+                    const viewportHeight = window.innerHeight;
+
+                    // Calculate how much of the section is visible
+                    const visibleTop = Math.max(0, -rect.top);
+                    const visibleBottom = Math.min(
+                        rect.height,
+                        viewportHeight - rect.top,
+                    );
+                    const visibleHeight = Math.max(
+                        0,
+                        visibleBottom - visibleTop,
+                    );
+                    const visibility = visibleHeight / viewportHeight;
+
+                    // Check if section is prominently visible (more than 30% of viewport)
+                    if (visibility > 0.3 && visibility > maxVisibility) {
+                        maxVisibility = visibility;
+                        activeSection = section;
+                    }
+
+                    // Also check if we're at the very top of a section
+                    if (
+                        rect.top <= 100 &&
+                        rect.top >= -100 &&
+                        rect.height > 200
+                    ) {
+                        activeSection = section;
                     }
                 }
             }
+
+            setActiveSection(activeSection);
         };
+
+        // Call once on mount to set initial state
+        handleScroll();
+
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [pathname]);
 
     const navLinks = [
         { href: "/#about", label: "À propos", id: "about" },
         { href: "/#stack", label: "Stack", id: "stack" },
+        { href: "/formations", label: "Formation", id: "formations" },
         { href: "/#projets", label: "Projets", id: "projets" },
         { href: "/#contact", label: "Contact", id: "contact" },
     ];

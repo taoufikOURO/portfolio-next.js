@@ -1,0 +1,30 @@
+[
+    {
+        "intitule": "MASTER INTERNATIONAL EN INFORMATIQUE",
+        "description": "Formation en Intelligence Artificielle et Big Data, orientée vers la conception de systèmes d’information complexes et l’analyse de données massives, à l’aide de techniques modernes d’IA et de Big Data.Formation réalisée en partenariat avec l’École Polytechnique de Lomé et l’Université de Technologie de Belfort-Montbéliard (France).",
+        "debut": "Octobre 2025",
+        "etablissement": "École Polytechnique de Lomé et Université de Technologie de Belfort-Montbéliard (France)",
+        "lieu": "Lomé, Togo",
+        "competences": [
+            "Analyse de données",
+            "Conception avancée de systèmes d’information (UML)"
+        ]
+    },
+    {
+        "intitule": "DIPLÔME D'INGENIEUR DES TRAVAUX INFORMATIQUES BAC+3",
+        "description": "Formation en Génie Logiciel et Systèmes d’Information à l’IAI-Togo, axée sur la conception et le développement d’applications web et mobiles, la gestion de projets informatiques et la maîtrise des systèmes d’information.",
+        "debut": "Novembre 2022",
+        "fin": "Août 2025",
+        "etablissement": "Institut Africain d'Informatique (IAI-Togo)",
+        "lieu": "Lomé, Togo",
+        "mention": "Très Bien",
+        "moyenne": "16.28",
+        "competences": [
+            "Conception et développement d’applications web et mobiles",
+            "Gestion de projets informatiques",
+            "Maîtrise des systèmes d’information",
+            "Programmation orientée objet",
+            "Base de données SQL et NoSQL"
+        ]
+    }
+]
