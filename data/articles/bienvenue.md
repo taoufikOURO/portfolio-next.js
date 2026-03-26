@@ -2,9 +2,6 @@
 
 Salut et bienvenue! Je suis ravi de vous accueillir sur ma plateforme de partage.
 
-```python
-print("Hello world")
-```
 ![Description de l'image](/images/projets/default-project.svg)
 
 ## Qui suis-je?
@@ -16,6 +13,17 @@ Je suis Taoufik, un développeur passionné par la technologie, l'innovation et 
 Ce blog est dédié à plusieurs thèmes:
 
 - **Développement Web**: Mes expériences avec Python et les technologies modernes
+
+```python
+n = 10
+star = 1
+
+while n != 0:
+    n = n - 1
+    print(" " * n, "*" * (2 * star - 1))
+    star = star + 1
+```
+
 - **Data Science**: Explorations du machine learning et de l'analyse de données
 - **Projets Personnels**: Les projets sur lesquels je travaille et ce que j'en apprends
 - **Réflexions Techniques**: Mes pensées sur les tendances et les meilleures pratiques

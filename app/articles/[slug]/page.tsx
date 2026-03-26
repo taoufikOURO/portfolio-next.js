@@ -1,5 +1,6 @@
 import articlesData from "@/data/articles.json";
 import fs from "fs";
+import hljs from "highlight.js";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import path from "path";
@@ -64,21 +65,80 @@ export default async function ArticlePage(props: {
     // Convertir markdown simple en HTML (basic conversion)
     const parseMarkdown = (md: string) => {
         let html = md;
+        const codeBlocks: string[] = [];
 
-        // Échapper les caractères HTML spéciaux
+        // ÉTAPE 1: Extraire et colorer les blocs de code
+        html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+            const trimmedCode = code.trim();
+            const lines = trimmedCode.split("\n");
+            let language = "";
+            let codeContent = trimmedCode;
+
+            // Vérifier si première ligne = langage
+            const firstLine = lines[0].trim();
+            if (
+                firstLine.match(/^[a-z0-9]+$/) &&
+                [
+                    "python",
+                    "javascript",
+                    "js",
+                    "typescript",
+                    "ts",
+                    "jsx",
+                    "tsx",
+                    "html",
+                    "css",
+                    "json",
+                    "bash",
+                    "shell",
+                    "java",
+                    "cpp",
+                    "c",
+                    "csharp",
+                    "php",
+                    "ruby",
+                    "go",
+                    "rust",
+                    "sql",
+                    "xml",
+                    "yaml",
+                    "yml",
+                    "plaintext",
+                ].includes(firstLine.toLowerCase())
+            ) {
+                language = firstLine.toLowerCase();
+                codeContent = lines.slice(1).join("\n");
+            }
+
+            // Colorer avec highlight.js
+            let highlightedCode = "";
+            try {
+                if (language) {
+                    highlightedCode = hljs.highlight(codeContent, {
+                        language,
+                    }).value;
+                } else {
+                    const result = hljs.highlightAuto(codeContent);
+                    highlightedCode = result.value;
+                    language = result.language || "text";
+                }
+            } catch (e) {
+                highlightedCode = codeContent
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+            }
+
+            const codeBlock = `<div class="code-block-wrapper" data-language="${language}"><div class="code-block-header"><span class="code-language">${language}</span><button class="copy-button" onclick="copyToClipboard(this)" title="Copier le code"><span class="copy-text">Copier</span></button></div><pre class="hljs"><code>${highlightedCode}</code></pre></div>`;
+            codeBlocks.push(codeBlock);
+            // Retourner un marqueur simple et unique
+            return `\x00CODEBLOCK${codeBlocks.length - 1}\x00`;
+        });
+
+        // ÉTAPE 2: Échapper les caractères HTML spéciaux
         html = html.replace(/&/g, "&amp;");
         html = html.replace(/</g, "&lt;");
         html = html.replace(/>/g, "&gt;");
-
-        // Code blocks - faire d'abord pour éviter les interférences
-        html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-            const escapedCode = code
-                .trim()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
-            return `<pre><code>${escapedCode}</code></pre>`;
-        });
 
         // Inline code
         html = html.replace(
@@ -149,7 +209,8 @@ export default async function ArticlePage(props: {
             if (
                 !trimmed ||
                 trimmed.startsWith("<") ||
-                trimmed.startsWith("</")
+                trimmed.startsWith("</") ||
+                trimmed.startsWith("&lt;!--CODE_PLACEHOLDER")
             ) {
                 return line;
             }
@@ -203,6 +264,11 @@ export default async function ArticlePage(props: {
             /<hr \/>/g,
             '<hr class="my-6 border-t-2 border-[#fca311]/20" />',
         );
+
+        // ÉTAPE 3: Restaurer les blocs de code colorisés
+        for (let i = 0; i < codeBlocks.length; i++) {
+            html = html.replace(`\x00CODEBLOCK${i}\x00`, codeBlocks[i]);
+        }
 
         return html;
     };
@@ -299,7 +365,151 @@ export default async function ArticlePage(props: {
                 .prose code {
                     @apply font-mono text-sm;
                 }
+
+                /* Code Block Styles */
+                .code-block-wrapper {
+                    margin-bottom: 1.5rem;
+                    border-radius: 0.75rem;
+                    overflow: hidden;
+                    background: #1e293b;
+                    border: 1px solid #334155;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+                    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+                }
+                .code-block-wrapper:hover {
+                    border-color: #475569;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3);
+                }
+                .code-block-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 1rem;
+                    background: linear-gradient(to bottom, #0f172a, #1e293b);
+                    border-bottom: 1px solid #334155;
+                }
+                .code-language {
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    color: #94a3b8;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    opacity: 0.85;
+                }
+                .copy-button {
+                    display: inline-block;
+                    padding: 0.5rem 1rem;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    color: #e2e8f0;
+                    background: #334155;
+                    border: 1px solid #475569;
+                    border-radius: 0.5rem;
+                    cursor: pointer;
+                    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.4, 1);
+                }
+                .copy-button:hover {
+                    background: #475569;
+                    border-color: #64748b;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    transform: translateY(-1px);
+                }
+                .copy-button:active {
+                    transform: scale(0.96);
+                    background: #64748b;
+                }
+                .copy-button.copied {
+                    background: #22863a;
+                    border-color: #238636;
+                    color: #c9d1d9;
+                }
+                .copy-text {
+                    white-space: nowrap;
+                    transition: opacity 0.3s ease;
+                }
+                .code-block-wrapper .hljs {
+                    display: block;
+                    overflow-x: auto;
+                    background: #1e293b;
+                    color: #e2e8f0;
+                    padding: 1.25rem;
+                    margin: 0;
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                    font-size: 14px;
+                    line-height: 1.6;
+                }
+                .code-block-wrapper code {
+                    background: transparent;
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                    font-size: 0.875rem;
+                    line-height: 1.6;
+                    letter-spacing: 0.01em;
+                }
+
+                /* Syntax Highlighting - Dark Theme */
+                .hljs { background: #1e293b; color: #e2e8f0; }
+                .hljs-attr { color: #a78bfa; }
+                .hljs-attribute { color: #a78bfa; }
+                .hljs-built_in { color: #60a5fa; }
+                .hljs-builtin-name { color: #60a5fa; }
+                .hljs-literal { color: #f87171; }
+                .hljs-meta { color: #86efac; }
+                .hljs-number { color: #f87171; }
+                .hljs-code { color: #f87171; }
+                .hljs-regexp { color: #f87171; }
+                .hljs-string { color: #34d399; }
+                .hljs-title { color: #c4b5fd; font-weight: 600; }
+                .hljs-title\.class_ { color: #c4b5fd; }
+                .hljs-title\.function_ { color: #a78bfa; }
+                .hljs-name { color: #c4b5fd; }
+                .hljs-selector-tag { color: #60a5fa; }
+                .hljs-selector-id { color: #60a5fa; }
+                .hljs-selector-class { color: #60a5fa; }
+                .hljs-selector-attr { color: #60a5fa; }
+                .hljs-symbol { color: #f87171; }
+                .hljs-bullet { color: #f87171; }
+                .hljs-link { color: #60a5fa; }
+                .hljs-keyword { color: #f87171; }
+                .hljs-comment { color: #64748b; }
+                .hljs-variable { color: #cbd5e1; }
+                .hljs-template-variable { color: #cbd5e1; }
+                .hljs-strong { font-weight: 700; }
+                .hljs-emphasis { font-style: italic; }
+                .hljs-quote { color: #64748b; }
+                .hljs-doctag { color: #fb7185; }
+                .hljs-type { color: #60a5fa; }
+                .hljs-section { color: #60a5fa; }
+                .hljs-tag { color: #86efac; }
+                .hljs-params { color: #cbd5e1; }
+                .hljs-operator { color: #f87171; }
             `}</style>
+
+            {/* Copy Script */}
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `window.copyToClipboard = function(btn) { 
+                        const wrapper = btn.closest('.code-block-wrapper'); 
+                        const code = wrapper.querySelector('code'); 
+                        const text = code.innerText; 
+                        const textSpan = btn.querySelector('.copy-text');
+                        const origText = textSpan.innerText;
+                        
+                        navigator.clipboard.writeText(text).then(() => { 
+                            btn.classList.add('copied');
+                            textSpan.innerText = 'Copié!';
+                            
+                            setTimeout(() => { 
+                                btn.classList.remove('copied');
+                                textSpan.innerText = origText; 
+                            }, 2000); 
+                        }).catch(e => {
+                            console.error('Erreur:', e);
+                            textSpan.innerText = 'Erreur';
+                            setTimeout(() => { textSpan.innerText = origText; }, 2000);
+                        }); 
+                    }`,
+                }}
+            />
         </article>
     );
 }
