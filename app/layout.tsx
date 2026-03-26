@@ -110,6 +110,15 @@ export default function RootLayout({
                                     </li>
                                     <li>
                                         <Link
+                                            href="/articles"
+                                            className="group/link bg-linear-to-r from-[#fca311]/20 to-[#fdb84d]/10 border border-[#fca311]/40 hover:border-[#fca311] hover:bg-linear-to-r hover:from-[#fca311]/30 hover:to-[#fdb84d]/20 px-3 py-2 rounded-lg text-[#fca311] hover:text-[#fdb84d] transition-all text-sm font-bold flex items-center gap-2"
+                                        >
+                                            <i className="fas fa-pen-fancy text-xs"></i>
+                                            Mes Articles
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
                                             href="/#contact"
                                             className="group/link text-gray-300 hover:text-[#fca311] transition-colors text-sm flex items-center gap-2"
                                         >

@@ -88,6 +88,7 @@ export default function Header() {
         { href: "/#stack", label: "Stack", id: "stack" },
         { href: "/#formations", label: "Formation", id: "formations" },
         { href: "/#projets", label: "Projets", id: "projets" },
+        { href: "/articles", label: "Blog", id: "articles" },
         { href: "/#contact", label: "Contact", id: "contact" },
     ];
 
@@ -124,9 +125,11 @@ export default function Header() {
                                         <Link
                                             href={link.href}
                                             className={`relative px-6 py-3 font-bold text-sm uppercase tracking-widest transition-all duration-300 group ${
-                                                activeSection === link.id
-                                                    ? "text-[#14213d]"
-                                                    : "text-[#64748b] hover:text-[#fca311]"
+                                                link.id === "articles"
+                                                    ? "bg-linear-to-r from-[#fca311] to-[#fdb84d] text-[#14213d] rounded-lg mx-2 px-6 py-2.5 hover:shadow-[0_0_20px_rgba(252,163,17,0.4)]"
+                                                    : activeSection === link.id
+                                                      ? "text-[#14213d]"
+                                                      : "text-[#64748b] hover:text-[#fca311]"
                                             }`}
                                         >
                                             <span className="relative z-10">
