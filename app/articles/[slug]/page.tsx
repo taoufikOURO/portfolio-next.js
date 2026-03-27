@@ -1,3 +1,4 @@
+import ShareArticleButton from "@/app/components/ShareArticleButton";
 import articlesData from "@/data/articles.json";
 import fs from "fs";
 import hljs from "highlight.js";
@@ -37,19 +38,42 @@ export default async function ArticlePage(props: {
         notFound();
     }
 
-    // Lire le fichier markdown
-    const mdPath = path.join(
-        process.cwd(),
-        "data/articles",
-        `${article.slug}.md`,
-    );
-
     let content = "";
-    try {
-        content = fs.readFileSync(mdPath, "utf-8");
-    } catch (error) {
-        console.error("Error reading markdown file:", error);
-        notFound();
+
+    // Vérifier si c'est une URL en ligne
+    if (
+        article.mdFile.startsWith("http://") ||
+        article.mdFile.startsWith("https://")
+    ) {
+        try {
+            // Convertir l'URL GitHub en URL brute si nécessaire
+            let fetchUrl = article.mdFile;
+            if (article.mdFile.includes("github.com")) {
+                // Convertir : https://github.com/user/repo/blob/branch/path/file.md
+                // En : https://raw.githubusercontent.com/user/repo/branch/path/file.md
+                fetchUrl = article.mdFile
+                    .replace("github.com", "raw.githubusercontent.com")
+                    .replace("/blob/", "/");
+            }
+
+            const response = await fetch(fetchUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.status}`);
+            }
+            content = await response.text();
+        } catch (error) {
+            console.error("Error fetching markdown file:", error);
+            notFound();
+        }
+    } else {
+        // Lire le fichier local
+        try {
+            const mdPath = path.join(process.cwd(), article.mdFile);
+            content = fs.readFileSync(mdPath, "utf-8");
+        } catch (error) {
+            console.error("Error reading markdown file:", error);
+            notFound();
+        }
     }
 
     // Formater la date
@@ -313,6 +337,8 @@ export default async function ArticlePage(props: {
                         <span className="text-sm text-[#14213d]/70 font-medium">
                             {article.auteur}
                         </span>
+                        <span className="text-sm text-[#14213d]/60">•</span>
+                        <ShareArticleButton />
                     </div>
 
                     {/* Divider */}

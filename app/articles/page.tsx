@@ -37,7 +37,7 @@ export default function ArticlesPage() {
     return (
         <div className="min-h-screen bg-linear-to-b from-white via-[#f8fafc] to-white -mt-25">
             {/* Header */}
-            <section className="pt-24 pb-12 md:pt-32 md:pb-12 relative overflow-hidden">
+            <section className="pt-24 pb-12 md:pt-32 md:pb-12 mt-10 relative overflow-hidden">
                 {/* Decorative blobs */}
                 <div className="absolute top-20 right-0 w-80 h-80 blob blob-accent rounded-full opacity-10" />
                 <div className="absolute -bottom-40 left-0 w-96 h-96 blob blob-primary rounded-full opacity-5" />

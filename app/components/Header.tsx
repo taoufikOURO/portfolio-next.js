@@ -88,7 +88,7 @@ export default function Header() {
         { href: "/#stack", label: "Stack", id: "stack" },
         { href: "/#formations", label: "Formation", id: "formations" },
         { href: "/#projets", label: "Projets", id: "projets" },
-        { href: "/articles", label: "Blog", id: "articles" },
+        { href: "/articles", label: "Blog", id: "blog" },
         { href: "/#contact", label: "Contact", id: "contact" },
     ];
 
@@ -125,8 +125,8 @@ export default function Header() {
                                         <Link
                                             href={link.href}
                                             className={`relative px-6 py-3 font-bold text-sm uppercase tracking-widest transition-all duration-300 group ${
-                                                link.id === "articles"
-                                                    ? "bg-linear-to-r from-[#fca311] to-[#fdb84d] text-[#14213d] rounded-lg mx-2 px-6 py-2.5 hover:shadow-[0_0_20px_rgba(252,163,17,0.4)]"
+                                                link.id === "blog"
+                                                    ? "bg-linear-to-r from-[#fca311] to-[#fdb84d] text-[#14213d] rounded-lg mx-2 px-6 py-2.5"
                                                     : activeSection === link.id
                                                       ? "text-[#14213d]"
                                                       : "text-[#64748b] hover:text-[#fca311]"
@@ -148,6 +148,22 @@ export default function Header() {
                                 ))}
                             </ul>
                         </nav>
+
+                        {/* Mobile Blog Link */}
+                        <Link
+                            href="/articles"
+                            className="lg:hidden group relative flex items-center gap-2 px-4 py-2.5 glass rounded-xl border border-[#fca311]/30 hover:border-[#fca311]/80 text-[#14213d] font-bold text-sm uppercase tracking-widest hover:shadow-lg hover:shadow-[#fca311]/30 transition-all duration-300 hover-lift"
+                        >
+                            <svg
+                                className="w-4 h-4 group-hover:rotate-12 transition-transform"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h14v2H5V5zm0 4h14v8H5V9z" />
+                            </svg>
+                            <span>Blog</span>
+                            <div className="absolute inset-0 rounded-xl bg-linear-to-r from-[#fca311]/10 to-[#fdb84d]/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+                        </Link>
 
                         {/* Mobile Menu Button */}
                         <button
@@ -198,7 +214,7 @@ export default function Header() {
                 ></div>
 
                 {/* Menu Content */}
-                <div className="relative h-full flex flex-col items-center justify-center px-6">
+                <div className="relative h-full flex flex-col items-center justify-start px-6 pt-24">
                     <nav className="w-full max-w-sm space-y-3">
                         {navLinks.map((link, index) => (
                             <Link

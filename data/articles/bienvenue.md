@@ -12,7 +12,10 @@ Je suis Taoufik, un développeur passionné par la technologie, l'innovation et 
 
 Ce blog est dédié à plusieurs thèmes:
 
-- **Développement Web**: Mes expériences avec Python et les technologies modernes
+- **Développement Web**: Mes expériences avec les technologies modernes
+- **Data Science**: Explorations du machine learning et de l'analyse de données
+- **Projets Personnels**: Les projets sur lesquels je travaille et ce que j'en apprends
+- **Réflexions Techniques**: Mes pensées sur les tendances et les meilleures pratiques
 
 ```python
 n = 10
@@ -24,13 +27,9 @@ while n != 0:
     star = star + 1
 ```
 
-- **Data Science**: Explorations du machine learning et de l'analyse de données
-- **Projets Personnels**: Les projets sur lesquels je travaille et ce que j'en apprends
-- **Réflexions Techniques**: Mes pensées sur les tendances et les meilleures pratiques
-
 ## Mises à jour régulières
 
-Je m'engage à mettre à jour ce blog régulièrement avec du contenu frais et pertinent. Chaque article est rédigé avec soin et passion.
+Je ferai tout mettre à jour ce blog régulièrement avec du contenu frais et pertinent. Chaque article est rédigé avec soin et passion.
 
 ## Restez connecté
 

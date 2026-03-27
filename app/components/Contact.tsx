@@ -77,7 +77,7 @@ export default function Contact() {
                     </div>
 
                     {/* Right side - Contact Cards */}
-                    <div className="space-y-6 animate-fade-in-left animation-delay-200">
+                    <div className="space-y-3 md:space-y-6 animate-fade-in-left animation-delay-200">
                         {contactLinks.map((link, index) => (
                             <a
                                 key={index}
@@ -98,16 +98,16 @@ export default function Contact() {
                                     animationDelay: `${300 + index * 100}ms`,
                                 }}
                             >
-                                <div className="rounded-2xl p-8 border-2 border-[#fca311]/60 hover:border-[#fdb84d] bg-[#14213d]/20 hover:bg-[#fca311]/10 hover:shadow-[0_0_40px_rgba(252,163,17,0.4)] hover-lift transition-all group overflow-hidden shadow-[inset_0_0_20px_rgba(252,163,17,0.1)]">
+                                <div className="rounded-2xl p-4 md:p-8 border-2 border-[#fca311]/60 hover:border-[#fdb84d] bg-[#14213d]/20 hover:bg-[#fca311]/10 hover:shadow-[0_0_40px_rgba(252,163,17,0.4)] hover-lift transition-all group overflow-hidden shadow-[inset_0_0_20px_rgba(252,163,17,0.1)]">
                                     <div className="absolute inset-0 bg-linear-to-br from-[#fca311]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                                     <div className="absolute inset-0 bg-linear-to-br from-[#fca311]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                                     <div className="relative">
-                                        <div className="flex items-start gap-6">
+                                        <div className="flex items-start gap-3 md:gap-6">
                                             {/* Icon container */}
                                             <div className="shrink-0">
-                                                <div className="relative w-16 h-16 bg-linear-to-br from-[#fca311]/20 to-[#fdb84d]/10 rounded-2xl p-4 flex items-center justify-center border border-[#fca311]/30 group-hover:border-[#fca311]/60 group-hover:shadow-[0_0_20px_rgba(252,163,17,0.3)] transition-all">
+                                                <div className="relative w-12 h-12 md:w-16 md:h-16 bg-linear-to-br from-[#fca311]/20 to-[#fdb84d]/10 rounded-2xl p-3 md:p-4 flex items-center justify-center border border-[#fca311]/30 group-hover:border-[#fca311]/60 group-hover:shadow-[0_0_20px_rgba(252,163,17,0.3)] transition-all">
                                                     <i
-                                                        className={`${link.icon} text-2xl text-[#fca311] group-hover:scale-110 transition-transform`}
+                                                        className={`${link.icon} text-lg md:text-2xl text-[#fca311] group-hover:scale-110 transition-transform`}
                                                     ></i>
                                                     <div className="absolute inset-0 rounded-2xl bg-[#fca311]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
                                                 </div>
@@ -119,11 +119,11 @@ export default function Contact() {
                                                     <p className="text-xs font-bold text-[#fca311] uppercase tracking-widest">
                                                         {link.label}
                                                     </p>
-                                                    <h3 className="text-xl font-bold text-transparent bg-linear-to-r from-[#fca311] to-[#fdb84d] bg-clip-text">
+                                                    <h3 className="text-base md:text-xl font-bold text-transparent bg-linear-to-r from-[#fca311] to-[#fdb84d] bg-clip-text">
                                                         {link.value}
                                                     </h3>
                                                 </div>
-                                                <p className="text-sm text-white/80">
+                                                <p className="text-xs md:text-sm text-white/80">
                                                     {link.description}
                                                 </p>
                                             </div>
@@ -131,7 +131,7 @@ export default function Contact() {
                                             {/* Arrow */}
                                             <div className="shrink-0">
                                                 <svg
-                                                    className="w-6 h-6 text-[#fca311] opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"
+                                                    className="w-5 h-5 md:w-6 md:h-6 text-[#fca311] opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -152,8 +152,6 @@ export default function Contact() {
                                 </div>
                             </a>
                         ))}
-
-
                     </div>
                 </div>
             </div>
