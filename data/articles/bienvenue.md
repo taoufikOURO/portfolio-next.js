@@ -29,7 +29,7 @@ while n != 0:
 
 ## Mises à jour régulières
 
-Je ferai tout mettre à jour ce blog régulièrement avec du contenu frais et pertinent. Chaque article est rédigé avec soin et passion.
+Je ferai tout pour mettre à jour ce blog régulièrement avec du contenu frais et pertinent. Chaque article est rédigé avec soin et passion.
 
 ## Restez connecté
 
