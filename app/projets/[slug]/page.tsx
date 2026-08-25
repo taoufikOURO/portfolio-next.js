@@ -115,33 +115,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             <div className="absolute -top-4 -left-4 w-8 h-8 bg-[#fca311]"></div>
                             <div className="absolute -bottom-4 -right-4 w-8 h-8 border-4 border-[#fca311]"></div>
                         </div>
-
-                        {/* Caractéristiques principales */}
-                        <div className="grid sm:grid-cols-2 gap-6">
-                            <div className="p-6 bg-white border border-[#14213d]/10 hover:-translate-y-1 transition-all duration-200">
-                                <div className="w-12 h-12 flex items-center justify-center border border-[#14213d]/20 mb-4">
-                                    <i className="fas fa-rocket text-[#fca311] text-xl"></i>
-                                </div>
-                                <h3 className="font-bold text-[#14213d] mb-2">
-                                    Performance
-                                </h3>
-                                <p className="text-sm text-[#14213d]/70">
-                                    Optimisé pour une expérience rapide et
-                                    fluide
-                                </p>
-                            </div>
-                            <div className="p-6 bg-white border border-[#14213d]/10 hover:-translate-y-1 transition-all duration-200">
-                                <div className="w-12 h-12 flex items-center justify-center border border-[#14213d]/20 mb-4">
-                                    <i className="fas fa-mobile-alt text-[#fca311] text-xl"></i>
-                                </div>
-                                <h3 className="font-bold text-[#14213d] mb-2">
-                                    Responsive
-                                </h3>
-                                <p className="text-sm text-[#14213d]/70">
-                                    Adapté à tous les écrans et appareils
-                                </p>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Sidebar */}

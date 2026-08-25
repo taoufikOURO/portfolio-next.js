@@ -15,5 +15,68 @@
                 "icon": "/images/stack/tailwind.png"
             }
         ]
+    },
+    {
+        "id": 2,
+        "slug": "api-traduction-multilingue",
+        "titre": "API de Traduction Multilingue",
+        "description": "Une API de traduction automatique français-anglais-éwé, développée avec FastAPI. L'objectif : poser une première brique pour l'accès aux contenus dans une langue locale encore peu couverte par les outils de traduction existants.",
+        "estPublie": true,
+        "lien": "https://ewe-multilingual-translator-fronten.vercel.app/",
+        "github": "https://github.com/taoufikOURO/multilingual-translator-api",
+        "stack": [
+            {
+                "name": "FastAPI",
+                "icon": "/images/stack/fastapi.png"
+            },
+            {
+                "name": "Angular",
+                "icon": "/images/stack/angular.png"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "slug": "pipeline-bigdata-hopital-tokoin",
+        "titre": "Pipeline Big Data – Hôpital de Tokoin",
+        "description": "Construction d'une base décisionnelle à partir de données brutes dispersées dans 7 formats différents. Modélisation d'un entrepôt de données et création de tableaux de bord pour centraliser l'information et fiabiliser l'aide à la décision.",
+        "estPublie": true,
+        "github": "https://github.com/taoufikOURO/tokoin-hospital-dwh",
+        "stack": [
+            {
+                "name": "Python",
+                "icon": "/images/stack/python.png"
+            },
+            {
+                "name": "PostgreSQL",
+                "icon": "/images/stack/postgresql.png"
+            },
+            {
+                "name": "MongoDB",
+                "icon": "/images/stack/mongodb.png"
+            },
+            {
+                "name": "Docker Compose",
+                "icon": "/images/stack/docker.png"
+            },
+            {
+                "name": "Metabase",
+                "icon": "/images/stack/metabase.png"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "slug": "detection-anomalies-bancaires-kmeans",
+        "titre": "Détection d'Anomalies Bancaires par K-Means",
+        "description": "Détection automatique de transactions bancaires suspectes pouvant signaler une fraude. Optimisation du seuil de détection pour limiter les faux positifs : 60 anomalies identifiées sur 20 000 transactions, soit 0,3 %.",
+        "estPublie": true,
+        "github": "https://github.com/taoufikOURO/kmeans-anomaly-detection",
+        "stack": [
+            {
+                "name": "Python",
+                "icon": "/images/stack/python.png"
+            }
+        ]
     }
 ]

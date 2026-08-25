@@ -7,7 +7,13 @@
         "lieu": "Lomé, Togo",
         "competences": [
             "Analyse de données",
-            "Conception avancée de systèmes d’information (UML)"
+            "Machine learning et modélisation prédictive",
+            "Architectures Big Data",
+            "Optimisation et algorithmique avancée",
+            "Conception avancée de systèmes d'information (UML)",
+            "Conception et gestion de bases de données (SQL, NoSQL)",
+            "Développement full-stack",
+            "Data engineering (pipelines ETL, entrepôts de données)"
         ]
     },
     {
