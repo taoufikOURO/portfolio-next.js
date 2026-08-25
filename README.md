@@ -1,53 +1,45 @@
-# 🚀 Portfolio Personnel - Taoufik OURO-BANG'NA
+# Portfolio Personnel - Taoufik OURO-BANG'NA
 
-Portfolio moderne et élégant développé avec **Next.js 16**, **React 19** et **Tailwind CSS 4**. Ce site met en avant mes compétences, projets et expériences avec un design soigné, des animations fluides et une architecture performante.
+Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le site présente mes compétences, mes projets et mon parcours à travers une interface soignée et une architecture performante.
 
-![Portfolio Preview](public/images/preview.png)
+## Aperçu
 
-## ✨ Caractéristiques
+- Interface moderne avec effets de glassmorphism et micro-interactions
+- Rendu optimisé grâce à Next.js 16 (App Router)
+- Design responsive, adapté à tous les formats d'écran
+- Architecture basée sur des fichiers JSON, sans base de données
+- Structure SEO optimisée
+- Code entièrement typé avec TypeScript
+- Composants modulaires et réutilisables
 
-- 🎨 **Design Ultra Moderne** - Interface élégante avec glassmorphism, gradients animés et micro-interactions
-- ⚡ **Performance Optimale** - Next.js 16 avec App Router pour un chargement ultra-rapide
-- 📱 **Responsive Design** - Adapté à tous les écrans (mobile, tablette, desktop)
-- 🎭 **Animations Fluides** - Transitions et animations CSS personnalisées
-- 🗂️ **Gestion de Données JSON** - Architecture sans base de données, données dans des fichiers JSON
-- 🎯 **SEO Optimisé** - Meta tags et structure optimisée pour le référencement
-- 🌐 **TypeScript** - Code typé pour une meilleure maintenabilité
-- 🎨 **Tailwind CSS 4** - Système de design moderne et cohérent
-- 📦 **Architecture Modulaire** - Composants réutilisables et bien organisés
-
-## 🛠️ Technologies Utilisées
+## Stack technique
 
 ### Frontend
 
-- **Next.js 16** - Framework React pour le rendu côté serveur
-- **React 19** - Bibliothèque UI moderne
-- **TypeScript** - Typage statique JavaScript
-- **Tailwind CSS 4** - Framework CSS utility-first
+- Next.js 16 - Framework React pour le rendu côté serveur
+- React 19 - Bibliothèque UI
+- TypeScript - Typage statique
+- Tailwind CSS 4 - Framework CSS utility-first
 
-### Outils de Développement
+### Outils
 
-- **ESLint** - Linter pour maintenir la qualité du code
-- **pnpm** - Gestionnaire de paquets rapide et efficace
-- **Font Awesome** - Bibliothèque d'icônes
+- ESLint - Linting et qualité de code
+- pnpm - Gestionnaire de paquets
+- Font Awesome - Icônes
 
-## 📦 Installation
+## Installation
 
 ### Prérequis
 
-- Node.js 18+
+- Node.js 18 ou supérieur
 - pnpm (recommandé) ou npm
 
-### Étapes d'installation
-
-1. **Cloner le repository**
+### Étapes
 
 ```bash
 git clone https://github.com/taoufikOURO/portfolio.git
 cd portfolio
 ```
-
-2. **Installer les dépendances**
 
 ```bash
 pnpm install
@@ -55,55 +47,47 @@ pnpm install
 npm install
 ```
 
-3. **Lancer le serveur de développement**
-
 ```bash
 pnpm dev
 # ou
 npm run dev
 ```
 
-4. **Ouvrir dans le navigateur**
+Le site est ensuite accessible sur `http://localhost:3000`.
 
-```
-http://localhost:3000
-```
-
-## 📁 Structure du Projet
+## Structure du projet
 
 ```
 portfolio/
 ├── app/                      # Application Next.js (App Router)
 │   ├── components/          # Composants React réutilisables
-│   │   ├── About.tsx       # Section À propos
-│   │   ├── Contact.tsx     # Formulaire de contact
-│   │   ├── Header.tsx      # Navigation principale
-│   │   ├── Hero.tsx        # Section hero/bannière
-│   │   ├── Projects.tsx    # Liste des projets
-│   │   └── Stack.tsx       # Technologies maîtrisées
-│   ├── lib/                # Utilitaires et fonctions
-│   │   └── data.ts         # Fonctions de récupération des données
-│   ├── projets/            # Pages des projets
-│   │   ├── page.tsx        # Liste complète des projets
-│   │   └── [slug]/         # Page détail d'un projet
-│   ├── types/              # Définitions TypeScript
-│   ├── globals.css         # Styles CSS globaux
-│   ├── layout.tsx          # Layout principal
-│   └── page.tsx            # Page d'accueil
-├── data/                    # Données JSON
-│   ├── profile.json        # Informations personnelles
-│   ├── projets.json        # Liste des projets
-│   └── stack.json          # Technologies
-├── public/                  # Assets statiques
-│   └── images/             # Images et icônes
-└── README.md               # Documentation
+│   │   ├── About.tsx        # Section à propos
+│   │   ├── Contact.tsx      # Formulaire de contact
+│   │   ├── Header.tsx       # Navigation principale
+│   │   ├── Hero.tsx         # Section d'introduction
+│   │   ├── Projects.tsx     # Liste des projets
+│   │   └── Stack.tsx        # Technologies maîtrisées
+│   ├── lib/                 # Utilitaires et fonctions
+│   │   └── data.ts          # Récupération des données
+│   ├── projets/             # Pages des projets
+│   │   ├── page.tsx         # Liste complète des projets
+│   │   └── [slug]/          # Page détail d'un projet
+│   ├── types/               # Définitions TypeScript
+│   ├── globals.css          # Styles globaux
+│   ├── layout.tsx           # Layout principal
+│   └── page.tsx             # Page d'accueil
+├── data/                     # Données JSON
+│   ├── profile.json         # Informations personnelles
+│   ├── projets.json         # Liste des projets
+│   └── stack.json           # Technologies
+├── public/                   # Assets statiques
+│   └── images/               # Images et icônes
+└── README.md
 ```
 
-## 🎨 Personnalisation
+## Personnalisation
 
-### Modifier vos informations
-
-1. **Profil personnel** (`data/profile.json`)
+### Profil (`data/profile.json`)
 
 ```json
 {
@@ -121,7 +105,7 @@ portfolio/
 }
 ```
 
-2. **Ajouter des projets** (`data/projets.json`)
+### Projets (`data/projets.json`)
 
 ```json
 {
@@ -137,7 +121,7 @@ portfolio/
 }
 ```
 
-3. **Technologies** (`data/stack.json`)
+### Technologies (`data/stack.json`)
 
 ```json
 {
@@ -146,97 +130,76 @@ portfolio/
 }
 ```
 
-### Personnaliser les couleurs
+### Couleurs
 
-Modifier les variables CSS dans `app/globals.css`:
+Les variables sont définies dans `app/globals.css` :
 
 ```css
 :root {
-    --color-primary: #14213d; /* Bleu foncé principal */
-    --color-accent: #fca311; /* Orange accent */
-    /* ... autres variables */
+    --color-primary: #14213d;
+    --color-accent: #fca311;
+    /* autres variables */
 }
 ```
 
-## 🚀 Déploiement
+## Déploiement
 
-### Vercel (recommandé)
+### Vercel
 
-1. Pusher votre code sur GitHub
-2. Connecter votre repo à [Vercel](https://vercel.com)
-3. Vercel détectera automatiquement Next.js et déploiera
+1. Pousser le code sur GitHub
+2. Connecter le dépôt à Vercel
+3. Vercel détecte automatiquement Next.js et déploie le projet
 
 ### Build manuel
 
 ```bash
-# Créer le build de production
 pnpm build
-
-# Lancer en production
 pnpm start
 ```
 
-## 📝 Scripts Disponibles
+## Scripts disponibles
 
 ```bash
-pnpm dev        # Démarre le serveur de développement
-pnpm build      # Crée le build de production
-pnpm start      # Lance le serveur de production
-pnpm lint       # Vérifie le code avec ESLint
+pnpm dev        # Serveur de développement
+pnpm build      # Build de production
+pnpm start      # Lancement en production
+pnpm lint       # Vérification ESLint
 ```
 
-## 🎯 Fonctionnalités
+## Fonctionnalités
 
 ### Pages
 
-- ✅ Page d'accueil avec toutes les sections
-- ✅ Page liste complète des projets
-- ✅ Pages détails de chaque projet
-- ✅ Navigation fluide entre les sections
-- ✅ Footer avec liens et informations
+- Page d'accueil avec l'ensemble des sections
+- Liste complète des projets
+- Page détail pour chaque projet
+- Navigation fluide entre sections
+- Footer avec liens et informations de contact
 
 ### Sections
 
-- ✅ **Hero** - Présentation avec photo et CTA
-- ✅ **About** - À propos avec points forts
-- ✅ **Stack** - Technologies avec icônes
-- ✅ **Projects** - Projets récents en cartes
-- ✅ **Contact** - Formulaire et liens sociaux
+- Hero - Présentation avec photo et appel à l'action
+- About - À propos et points forts
+- Stack - Technologies maîtrisées
+- Projects - Projets récents
+- Contact - Formulaire et liens sociaux
 
-### Design
+## Contribution
 
-- ✅ Animations CSS personnalisées
-- ✅ Effets glassmorphism
-- ✅ Gradients animés
-- ✅ Micro-interactions au hover
-- ✅ Blobs décoratifs animés
-- ✅ Scrollbar personnalisée
-- ✅ Header avec effet de scroll
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à :
-
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/amelioration`)
-3. Commit vos changements (`git commit -m 'Ajout fonctionnalité'`)
+1. Fork du projet
+2. Création d'une branche (`git checkout -b feature/amelioration`)
+3. Commit des changements (`git commit -m 'Ajout fonctionnalité'`)
 4. Push vers la branche (`git push origin feature/amelioration`)
-5. Ouvrir une Pull Request
+5. Ouverture d'une Pull Request
 
-## 📄 Licence
+## Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
 
-## 👤 Contact
+## Contact
 
 **Taoufik OURO-BANG'NA**
 
-- 📧 Email: ourotaoufik1@gmail.com
-- 💼 LinkedIn: [linkedin.com/in/taoufik-ouro-bang-na](https://www.linkedin.com/in/taoufik-ouro-bang-na)
-- 🐙 GitHub: [@taoufikOURO](https://github.com/taoufikOURO)
-
----
-
-⭐ **Si ce projet vous plaît, n'hésitez pas à lui donner une étoile !**
-
-Fait avec ❤️ et Next.js
+- Email : ourotaoufik1@gmail.com
+- LinkedIn : [linkedin.com/in/taoufik-ouro-bang-na](https://www.linkedin.com/in/taoufik-ouro-bang-na)
+- GitHub : [@taoufikOURO](https://github.com/taoufikOURO)
