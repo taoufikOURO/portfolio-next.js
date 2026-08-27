@@ -146,7 +146,7 @@ export default async function ArticlePage(props: {
                     highlightedCode = result.value;
                     language = result.language || "text";
                 }
-            } catch (e) {
+            } catch {
                 highlightedCode = codeContent
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
@@ -298,12 +298,12 @@ export default async function ArticlePage(props: {
     };
 
     return (
-        <article className="min-h-screen bg-linear-to-b from-white via-[#f8fafc] to-white pt-8 md:pt-0">
+        <article className="data-grid min-h-screen px-6 pb-24 pt-32">
             {/* Back button */}
-            <div className="max-w-3xl mx-auto px-6 mb-12">
+            <div className="mx-auto mb-12 max-w-4xl">
                 <Link
                     href="/articles"
-                    className="inline-flex items-center gap-2 text-[#fca311] hover:text-[#14213d] font-medium transition-colors group"
+                    className="section-label transition-colors hover:text-[#668b26]"
                 >
                     <svg
                         className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
@@ -322,14 +322,12 @@ export default async function ArticlePage(props: {
                 </Link>
             </div>
 
-            <div className="max-w-3xl mx-auto px-6">
+            <div className="mx-auto max-w-4xl">
                 {/* Article Header */}
-                <header className="mb-12">
+                <header className="reveal mb-12">
                     {/* Category and Date */}
                     <div className="flex items-center gap-4 mb-6 flex-wrap">
-                        <span className="inline-block text-xs font-bold text-[#fca311] uppercase tracking-widest bg-[#fca311]/10 px-3 py-1 rounded-full">
-                            {article.categorie}
-                        </span>
+                        <span className="eyebrow">{article.categorie}</span>
                         <span className="text-sm text-[#14213d]/60">
                             {formatDate(article.date)}
                         </span>
@@ -349,7 +347,7 @@ export default async function ArticlePage(props: {
                 </header>
 
                 {/* Article Content */}
-                <div className="glass rounded-3xl mt-10 md:p-12 -mt-25 mb-16 prose-custom">
+                <div className="data-card mt-10 mb-16 border p-6 md:p-12 prose-custom">
                     <div
                         className="prose max-w-none"
                         dangerouslySetInnerHTML={{
@@ -362,16 +360,16 @@ export default async function ArticlePage(props: {
             {/* Global Styles for Markdown */}
             <style>{`
                 .prose h1 {
-                    @apply text-3xl md:text-4xl font-black text-[#14213d] mt-10 mb-6 leading-tight;
+                    @apply text-3xl md:text-4xl font-black mt-10 mb-6 leading-tight;
                 }
                 .prose h2 {
-                    @apply text-2xl md:text-3xl font-black text-[#14213d] mt-9 mb-5 leading-tight;
+                    @apply text-2xl md:text-3xl font-black mt-9 mb-5 leading-tight;
                 }
                 .prose h3 {
-                    @apply text-xl md:text-2xl font-bold text-[#14213d] mt-8 mb-4;
+                    @apply text-xl md:text-2xl font-bold mt-8 mb-4;
                 }
                 .prose p {
-                    @apply text-lg text-[#14213d]/80 leading-relaxed mb-6 font-light;
+                    @apply text-lg leading-relaxed mb-6 font-light text-(--muted);
                 }
                 .prose strong {
                     @apply font-bold text-[#14213d];
