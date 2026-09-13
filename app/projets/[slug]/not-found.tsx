@@ -1,7 +1,7 @@
 import Link from "next/link";
 export default function NotFound() {
     return (
-        <main className="data-grid flex min-h-screen items-center justify-center px-6 text-center">
+        <main className="poster-section data-grid flex min-h-screen items-center justify-center px-6 text-center">
             <div>
                 <p className="eyebrow">404 / Missing data</p>
                 <h1 className="display mt-5 text-6xl">Projet introuvable.</h1>

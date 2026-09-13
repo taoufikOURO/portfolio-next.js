@@ -4,13 +4,13 @@ import Link from "next/link";
 export default function FormationsPage() {
     const formations = getAllFormations();
     return (
-        <main className="data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
+        <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-6xl">
                 <Link href="/" className="section-label">
                     Retour accueil
                 </Link>
                 <div className="mt-12 max-w-4xl">
-                    <h1 className="display text-6xl leading-none md:text-9xl">
+                    <h1 className="display poster-heading">
                         Les fondations
                         <br />
                         <span className="text-[#668b26]">du parcours.</span>
@@ -24,7 +24,7 @@ export default function FormationsPage() {
                     {formations.map((formation, index) => (
                         <article
                             key={index}
-                            className="grid gap-6 border-b border-(--line) py-10 md:grid-cols-[.2fr_1fr_.4fr]"
+                            className="line-item grid gap-6 border-b border-(--line) py-10 md:grid-cols-[.2fr_1fr_.4fr]"
                         >
                             <span className="font-mono text-sm text-(--coral)">
                                 {formation.debut} → {formation.fin || "now"}

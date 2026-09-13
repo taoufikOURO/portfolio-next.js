@@ -7,13 +7,15 @@ export default function Projects() {
     return (
         <section
             id="projets"
-            className="bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
+            className="poster-section bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
         >
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
                     <div>
-                        <span className="section-label">Études de cas</span>
-                        <h2 className="display mt-7 text-5xl md:text-7xl">
+                        <span className="poster-kicker">
+                            04 / Études de cas
+                        </span>
+                        <h2 className="display poster-heading mt-7">
                             Des idées
                             <br />
                             <span className="text-[#668b26]">
@@ -33,7 +35,7 @@ export default function Projects() {
                         <Link
                             key={project.id}
                             href={`/projets/${project.slug}`}
-                            className={`data-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 ${index === 0 ? "md:col-span-2" : ""}`}
+                            className={`editorial-card group overflow-hidden ${index === 0 ? "md:col-span-2" : ""}`}
                         >
                             <div
                                 className={`relative overflow-hidden bg-(--blue) ${index === 0 ? "aspect-2/1" : "aspect-4/3"}`}

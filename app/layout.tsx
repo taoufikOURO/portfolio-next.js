@@ -55,7 +55,7 @@ export default function RootLayout({
             <body className={instrumentSans.variable}>
                 <Header />
                 <main>{children}</main>
-                <footer className="bg-(--ink) px-6 py-14 text-(--paper) md:px-12 lg:px-20">
+                <footer className="poster-section dark-section px-6 py-14 text-(--paper) md:px-12 lg:px-20">
                     <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
                         <div>
                             <p className="eyebrow text-(--lime)">

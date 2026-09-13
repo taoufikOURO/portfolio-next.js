@@ -298,7 +298,7 @@ export default async function ArticlePage(props: {
     };
 
     return (
-        <article className="data-grid min-h-screen px-6 pb-24 pt-32">
+        <article className="poster-section data-grid min-h-screen px-6 pb-24 pt-32">
             {/* Back button */}
             <div className="mx-auto mb-12 max-w-4xl">
                 <Link
@@ -347,7 +347,7 @@ export default async function ArticlePage(props: {
                 </header>
 
                 {/* Article Content */}
-                <div className="data-card mt-10 mb-16 border p-6 md:p-12 prose-custom">
+                <div className="article-paper mt-10 mb-16 p-6 md:p-12 prose-custom">
                     <div
                         className="prose max-w-none"
                         dangerouslySetInnerHTML={{

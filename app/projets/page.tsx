@@ -5,13 +5,13 @@ import Link from "next/link";
 export default function ProjectsPage() {
     const projects = getAllProjects();
     return (
-        <main className="data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
+        <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-7xl">
                 <Link href="/" className="section-label">
                     Retour accueil
                 </Link>
                 <div className="mt-12 grid items-end gap-8 md:grid-cols-[1fr_.5fr]">
-                    <h1 className="display text-6xl leading-none md:text-9xl">
+                    <h1 className="display poster-heading">
                         Le laboratoire
                         <br />
                         <span className="text-[#668b26]">des projets.</span>
@@ -26,7 +26,7 @@ export default function ProjectsPage() {
                         <Link
                             key={project.id}
                             href={`/projets/${project.slug}`}
-                            className="data-card group overflow-hidden"
+                            className="editorial-card group overflow-hidden"
                         >
                             <div className="relative aspect-16/10 overflow-hidden bg-(--blue)">
                                 <Image

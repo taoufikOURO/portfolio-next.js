@@ -6,15 +6,15 @@ export default function Stack() {
     return (
         <section
             id="stack"
-            className="bg-(--ink) px-6 py-24 text-(--paper) md:px-12 md:py-36 lg:px-20"
+            className="poster-section dark-section px-6 py-24 md:px-12 md:py-36 lg:px-20"
         >
             <div className="mx-auto max-w-7xl">
                 <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
                     <div>
-                        <span className="section-label text-(--blue)">
-                            Stack technique
+                        <span className="poster-kicker text-(--blue)">
+                            02 / Stack technique
                         </span>
-                        <h2 className="display mt-7 text-5xl md:text-7xl">
+                        <h2 className="display poster-heading mt-7">
                             Les outils
                             <br />
                             <span className="text-(--lime)">
@@ -33,7 +33,7 @@ export default function Stack() {
                     {technologies.map((tech, index) => (
                         <div
                             key={tech.name}
-                            className="group relative flex min-h-36 flex-col justify-between border-b border-r border-white/15 p-5 transition-colors hover:bg-white/10"
+                            className="group relative flex min-h-36 flex-col justify-between border-b border-r border-white/15 p-5 transition-colors hover:bg-(--coral)/20"
                         >
                             <span className="font-mono text-[10px] text-white/40">
                                 0{index + 1}

@@ -15,7 +15,7 @@ export default async function ProjectDetailPage({
     const project = getProjectBySlug(slug);
     if (!project) notFound();
     return (
-        <main className="data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
+        <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-7xl">
                 <Link href="/projets" className="section-label">
                     Tous les projets
@@ -23,7 +23,7 @@ export default async function ProjectDetailPage({
                 <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_.42fr]">
                     <div>
                         <p className="eyebrow">CASE STUDY / {project.id}</p>
-                        <h1 className="display mt-6 text-6xl leading-none md:text-9xl">
+                        <h1 className="display poster-heading mt-6">
                             {project.titre}
                         </h1>
                         <p className="mt-8 max-w-2xl text-xl leading-relaxed text-(--muted)">
@@ -69,7 +69,7 @@ export default async function ProjectDetailPage({
                         </div>
                     </aside>
                 </div>
-                <div className="data-card mt-20 overflow-hidden p-3">
+                <div className="editorial-card mt-20 overflow-hidden p-3">
                     <div className="relative aspect-16/8 overflow-hidden bg-(--blue)">
                         <Image
                             src={

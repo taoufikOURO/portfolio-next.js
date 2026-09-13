@@ -5,13 +5,13 @@ import Link from "next/link";
 export default function ArticlesPage() {
     const articles = getAllArticles();
     return (
-        <main className="data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
+        <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-7xl">
                 <Link href="/" className="section-label">
                     Retour accueil
                 </Link>
                 <div className="mt-12 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-                    <h1 className="display text-6xl leading-none md:text-9xl">
+                    <h1 className="display poster-heading">
                         Notes de
                         <br />
                         <span className="text-[#668b26]">terrain.</span>
@@ -26,7 +26,7 @@ export default function ArticlesPage() {
                         <Link
                             key={article.id}
                             href={`/articles/${article.slug}`}
-                            className="data-card group overflow-hidden"
+                            className="editorial-card group overflow-hidden"
                         >
                             <div className="relative aspect-4/3 overflow-hidden bg-(--blue)">
                                 {article.image && (

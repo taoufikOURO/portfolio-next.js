@@ -16,15 +16,15 @@ export default function Contact() {
     return (
         <section
             id="contact"
-            className="bg-(--coral) px-6 py-24 md:px-12 md:py-36 lg:px-20"
+            className="poster-section contact-poster px-6 py-24 md:px-12 md:py-36 lg:px-20"
         >
             <div className="mx-auto max-w-7xl">
                 <div className="grid gap-14 lg:grid-cols-[1fr_.8fr]">
                     <div>
-                        <span className="section-label text-(--ink)">
-                            Dernière étape
+                        <span className="poster-kicker text-(--ink)">
+                            05 / Dernière étape
                         </span>
-                        <h2 className="display mt-8 text-6xl leading-[.9] md:text-8xl">
+                        <h2 className="display poster-heading mt-8">
                             On ouvre
                             <br />
                             <span className="text-(--paper)">le dialogue.</span>

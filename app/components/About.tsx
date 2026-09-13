@@ -22,23 +22,21 @@ export default function About() {
     return (
         <section
             id="about"
-            className="data-grid px-6 py-24 md:px-12 md:py-36 lg:px-20"
+            className="poster-section data-grid px-6 py-24 md:px-12 md:py-36 lg:px-20"
         >
             <div className="mx-auto max-w-7xl">
                 <div className="grid gap-12 lg:grid-cols-[.65fr_1.35fr]">
                     <div className="reveal">
-                        <span className="section-label">À propos</span>
+                        <span className="poster-kicker">01 / À propos</span>
                         <p className="mt-8 font-mono text-xs text-(--muted)">
                             SIGNAL / HUMAN_CONTEXT
                         </p>
                     </div>
                     <div className="reveal reveal-delay-1">
-                        <h2 className="display max-w-4xl text-5xl leading-none md:text-7xl">
+                        <h2 className="display poster-heading">
                             La donnée comme moyen,
                             <br />
-                            <span className="text-[#668b26]">
-                                pas comme finalité.
-                            </span>
+                            <span>pas comme finalité.</span>
                         </h2>
                         <p className="mt-8 max-w-3xl text-xl leading-relaxed text-(--muted)">
                             {profile.aPropos}
@@ -47,7 +45,7 @@ export default function About() {
                             {highlights.map(([number, title, text]) => (
                                 <div
                                     key={number}
-                                    className="border-b border-(--line) py-6 md:border-b-0 md:border-r md:px-6 first:pl-0 last:border-r-0"
+                                    className="line-item border-b border-(--line) py-6 md:border-b-0 md:border-r md:px-6 first:pl-0 last:border-r-0"
                                 >
                                     <span className="font-mono text-xs text-(--coral)">
                                         {number}

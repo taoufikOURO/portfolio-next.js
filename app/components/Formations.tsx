@@ -6,13 +6,13 @@ export default function Formations() {
     return (
         <section
             id="formations"
-            className="bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
+            className="poster-section bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
         >
             <div className="mx-auto max-w-7xl">
                 <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
                     <div>
-                        <span className="section-label">Parcours</span>
-                        <h2 className="display mt-7 text-5xl md:text-7xl">
+                        <span className="poster-kicker">03 / Parcours</span>
+                        <h2 className="display poster-heading mt-7">
                             Construire
                             <br />
                             <span className="text-[#668b26]">
@@ -31,7 +31,7 @@ export default function Formations() {
                     {formations.map((formation, index) => (
                         <article
                             key={index}
-                            className="group grid gap-4 border-b border-(--line) py-8 md:grid-cols-[.18fr_1fr_.35fr] md:items-start"
+                            className="line-item group grid gap-4 border-b border-(--line) py-8 md:grid-cols-[.18fr_1fr_.35fr] md:items-start"
                         >
                             <span className="font-mono text-sm text-(--coral)">
                                 {formation.debut}
