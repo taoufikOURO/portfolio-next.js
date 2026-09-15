@@ -40,16 +40,17 @@ export default async function ProjectDetailPage({
                                     Voir le projet
                                 </a>
                             )}
-                            {project.github && (
+                            {project.github?.map((repository) => (
                                 <a
-                                    href={project.github}
+                                    key={repository.url}
+                                    href={repository.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="outline-button"
                                 >
-                                    Code source
+                                    {repository.nom}
                                 </a>
-                            )}
+                            ))}
                         </div>
                     </div>
                     <aside className="border-t border-(--ink) pt-5">

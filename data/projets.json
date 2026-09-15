@@ -24,7 +24,12 @@
         "description": "Une API de traduction automatique français-anglais-éwé, développée avec FastAPI. L'objectif : poser une première brique pour l'accès aux contenus dans une langue locale encore peu couverte par les outils de traduction existants.",
         "estPublie": true,
         "lien": "https://ewe-multilingual-translator-fronten.vercel.app/",
-        "github": "https://github.com/taoufikOURO/multilingual-translator-api",
+        "github": [
+            {
+                "nom": "Code source",
+                "url": "https://github.com/taoufikOURO/multilingual-translator-api"
+            }
+        ],
         "stack": [
             {
                 "name": "FastAPI",
@@ -43,7 +48,12 @@
         "titre": "Pipeline Big Data – Hôpital de Tokoin",
         "description": "Construction d'une base décisionnelle à partir de données brutes dispersées dans 7 formats différents. Modélisation d'un entrepôt de données et création de tableaux de bord pour centraliser l'information et fiabiliser l'aide à la décision.",
         "estPublie": true,
-        "github": "https://github.com/taoufikOURO/tokoin-hospital-dwh",
+        "github": [
+            {
+                "nom": "Code source",
+                "url": "https://github.com/taoufikOURO/tokoin-hospital-dwh"
+            }
+        ],
         "stack": [
             {
                 "name": "Python",
@@ -73,7 +83,12 @@
         "titre": "Détection d'Anomalies Bancaires par K-Means",
         "description": "Détection automatique de transactions bancaires suspectes pouvant signaler une fraude. Optimisation du seuil de détection pour limiter les faux positifs : 60 anomalies identifiées sur 20 000 transactions, soit 0,3 %.",
         "estPublie": true,
-        "github": "https://github.com/taoufikOURO/kmeans-anomaly-detection",
+        "github": [
+            {
+                "nom": "Code source",
+                "url": "https://github.com/taoufikOURO/kmeans-anomaly-detection"
+            }
+        ],
         "stack": [
             {
                 "name": "Python",
@@ -88,6 +103,16 @@
         "description": "ArtikelBuddy est une application web permettant d'apprendre les articles allemands (der/die/das) en jouant, conçue à la demande d'une amie apprenant l'allemand. L'utilisateur s'inscrit, choisit son niveau CECRL (A1 à C2), puis enchaîne des sessions de jeu (\"rush\") où il doit deviner l'article correct de mots allemands tirés aléatoirement selon un algorithme de priorité qui évite les répétitions rapprochées. Chaque mot est suivi individuellement : il devient \"maîtrisé\" après plusieurs réussites sur des sessions distinctes, et redevient actif après une erreur. Un dashboard détaillé affiche la progression (mots maîtrisés, précision, meilleur score, estimation du nombre de sessions restantes), et l'utilisateur passe automatiquement au niveau supérieur une fois un seuil de maîtrise atteint. L'authentification repose sur des cookies httpOnly avec validation d'adresse email par code OTP, plutôt que sur des JWT. Le jeu de données (plus de 100 000 mots allemands) a été construit en croisant un dataset Wiktionary (genre grammatical) avec les listes officielles de vocabulaire du Goethe-Institut (niveau CECRL).",
         "estPublie": true,
         "lien": "https://artikelbuddy.vercel.app/",
+         "github": [
+            {
+                "nom": "Code Source (FastAPI)",
+                "url": "https://github.com/taoufikOURO/der-die-das-api.git"
+            },
+            {
+                "nom": "Code source (Angular)",
+                "url": "https://github.com/taoufikOURO/artikelbuddy-front.git"
+            }
+        ],
         "stack": [
             {
                 "name": "FastAPI",

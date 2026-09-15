@@ -18,6 +18,11 @@ export interface Technology {
     icon: string;
 }
 
+export interface ProjectRepository {
+    nom: string;
+    url: string;
+}
+
 export interface Project {
     id: number;
     titre: string;
@@ -27,7 +32,7 @@ export interface Project {
     image: string;
     stack: Technology[];
     slug?: string;
-    github?: string;
+    github?: ProjectRepository[];
 }
 
 export interface Formation {
