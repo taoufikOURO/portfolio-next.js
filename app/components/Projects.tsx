@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Projects() {
-    const projects = getRecentProjects(6);
+    const projects = getRecentProjects(5);
     return (
         <section
             id="projets"
@@ -27,7 +27,7 @@ export default function Projects() {
                         href="/projets"
                         className="outline-button self-start md:self-end"
                     >
-                        Tout voir ↗
+                        Tout voir
                     </Link>
                 </div>
                 <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -58,9 +58,6 @@ export default function Projects() {
                                     <h3 className="text-2xl font-bold group-hover:text-[#668b26]">
                                         {project.titre}
                                     </h3>
-                                    <span className="text-xl transition-transform group-hover:translate-x-1">
-                                        ↗
-                                    </span>
                                 </div>
                                 <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-(--muted)">
                                     {project.description}

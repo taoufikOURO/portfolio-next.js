@@ -26,7 +26,7 @@ export default async function ProjectDetailPage({
                         <h1 className="display poster-heading mt-6">
                             {project.titre}
                         </h1>
-                        <p className="mt-8 max-w-2xl text-xl leading-relaxed text-(--muted)">
+                        <p className="mt-8 max-w-4xl text-xl leading-relaxed text-(--muted) text-justify">
                             {project.description}
                         </p>
                         <div className="mt-10 flex flex-wrap gap-3">
@@ -37,7 +37,7 @@ export default async function ProjectDetailPage({
                                     rel="noopener noreferrer"
                                     className="lime-button"
                                 >
-                                    Voir le projet ↗
+                                    Voir le projet
                                 </a>
                             )}
                             {project.github && (
@@ -47,7 +47,7 @@ export default async function ProjectDetailPage({
                                     rel="noopener noreferrer"
                                     className="outline-button"
                                 >
-                                    Code source ↗
+                                    Code source
                                 </a>
                             )}
                         </div>
@@ -62,25 +62,34 @@ export default async function ProjectDetailPage({
                                     key={tech.name}
                                     className="flex items-center gap-3 border-b border-(--line) pb-3 font-bold"
                                 >
-                                    <span className="text-(--coral)">#</span>
+                                    <span className="text-(--coral)">
+                                        <Image
+                                            src={tech.icon}
+                                            alt={tech.name}
+                                            width={24}
+                                            height={24}
+                                        />
+                                    </span>
                                     {tech.name}
                                 </div>
                             ))}
                         </div>
+                        {project.image && (
+                            <div className="editorial-card mt-20 overflow-hidden p-3">
+                                <div className="relative aspect-16/8 overflow-hidden bg-(--blue)">
+                                    <Image
+                                        src={
+                                            project.image ||
+                                            "/images/projets/default-project.svg"
+                                        }
+                                        alt={project.titre}
+                                        fill
+                                        className="object-cover grayscale transition duration-700 hover:grayscale-0"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </aside>
-                </div>
-                <div className="editorial-card mt-20 overflow-hidden p-3">
-                    <div className="relative aspect-16/8 overflow-hidden bg-(--blue)">
-                        <Image
-                            src={
-                                project.image ||
-                                "/images/projets/default-project.svg"
-                            }
-                            alt={project.titre}
-                            fill
-                            className="object-cover grayscale transition duration-700 hover:grayscale-0"
-                        />
-                    </div>
                 </div>
             </div>
         </main>

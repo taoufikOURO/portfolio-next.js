@@ -25,10 +25,10 @@ export default function Hero() {
                     </p>
                     <div className="mt-9 flex flex-wrap gap-3">
                         <a href="#projets" className="lime-button">
-                            Explorer les projets <span>↗</span>
+                            Explorer les projets
                         </a>
                         <Link href="/articles" className="outline-button">
-                            Lire le blog <span>↗</span>
+                            Lire le blog
                         </Link>
                         <a
                             href={profile.cv}
@@ -36,7 +36,7 @@ export default function Hero() {
                             rel="noopener noreferrer"
                             className="outline-button"
                         >
-                            Lire le CV <span>↓</span>
+                            Lire le CV
                         </a>
                     </div>
                 </div>

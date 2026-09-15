@@ -9,7 +9,7 @@ export default function NotFound() {
                     Cette observation n’existe pas dans le dataset actuel.
                 </p>
                 <Link href="/projets" className="lime-button mt-8">
-                    Retour aux projets ↗
+                    Retour aux projets
                 </Link>
             </div>
         </main>

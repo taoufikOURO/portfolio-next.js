@@ -33,7 +33,7 @@ export default function Stack() {
                     {technologies.map((tech, index) => (
                         <div
                             key={tech.name}
-                            className="group relative flex min-h-36 flex-col justify-between border-b border-r border-white/15 p-5 transition-colors hover:bg-(--coral)/20"
+                            className="group relative flex min-h-36 flex-col justify-between border-b border-r border-white/15 p-5 transition-colors"
                         >
                             <span className="font-mono text-[10px] text-white/40">
                                 0{index + 1}
@@ -44,7 +44,7 @@ export default function Stack() {
                                         src={tech.icon}
                                         alt={tech.name}
                                         fill
-                                        className="object-contain brightness-0 invert opacity-70 transition-opacity group-hover:opacity-100"
+                                        className="object-contain  transition-opacity"
                                     />
                                 </div>
                             )}

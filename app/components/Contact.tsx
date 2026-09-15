@@ -56,9 +56,6 @@ export default function Contact() {
                                         {value}
                                     </strong>
                                 </span>
-                                <span className="text-2xl transition-transform group-hover:translate-x-2">
-                                    ↗
-                                </span>
                             </a>
                         ))}
                     </div>

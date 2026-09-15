@@ -54,9 +54,6 @@ export default function ProjectsPage() {
                                             .join(" · ")}
                                     </p>
                                 </div>
-                                <span className="text-2xl transition-transform group-hover:translate-x-2">
-                                    ↗
-                                </span>
                             </div>
                         </Link>
                     ))}

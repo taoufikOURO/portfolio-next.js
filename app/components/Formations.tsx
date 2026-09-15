@@ -24,7 +24,7 @@ export default function Formations() {
                         href="/formations"
                         className="outline-button self-start md:self-end"
                     >
-                        Voir le détail ↗
+                        Voir le détail
                     </Link>
                 </div>
                 <div className="border-t border-(--ink)">
