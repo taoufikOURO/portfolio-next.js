@@ -1,4 +1,5 @@
 import { getAllProjects, getProjectBySlug } from "@/app/lib/data";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,6 +7,43 @@ import { notFound } from "next/navigation";
 export async function generateStaticParams() {
     return getAllProjects().map((project) => ({ slug: project.slug }));
 }
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const project = getProjectBySlug(slug);
+
+    if (!project) return {};
+
+    const image = project.image || "/images/projets/default-project.svg";
+    const title = `${project.titre} | Taoufik OURO-BANG'NA`;
+
+    return {
+        title,
+        description: project.description,
+        openGraph: {
+            type: "website",
+            title,
+            description: project.description,
+            images: [
+                {
+                    url: image,
+                    alt: project.titre,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description: project.description,
+            images: [image],
+        },
+    };
+}
+
 export default async function ProjectDetailPage({
     params,
 }: {

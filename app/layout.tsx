@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         siteName: "Taoufik OURO-BANG'NA",
         images: [
             {
-                url: "/images/profile/taoufik.jpg",
+                url: profile.photo,
                 width: 1200,
                 height: 1200,
                 alt: "Taoufik OURO-BANG'NA, Data Scientist",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "Taoufik OURO-BANG'NA | Data Scientist",
         description: "Portfolio de Taoufik OURO-BANG'NA, Data Scientist.",
-        images: ["/images/profile/taoufik.jpg"],
+        images: [profile.photo],
     },
 };
 export default function RootLayout({
