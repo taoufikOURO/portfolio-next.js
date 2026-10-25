@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Reveal, Stagger, StaggerItem } from "@/app/components/Motion";
 
 export async function generateStaticParams() {
     return getAllProjects().map((project) => ({ slug: project.slug }));
@@ -55,11 +56,13 @@ export default async function ProjectDetailPage({
     return (
         <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-7xl">
-                <Link href="/projets" className="section-label">
-                    Tous les projets
-                </Link>
+                <Reveal>
+                    <Link href="/projets" className="section-label">
+                        Tous les projets
+                    </Link>
+                </Reveal>
                 <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_.42fr]">
-                    <div>
+                    <Reveal>
                         <p className="eyebrow">CASE STUDY / {project.id}</p>
                         <h1 className="display poster-heading mt-6">
                             {project.titre}
@@ -90,14 +93,15 @@ export default async function ProjectDetailPage({
                                 </a>
                             ))}
                         </div>
-                    </div>
+                    </Reveal>
+                    <Reveal delay={0.1}>
                     <aside className="border-t border-(--ink) pt-5">
                         <p className="font-mono text-xs text-(--muted)">
                             OUTILKIT
                         </p>
-                        <div className="mt-5 space-y-3">
+                        <Stagger className="mt-5 space-y-3">
                             {project.stack.map((tech) => (
-                                <div
+                                <StaggerItem
                                     key={tech.name}
                                     className="flex items-center gap-3 border-b border-(--line) pb-3 font-bold"
                                 >
@@ -110,9 +114,9 @@ export default async function ProjectDetailPage({
                                         />
                                     </span>
                                     {tech.name}
-                                </div>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </Stagger>
                         {project.image && (
                             <div className="editorial-card mt-20 overflow-hidden p-3">
                                 <div className="relative aspect-16/8 overflow-hidden bg-(--blue)">
@@ -129,6 +133,7 @@ export default async function ProjectDetailPage({
                             </div>
                         )}
                     </aside>
+                    </Reveal>
                 </div>
             </div>
         </main>

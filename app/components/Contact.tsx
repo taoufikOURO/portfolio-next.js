@@ -1,4 +1,5 @@
 import { getProfile } from "@/app/lib/data";
+import { Reveal, Stagger, StaggerItem } from "./Motion";
 
 export default function Contact() {
     const profile = getProfile();
@@ -20,7 +21,7 @@ export default function Contact() {
         >
             <div className="mx-auto max-w-7xl">
                 <div className="grid gap-14 lg:grid-cols-[1fr_.8fr]">
-                    <div>
+                    <Reveal>
                         <span className="poster-kicker text-(--ink)">
                             05 / Dernière étape
                         </span>
@@ -34,11 +35,11 @@ export default function Contact() {
                             simplement une idée à tester? Je suis toujours
                             partant pour commencer par une bonne question.
                         </p>
-                    </div>
-                    <div className="border-t border-(--ink)">
+                    </Reveal>
+                    <Stagger className="border-t border-(--ink)">
                         {links.map(([label, value, href], index) => (
+                            <StaggerItem key={label}>
                             <a
-                                key={label}
                                 href={href}
                                 target={index === 0 ? undefined : "_blank"}
                                 rel={
@@ -57,8 +58,9 @@ export default function Contact() {
                                     </strong>
                                 </span>
                             </a>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </Stagger>
                 </div>
             </div>
         </section>

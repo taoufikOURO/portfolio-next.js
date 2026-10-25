@@ -1,4 +1,5 @@
 import ShareArticleButton from "@/app/components/ShareArticleButton";
+import { Reveal } from "@/app/components/Motion";
 import articlesData from "@/data/articles.json";
 import fs from "fs";
 import hljs from "highlight.js";
@@ -300,7 +301,7 @@ export default async function ArticlePage(props: {
     return (
         <article className="poster-section data-grid min-h-screen px-6 pb-24 pt-32">
             {/* Back button */}
-            <div className="mx-auto mb-12 max-w-4xl">
+            <Reveal className="mx-auto mb-12 max-w-4xl">
                 <Link
                     href="/articles"
                     className="section-label transition-colors hover:text-[#668b26]"
@@ -320,9 +321,9 @@ export default async function ArticlePage(props: {
                     </svg>
                     Retour aux articles
                 </Link>
-            </div>
+            </Reveal>
 
-            <div className="mx-auto max-w-4xl">
+            <Reveal delay={0.08} className="mx-auto max-w-4xl">
                 {/* Article Header */}
                 <header className="reveal mb-12">
                     {/* Category and Date */}
@@ -355,7 +356,7 @@ export default async function ArticlePage(props: {
                         }}
                     />
                 </div>
-            </div>
+            </Reveal>
 
             {/* Global Styles for Markdown */}
             <style>{`

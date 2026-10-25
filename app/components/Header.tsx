@@ -4,6 +4,7 @@ import profile from "@/data/profile.json";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { MenuPanel, motion } from "./Motion";
 
 export default function Header() {
     const [open, setOpen] = useState(false);
@@ -19,6 +20,11 @@ export default function Header() {
     return (
         <header className="fixed inset-x-0 top-0 z-50 px-4 py-4 md:px-8">
             <nav className="mx-auto flex max-w-7xl items-center justify-between border border-(--line) bg-[rgba(243,244,237,.86)] px-4 py-3 shadow-sm backdrop-blur-xl md:px-6">
+                <motion.div
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55 }}
+                >
                 <Link
                     href="/"
                     className="group flex items-center gap-3"
@@ -31,6 +37,7 @@ export default function Header() {
                         Data / web / idées
                     </span>
                 </Link>
+                </motion.div>
                 <div className="hidden items-center gap-1 lg:flex">
                     {links.map(([href, label]) => (
                         <Link
@@ -56,7 +63,7 @@ export default function Header() {
                     </button>
                 </div>
             </nav>
-            {open && (
+            <MenuPanel open={open}>
                 <div className="data-card mx-auto mt-2 max-w-7xl border p-4 lg:hidden">
                     <div className="grid grid-cols-2 gap-1">
                         {links.map(([href, label], index) => (
@@ -77,7 +84,7 @@ export default function Header() {
                         {profile.email}
                     </p>
                 </div>
-            )}
+            </MenuPanel>
         </header>
     );
 }

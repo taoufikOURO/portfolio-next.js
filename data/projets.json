@@ -14,8 +14,7 @@
                 "name": "Tailwind CSS",
                 "icon": "/images/stack/tailwind.png"
             }
-        ],
-        "image": "/images/projets/portfolio.png"
+        ]
     },
     {
         "id": 2,
@@ -103,7 +102,7 @@
         "description": "ArtikelBuddy est une application web permettant d'apprendre les articles allemands (der/die/das) en jouant, conçue à la demande d'une amie apprenant l'allemand. L'utilisateur s'inscrit, choisit son niveau CECRL (A1 à C2), puis enchaîne des sessions de jeu (\"rush\") où il doit deviner l'article correct de mots allemands tirés aléatoirement selon un algorithme de priorité qui évite les répétitions rapprochées. Chaque mot est suivi individuellement : il devient \"maîtrisé\" après plusieurs réussites sur des sessions distinctes, et redevient actif après une erreur. Un dashboard détaillé affiche la progression (mots maîtrisés, précision, meilleur score, estimation du nombre de sessions restantes), et l'utilisateur passe automatiquement au niveau supérieur une fois un seuil de maîtrise atteint. L'authentification repose sur des cookies httpOnly avec validation d'adresse email par code OTP, plutôt que sur des JWT. Le jeu de données (plus de 100 000 mots allemands) a été construit en croisant un dataset Wiktionary (genre grammatical) avec les listes officielles de vocabulaire du Goethe-Institut (niveau CECRL).",
         "estPublie": true,
         "lien": "https://artikelbuddy.vercel.app/",
-         "github": [
+        "github": [
             {
                 "nom": "Code Source (FastAPI)",
                 "url": "https://github.com/taoufikOURO/der-die-das-api.git"

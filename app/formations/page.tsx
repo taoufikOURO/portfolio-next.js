@@ -1,15 +1,18 @@
 import { getAllFormations } from "@/app/lib/data";
 import Link from "next/link";
+import { Reveal, Stagger, StaggerItem } from "../components/Motion";
 
 export default function FormationsPage() {
     const formations = getAllFormations();
     return (
         <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
             <div className="mx-auto max-w-6xl">
-                <Link href="/" className="section-label">
-                    Retour accueil
-                </Link>
-                <div className="mt-12 max-w-4xl">
+                <Reveal>
+                    <Link href="/" className="section-label">
+                        Retour accueil
+                    </Link>
+                </Reveal>
+                <Reveal delay={0.08} className="mt-12 max-w-4xl">
                     <h1 className="display poster-heading">
                         Les fondations
                         <br />
@@ -19,10 +22,10 @@ export default function FormationsPage() {
                         Les étapes qui ont construit ma façon de questionner,
                         modéliser et transmettre.
                     </p>
-                </div>
-                <div className="mt-20 border-t border-(--ink)">
+                </Reveal>
+                <Stagger className="mt-20 border-t border-(--ink)">
                     {formations.map((formation, index) => (
-                        <article
+                        <StaggerItem
                             key={index}
                             className="line-item grid gap-6 border-b border-(--line) py-10 md:grid-cols-[.2fr_1fr_.4fr]"
                         >
@@ -50,9 +53,9 @@ export default function FormationsPage() {
                                     </span>
                                 ))}
                             </div>
-                        </article>
+                        </StaggerItem>
                     ))}
-                </div>
+                </Stagger>
             </div>
         </main>
     );

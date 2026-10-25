@@ -1,5 +1,6 @@
 import { getAllFormations } from "@/app/lib/data";
 import Link from "next/link";
+import { Reveal, Stagger, StaggerItem } from "./Motion";
 
 export default function Formations() {
     const formations = getAllFormations();
@@ -10,7 +11,7 @@ export default function Formations() {
         >
             <div className="mx-auto max-w-7xl">
                 <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-                    <div>
+                    <Reveal>
                         <span className="poster-kicker">03 / Parcours</span>
                         <h2 className="display poster-heading mt-7">
                             Construire
@@ -19,17 +20,19 @@ export default function Formations() {
                                 les fondations.
                             </span>
                         </h2>
-                    </div>
+                    </Reveal>
+                    <Reveal delay={0.08}>
                     <Link
                         href="/formations"
                         className="outline-button self-start md:self-end"
                     >
                         Voir le détail
                     </Link>
+                    </Reveal>
                 </div>
-                <div className="border-t border-(--ink)">
+                <Stagger className="border-t border-(--ink)">
                     {formations.map((formation, index) => (
-                        <article
+                        <StaggerItem
                             key={index}
                             className="line-item group grid gap-4 border-b border-(--line) py-8 md:grid-cols-[.18fr_1fr_.35fr] md:items-start"
                         >
@@ -61,9 +64,9 @@ export default function Formations() {
                                         ))}
                                 </div>
                             </div>
-                        </article>
+                        </StaggerItem>
                     ))}
-                </div>
+                </Stagger>
             </div>
         </section>
     );

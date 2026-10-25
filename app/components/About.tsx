@@ -1,4 +1,5 @@
 import { getProfile } from "@/app/lib/data";
+import { Reveal, Stagger, StaggerItem } from "./Motion";
 
 export default function About() {
     const profile = getProfile();
@@ -26,24 +27,21 @@ export default function About() {
         >
             <div className="mx-auto max-w-7xl">
                 <div className="grid gap-12 lg:grid-cols-[.65fr_1.35fr]">
-                    <div className="reveal">
+                    <Reveal>
                         <span className="poster-kicker">01 / À propos</span>
-                        <p className="mt-8 font-mono text-xs text-(--muted)">
-                            SIGNAL / HUMAN_CONTEXT
-                        </p>
-                    </div>
-                    <div className="reveal reveal-delay-1">
+                    </Reveal>
+                    <Reveal delay={0.08}>
                         <h2 className="display poster-heading">
                             La donnée comme moyen,
                             <br />
                             <span>pas comme finalité.</span>
                         </h2>
-                        <p className="mt-8 max-w-3xl text-xl leading-relaxed text-(--muted)">
+                        <p className="mt-8 max-w-3xl text-xl leading-relaxed text-(--muted) text-justify">
                             {profile.aPropos}
                         </p>
-                        <div className="mt-14 grid border-t border-(--line) md:grid-cols-3">
+                        <Stagger className="mt-14 grid border-t border-(--line) md:grid-cols-3">
                             {highlights.map(([number, title, text]) => (
-                                <div
+                                <StaggerItem
                                     key={number}
                                     className="line-item border-b border-(--line) py-6 md:border-b-0 md:border-r md:px-6 first:pl-0 last:border-r-0"
                                 >
@@ -56,10 +54,10 @@ export default function About() {
                                     <p className="mt-3 text-sm leading-relaxed text-(--muted)">
                                         {text}
                                     </p>
-                                </div>
+                                </StaggerItem>
                             ))}
-                        </div>
-                    </div>
+                        </Stagger>
+                    </Reveal>
                 </div>
             </div>
         </section>
