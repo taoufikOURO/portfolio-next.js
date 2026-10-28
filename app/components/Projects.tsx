@@ -1,84 +1,76 @@
 import { getRecentProjects } from "@/app/lib/data";
+import { ArrowUpRight, FolderGit2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { HorizontalSlideItem, Reveal, Stagger } from "./Motion";
+import Reveal from "./Reveal";
 
 export default function Projects() {
     const projects = getRecentProjects(5);
+
     return (
-        <section
-            id="projets"
-            className="poster-section bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
-        >
-            <div className="mx-auto max-w-7xl">
-                <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
-                    <Reveal>
-                        <span className="poster-kicker">
-                            04 / Études de cas
-                        </span>
-                        <h2 className="display poster-heading mt-7">
-                            Des idées
-                            <br />
-                            <span className="text-[#668b26]">
-                                mises à l’épreuve.
-                            </span>
-                        </h2>
-                    </Reveal>
-                    <Reveal delay={0.08}>
+        <section id="projects" className="section">
+            <Reveal className="shell">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                    <h2 className="heading section-heading text-3xl">
+                        Projets
+                    </h2>
                     <Link
                         href="/projets"
-                        className="outline-button self-start md:self-end"
+                        className="inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:underline"
                     >
-                        Tout voir
+                        Tous les projets
+                        <ArrowUpRight className="h-4 w-4" aria-hidden />
                     </Link>
-                    </Reveal>
                 </div>
-                <Stagger className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {projects.map((project, index) => (
-                        <HorizontalSlideItem
+
+                <div className="mt-8 border-t border-(--line)">
+                    {projects.map((project) => (
+                        <Link
                             key={project.id}
-                            className={`editorial-card group overflow-hidden ${index === 0 ? "md:col-span-2" : ""}`}
+                            href={`/projets/${project.slug}`}
+                            className="group flex items-center gap-4 border-b border-(--line) py-4"
                         >
-                            <Link href={`/projets/${project.slug}`}>
-                                <div
-                                    className={`relative overflow-hidden bg-(--blue) ${index === 0 ? "aspect-2/1" : "aspect-4/3"}`}
-                                >
+                            <div className="relative hidden h-14 w-20 shrink-0 overflow-hidden rounded border border-(--line) bg-(--surface-2) sm:block">
+                                {project.image ? (
                                     <Image
-                                        src={
-                                            project.image ||
-                                            "/images/projets/default-project.svg"
-                                        }
-                                        alt={project.titre}
+                                        src={project.image}
+                                        alt=""
                                         fill
-                                        className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                                        sizes="80px"
+                                        className="object-cover"
                                     />
-                                    <span className="absolute left-4 top-4 bg-(--lime) px-2 py-1 font-mono text-[10px]">
-                                        CASE_{String(index + 1).padStart(2, "0")}
-                                    </span>
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-2xl font-bold group-hover:text-[#668b26]">
-                                        {project.titre}
-                                    </h3>
-                                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-(--muted)">
-                                        {project.description}
-                                    </p>
-                                    <div className="mt-5 flex flex-wrap gap-2">
-                                        {project.stack.slice(0, 3).map((tech) => (
-                                            <span
-                                                key={tech.name}
-                                                className="font-mono text-[10px] text-(--coral)"
-                                            >
-                                                #{tech.name}
-                                            </span>
-                                        ))}
+                                ) : (
+                                    <div className="flex h-full items-center justify-center">
+                                        <FolderGit2
+                                            className="h-5 w-5 text-(--line-strong)"
+                                            aria-hidden
+                                        />
                                     </div>
-                                </div>
-                            </Link>
-                        </HorizontalSlideItem>
+                                )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <h3 className="text-lg font-semibold transition-colors group-hover:text-(--accent)">
+                                    {project.titre}
+                                </h3>
+                                <p className="mt-0.5 line-clamp-1 text-sm text-(--muted)">
+                                    {project.description}
+                                </p>
+                            </div>
+                            <div className="hidden shrink-0 gap-1.5 md:flex">
+                                {project.stack.slice(0, 3).map((technology) => (
+                                    <span key={technology.name} className="tag">
+                                        {technology.name}
+                                    </span>
+                                ))}
+                            </div>
+                            <ArrowUpRight
+                                className="h-4 w-4 shrink-0 text-(--muted) transition-colors group-hover:text-(--accent)"
+                                aria-hidden
+                            />
+                        </Link>
                     ))}
-                </Stagger>
-            </div>
+                </div>
+            </Reveal>
         </section>
     );
 }

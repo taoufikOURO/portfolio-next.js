@@ -1,65 +1,45 @@
 import { getProfile } from "@/app/lib/data";
-import { Reveal, Stagger, StaggerItem } from "./Motion";
+import { GraduationCap, MapPin, Wrench } from "lucide-react";
+import Reveal from "./Reveal";
 
 export default function About() {
     const profile = getProfile();
-    const highlights = [
-        [
-            "01",
-            "Comprendre",
-            "Je pars du problème et du terrain avant de choisir un modèle.",
-        ],
-        [
-            "02",
-            "Modéliser",
-            "Je transforme la donnée brute en systèmes lisibles, testables et utiles.",
-        ],
-        [
-            "03",
-            "Transmettre",
-            "Je rends les résultats accessibles à celles et ceux qui doivent agir.",
-        ],
-    ];
+
     return (
-        <section
-            id="about"
-            className="poster-section data-grid px-6 py-24 md:px-12 md:py-36 lg:px-20"
-        >
-            <div className="mx-auto max-w-7xl">
-                <div className="grid gap-12 lg:grid-cols-[.65fr_1.35fr]">
-                    <Reveal>
-                        <span className="poster-kicker">01 / À propos</span>
-                    </Reveal>
-                    <Reveal delay={0.08}>
-                        <h2 className="display poster-heading">
-                            La donnée comme moyen,
-                            <br />
-                            <span>pas comme finalité.</span>
-                        </h2>
-                        <p className="mt-8 max-w-3xl text-xl leading-relaxed text-(--muted) text-justify">
-                            {profile.aPropos}
-                        </p>
-                        <Stagger className="mt-14 grid border-t border-(--line) md:grid-cols-3">
-                            {highlights.map(([number, title, text]) => (
-                                <StaggerItem
-                                    key={number}
-                                    className="line-item border-b border-(--line) py-6 md:border-b-0 md:border-r md:px-6 first:pl-0 last:border-r-0"
-                                >
-                                    <span className="font-mono text-xs text-(--coral)">
-                                        {number}
-                                    </span>
-                                    <h3 className="mt-7 text-xl font-bold">
-                                        {title}
-                                    </h3>
-                                    <p className="mt-3 text-sm leading-relaxed text-(--muted)">
-                                        {text}
-                                    </p>
-                                </StaggerItem>
-                            ))}
-                        </Stagger>
-                    </Reveal>
+        <section id="about" className="section">
+            <Reveal className="shell grid gap-8 md:grid-cols-[11rem_1fr] md:gap-12">
+                <div>
+                    <h2 className="heading section-heading text-3xl">
+                        À propos
+                    </h2>
+                    <ul className="mt-6 space-y-4 text-sm text-(--muted)">
+                        <li className="flex items-start gap-2">
+                            <MapPin
+                                className="mt-0.5 h-4 w-4 shrink-0 text-(--accent-4)"
+                                aria-hidden
+                            />
+                            Lomé, Togo
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <GraduationCap
+                                className="mt-0.5 h-4 w-4 shrink-0 text-(--accent)"
+                                aria-hidden
+                            />
+                            Master IA &amp; Big Data
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <Wrench
+                                className="mt-0.5 h-4 w-4 shrink-0 text-(--accent-2)"
+                                aria-hidden
+                            />
+                            Data · ML · Interfaces
+                        </li>
+                    </ul>
                 </div>
-            </div>
+                <p className="max-w-2xl text-lg leading-relaxed text-(--muted) md:text-xl text-justify">
+                    {profile.aPropos}
+                </p>
+            </Reveal>
         </section>
     );
 }

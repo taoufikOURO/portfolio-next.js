@@ -1,8 +1,7 @@
 import profile from "@/data/profile.json";
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
-import Link from "next/link";
-import Header from "./components/Header";
+import { Instrument_Sans, Space_Grotesk } from "next/font/google";
+import Footer from "./components/Footer";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -11,6 +10,14 @@ const instrumentSans = Instrument_Sans({
     subsets: ["latin"],
     display: "swap",
 });
+
+const spaceGrotesk = Space_Grotesk({
+    variable: "--font-space-grotesk",
+    weight: ["500", "600", "700"],
+    subsets: ["latin"],
+    display: "swap",
+});
+
 export const metadata: Metadata = {
     metadataBase: new URL(
         process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
@@ -46,45 +53,17 @@ export const metadata: Metadata = {
         images: [profile.photo],
     },
 };
+
 export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
-    const fullName = `${profile.prenom} ${profile.nom}`;
     return (
         <html lang="fr">
-            <body className={instrumentSans.variable}>
-                <Header />
-                <main>{children}</main>
-                <footer className="poster-section dark-section px-6 py-14 text-(--paper) md:px-12 lg:px-20">
-                    <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-end">
-                        <div>
-                            <p className="eyebrow text-(--lime)">
-                                Fin du dataset
-                            </p>
-                            <p className="display mt-4 text-4xl">{fullName}</p>
-                        </div>
-                        <div className="text-left text-sm text-white/60 md:text-right">
-                            <p>{profile.titreProfessionnel}</p>
-                            <p className="mt-2">
-                                © {new Date().getFullYear()} · {profile.email}
-                            </p>
-                            <div className="mt-4 flex gap-4 md:justify-end">
-                                <Link
-                                    href="/articles"
-                                    className="hover:text-(--lime)"
-                                >
-                                    Notes
-                                </Link>
-                                <Link
-                                    href="/projets"
-                                    className="hover:text-(--lime)"
-                                >
-                                    Projets
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
+            <body
+                className={`${instrumentSans.variable} ${spaceGrotesk.variable}`}
+            >
+                {children}
+                <Footer />
             </body>
         </html>
     );

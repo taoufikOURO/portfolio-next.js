@@ -1,70 +1,55 @@
 import { getAllArticles } from "@/app/lib/data";
-import Image from "next/image";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { Reveal, Stagger, StaggerItem } from "../components/Motion";
 
 export default function ArticlesPage() {
     const articles = getAllArticles();
+
     return (
-        <main className="poster-section data-grid min-h-screen px-6 pb-24 pt-32 md:px-12 lg:px-20">
-            <div className="mx-auto max-w-7xl">
-                <Reveal>
-                    <Link href="/" className="section-label">
-                        Retour accueil
+        <main className="shell py-10 md:py-16">
+            <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-sm text-(--muted) transition-colors hover:text-(--text)"
+            >
+                <ArrowLeft className="h-4 w-4" aria-hidden />
+                Retour
+            </Link>
+
+            <div className="mt-8 max-w-2xl">
+                <h1 className="heading text-3xl sm:text-4xl">Notes</h1>
+                <p className="mt-3 text-base leading-relaxed text-(--muted)">
+                    Réflexions et apprentissages autour de la data, du machine
+                    learning et du développement.
+                </p>
+            </div>
+
+            <div className="mt-8 divide-y divide-(--line) border-y border-(--line)">
+                {articles.map((article) => (
+                    <Link
+                        key={article.id}
+                        href={`/articles/${article.slug}`}
+                        className="group flex items-start justify-between gap-6 py-6"
+                    >
+                        <div>
+                            <p className="text-xs text-(--muted)">
+                                {article.categorie} ·{" "}
+                                {new Date(article.date).toLocaleDateString(
+                                    "fr-FR",
+                                )}
+                            </p>
+                            <h2 className="mt-1 text-lg font-semibold transition-colors group-hover:text-(--accent)">
+                                {article.titre}
+                            </h2>
+                            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-(--muted)">
+                                {article.description}
+                            </p>
+                        </div>
+                        <ArrowUpRight
+                            className="mt-1 h-4 w-4 shrink-0 text-(--muted) transition-colors group-hover:text-(--accent)"
+                            aria-hidden
+                        />
                     </Link>
-                </Reveal>
-                <Reveal delay={0.08} className="mt-12 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-                    <h1 className="display poster-heading">
-                        Notes de
-                        <br />
-                        <span className="text-[#668b26]">terrain.</span>
-                    </h1>
-                    <p className="max-w-sm text-lg leading-relaxed text-(--muted)">
-                        Réflexions, apprentissages et fragments de recherche
-                        entre data et produit.
-                    </p>
-                </Reveal>
-                <Stagger className="mt-20 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {articles.map((article, index) => (
-                        <StaggerItem
-                            key={article.id}
-                            className="editorial-card group overflow-hidden"
-                        >
-                            <Link href={`/articles/${article.slug}`}>
-                                <div className="relative aspect-4/3 overflow-hidden bg-(--blue)">
-                                    {article.image && (
-                                        <Image
-                                            src={article.image}
-                                            alt={article.titre}
-                                            fill
-                                            className="object-cover grayscale transition duration-700 group-hover:grayscale-0"
-                                        />
-                                    )}
-                                    <span className="absolute left-4 top-4 bg-(--lime) px-2 py-1 font-mono text-[10px]">
-                                        NOTE_{String(index + 1).padStart(2, "0")}
-                                    </span>
-                                </div>
-                                <div className="p-6">
-                                    <p className="font-mono text-xs text-(--coral)">
-                                        {article.categorie} ·{" "}
-                                        {new Date(article.date).toLocaleDateString(
-                                            "fr-FR",
-                                        )}
-                                    </p>
-                                    <h2 className="mt-4 text-2xl font-bold leading-tight group-hover:text-[#668b26]">
-                                        {article.titre}
-                                    </h2>
-                                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-(--muted)">
-                                        {article.description}
-                                    </p>
-                                    <span className="mt-6 block font-mono text-xs">
-                                        Lire la note ↗
-                                    </span>
-                                </div>
-                            </Link>
-                        </StaggerItem>
-                    ))}
-                </Stagger>
+                ))}
             </div>
         </main>
     );

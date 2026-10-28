@@ -1,73 +1,61 @@
 import { getAllFormations } from "@/app/lib/data";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { Reveal, Stagger, StaggerItem } from "./Motion";
+import Reveal from "./Reveal";
 
 export default function Formations() {
     const formations = getAllFormations();
+
     return (
-        <section
-            id="formations"
-            className="poster-section bg-(--paper) px-6 py-24 md:px-12 md:py-36 lg:px-20"
-        >
-            <div className="mx-auto max-w-7xl">
-                <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-                    <Reveal>
-                        <span className="poster-kicker">03 / Parcours</span>
-                        <h2 className="display poster-heading mt-7">
-                            Construire
-                            <br />
-                            <span className="text-[#668b26]">
-                                les fondations.
-                            </span>
-                        </h2>
-                    </Reveal>
-                    <Reveal delay={0.08}>
+        <section id="formations" className="section">
+            <Reveal className="shell">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                    <h2 className="heading section-heading text-3xl">
+                        Formation
+                    </h2>
                     <Link
                         href="/formations"
-                        className="outline-button self-start md:self-end"
+                        className="inline-flex items-center gap-1 text-sm font-medium text-(--accent) hover:underline"
                     >
-                        Voir le détail
+                        Voir le parcours
+                        <ArrowUpRight className="h-4 w-4" aria-hidden />
                     </Link>
-                    </Reveal>
                 </div>
-                <Stagger className="border-t border-(--ink)">
-                    {formations.map((formation, index) => (
-                        <StaggerItem
-                            key={index}
-                            className="line-item group grid gap-4 border-b border-(--line) py-8 md:grid-cols-[.18fr_1fr_.35fr] md:items-start"
+
+                <div className="mt-8 divide-y divide-(--line) border-y border-(--line)">
+                    {formations.map((formation) => (
+                        <article
+                            key={`${formation.intitule}-${formation.debut}`}
+                            className="grid gap-3 py-6 md:grid-cols-[10rem_1fr] md:gap-8"
                         >
-                            <span className="font-mono text-sm text-(--coral)">
-                                {formation.debut}
-                            </span>
+                            <p className="text-sm font-medium text-(--accent)">
+                                {formation.debut} —{" "}
+                                {formation.fin || "aujourd’hui"}
+                            </p>
                             <div>
-                                <h3 className="text-2xl font-bold transition-colors group-hover:text-[#668b26]">
+                                <h3 className="text-lg font-semibold">
                                     {formation.intitule}
                                 </h3>
-                                <p className="mt-2 text-(--muted)">
-                                    {formation.etablissement} · {formation.lieu}
+                                <p className="mt-1 text-sm text-(--muted)">
+                                    {formation.etablissement} ·{" "}
+                                    {formation.lieu}
                                 </p>
+                                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-(--muted)">
+                                    {formation.description}
+                                </p>
+                                {formation.mention && (
+                                    <p className="mt-2 text-sm text-(--accent)">
+                                        Mention {formation.mention}
+                                        {formation.moyenne
+                                            ? ` · ${formation.moyenne}/20`
+                                            : ""}
+                                    </p>
+                                )}
                             </div>
-                            <div className="text-sm text-(--muted) md:text-right">
-                                {formation.fin
-                                    ? `→ ${formation.fin}`
-                                    : "En cours"}
-                                <div className="mt-3 flex flex-wrap gap-2 md:justify-end">
-                                    {formation.competences
-                                        .slice(0, 3)
-                                        .map((item) => (
-                                            <span
-                                                key={item}
-                                                className="border border-(--line) px-2 py-1 font-mono text-[10px]"
-                                            >
-                                                {item}
-                                            </span>
-                                        ))}
-                                </div>
-                            </div>
-                        </StaggerItem>
+                        </article>
                     ))}
-                </Stagger>
-            </div>
+                </div>
+            </Reveal>
         </section>
     );
 }

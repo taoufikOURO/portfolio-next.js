@@ -1,18 +1,20 @@
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Reveal } from "@/app/components/Motion";
+
 export default function NotFound() {
     return (
-        <main className="poster-section data-grid flex min-h-screen items-center justify-center px-6 text-center">
-            <Reveal className="text-center">
-                <p className="eyebrow">404 / Missing data</p>
-                <h1 className="display mt-5 text-6xl">Projet introuvable.</h1>
-                <p className="mx-auto mt-5 max-w-md text-(--muted)">
-                    Cette observation n’existe pas dans le dataset actuel.
-                </p>
-                <Link href="/projets" className="lime-button mt-8">
-                    Retour aux projets
-                </Link>
-            </Reveal>
+        <main className="shell flex min-h-[70vh] flex-col items-start justify-center py-16">
+            <p className="eyebrow">404</p>
+            <h1 className="heading mt-3 text-3xl sm:text-4xl">
+                Projet introuvable
+            </h1>
+            <p className="mt-3 max-w-md text-(--muted)">
+                Ce projet n’existe pas ou n’est plus disponible.
+            </p>
+            <Link href="/projets" className="btn btn-primary mt-6">
+                <ArrowLeft className="h-4 w-4" aria-hidden />
+                Retour aux projets
+            </Link>
         </main>
     );
 }

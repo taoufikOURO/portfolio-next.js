@@ -1,84 +1,97 @@
 import { getProfile } from "@/app/lib/data";
+import { Briefcase, Circle, Code2, FileText, Mail, MapPin } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { Reveal } from "./Motion";
+import Reveal from "./Reveal";
 
 export default function Hero() {
     const profile = getProfile();
+    const linkedin = profile.liens.linkedin.startsWith("http")
+        ? profile.liens.linkedin
+        : `https://${profile.liens.linkedin}`;
+
     return (
-        <section className="data-grid noise relative flex min-h-[calc(100vh-1rem)] items-center overflow-hidden px-6 pb-20 pt-28 md:px-12 lg:px-20">
-            <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
-                <Reveal className="relative z-10">
-                    <p className="eyebrow mb-7">01 / Profil actif</p>
-                    <h1 className="display max-w-4xl text-6xl leading-[.92] md:text-8xl lg:text-[9.4rem]">
-                        DATA
-                        <br />
-                        <span className="text-[#668b26]">SCIENTIST</span>
-                    </h1>
-                    <div className="mt-8 flex items-center gap-3">
-                        <span className="h-2 w-2 bg-(--coral)" />
-                        <p className="font-mono text-sm font-bold uppercase tracking-[.14em]">
-                            {profile.prenom}
+        <section className="section border-t-0">
+            <Reveal className="shell">
+                <div className="flex flex-col-reverse gap-8 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="max-w-3xl">
+                        <p className="eyebrow">
+                            {profile.prenom} {profile.nom}
                         </p>
-                        <p className="font-mono text-sm font-bold uppercase tracking-[.14em]">
-                            {profile.nom}
+                        <h1 className="heading mt-4 text-[clamp(2.6rem,6vw,5rem)] uppercase leading-[0.95]">
+                            {profile.titreProfessionnel}
+                        </h1>
+                        <p className="mt-6 max-w-xl text-lg leading-relaxed text-(--muted) md:text-xl text-justify">
+                            {profile.bio}
                         </p>
-                    </div>
-                    <p className="mt-8 max-w-xl text-lg leading-relaxed text-(--muted) md:text-xl">
-                        {profile.bio}
-                    </p>
-                    <div className="mt-9 flex flex-wrap gap-3">
-                        <a href="#projets" className="lime-button">
-                            Explorer les projets
-                        </a>
-                        <Link href="/articles" className="outline-button">
-                            Lire le blog
-                        </Link>
-                        <a
-                            href={profile.cv}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="outline-button"
-                        >
-                            Lire le CV
-                        </a>
-                    </div>
-                </Reveal>
-                <Reveal
-                    delay={0.16}
-                    className="relative mx-auto w-full max-w-md"
-                >
-                    <div className="absolute -right-3 -top-3 z-20 bg-(--coral) px-3 py-2 font-mono text-xs font-bold text-white">
-                        DATA_PERSON_001
-                    </div>
-                    <div className="hero-image-shell">
-                        <div className="hero-image-frame">
-                            <Image
-                                src={profile.photo}
-                                alt={`${profile.prenom} ${profile.nom}`}
-                                fill
-                                priority
-                                className="hero-image"
-                            />
-                            <span className="hero-image-index">01</span>
+                        <div className="mt-8 flex flex-wrap gap-2">
+                            <a
+                                href={`mailto:${profile.email}`}
+                                className="btn btn-primary"
+                            >
+                                <Mail className="h-4 w-4" aria-hidden />
+                                Me contacter
+                            </a>
+                            <a
+                                href={profile.cv}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-ghost"
+                            >
+                                <FileText className="h-4 w-4" aria-hidden />
+                                Télécharger le CV
+                            </a>
                         </div>
                     </div>
-                    <div className="mt-7 grid grid-cols-3 border-y border-(--line) py-4 font-mono text-xs">
-                        <span>
-                            <b className="block text-xl">ML</b> focus
-                        </span>
-                        <span>
-                            <b className="block text-xl">UX</b> craft
-                        </span>
-                        <span>
-                            <b className="block text-xl">∞</b> curious
-                        </span>
-                    </div>
-                    </Reveal>
+
+                    <Image
+                        src={profile.photo}
+                        alt={`${profile.prenom} ${profile.nom}`}
+                        width={144}
+                        height={144}
+                        priority
+                        className="h-40 w-40 shrink-0 rounded-full object-cover ring-2 ring-[#ffcb77] ring-offset-4 ring-offset-[#fef9ef] sm:h-60 sm:w-60"
+                    />
                 </div>
-            <div className="absolute right-8 top-1/2 hidden h-40 w-40 -translate-y-1/2 rounded-full border border-(--coral)/50 lg:block">
-                <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 bg-(--coral)" />
-            </div>
+
+                <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-(--line) pt-5 text-sm text-(--muted)">
+                    <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="h-4 w-4" aria-hidden />
+                        Lomé, Togo
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <Circle
+                            className="h-2.5 w-2.5 fill-[#17c3b2] text-[#17c3b2]"
+                            aria-hidden
+                        />
+                        Disponible pour des missions
+                    </span>
+                    <a
+                        href={`mailto:${profile.email}`}
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-(--accent)"
+                    >
+                        <Mail className="h-4 w-4" aria-hidden />
+                        {profile.email}
+                    </a>
+                    <a
+                        href={profile.liens.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-(--accent)"
+                    >
+                        <Code2 className="h-4 w-4" aria-hidden />
+                        GitHub
+                    </a>
+                    <a
+                        href={linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-(--accent)"
+                    >
+                        <Briefcase className="h-4 w-4" aria-hidden />
+                        LinkedIn
+                    </a>
+                </div>
+            </Reveal>
         </section>
     );
 }
