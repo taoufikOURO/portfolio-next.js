@@ -4,7 +4,7 @@ Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le 
 
 ## Aperçu
 
-- Interface moderne avec effets de glassmorphism et micro-interactions
+- Interface éditoriale avec micro-interactions et animations discrètes
 - Rendu optimisé grâce à Next.js 16 (App Router)
 - Design responsive, adapté à tous les formats d'écran
 - Architecture basée sur des fichiers JSON, sans base de données
@@ -25,7 +25,7 @@ Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le 
 
 - ESLint - Linting et qualité de code
 - pnpm - Gestionnaire de paquets
-- Font Awesome - Icônes
+- Lucide React - Icônes
 
 ## Installation
 
@@ -116,7 +116,12 @@ portfolio/
     "estPublie": true,
     "lien": "https://projet.com",
     "image": "/images/projets/projet.png",
-    "github": "https://github.com/user/projet",
+    "github": [
+        {
+            "nom": "GitHub",
+            "url": "https://github.com/user/projet"
+        }
+    ],
     "stack": [...]
 }
 ```
@@ -132,13 +137,14 @@ portfolio/
 
 ### Couleurs
 
-Les variables sont définies dans `app/globals.css` :
+Les variables de thème sont définies dans `app/globals.css` :
 
 ```css
 :root {
-    --color-primary: #14213d;
-    --color-accent: #fca311;
-    /* autres variables */
+    --bg: ...;
+    --surface: ...;
+    --text: ...;
+    --accent: ...;
 }
 ```
 

@@ -7,46 +7,37 @@ export default function ProjectCard({ project }: { project: Project }) {
     return (
         <Link
             href={`/projets/${project.slug}`}
-            className="card group flex flex-col overflow-hidden"
+            className="group relative block aspect-4/3 overflow-hidden rounded-3xl bg-(--surface-2) group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_12px_rgba(9,7,8,0.15)]"
         >
-            <div className="media-frame aspect-16/10 border-b border-(--line)">
-                {project.image ? (
-                    <Image
-                        src={project.image}
-                        alt={project.titre}
-                        fill
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="flex h-full items-center justify-center bg-(--surface-2)">
-                        <FolderGit2
-                            className="h-9 w-9 text-(--line-strong)"
-                            aria-hidden
-                        />
-                    </div>
-                )}
-            </div>
-            <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-semibold leading-snug transition-colors group-hover:text-(--accent)">
-                        {project.titre}
-                    </h3>
-                    <ArrowUpRight
-                        className="mt-0.5 h-4 w-4 shrink-0 text-(--muted) transition-colors group-hover:text-(--accent)"
+            {project.image ? (
+                <Image
+                    src={project.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                />
+            ) : (
+                <div className="relative flex h-full items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#ec2712,#f5765b_55%,#6358a4)]">
+                    <span className="heading text-[9rem] leading-none text-white/25">
+                        {project.titre.charAt(0)}
+                    </span>
+                    <FolderGit2
+                        className="absolute left-5 top-5 h-7 w-7 text-white/70"
                         aria-hidden
                     />
                 </div>
-                <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-(--muted)">
-                    {project.description}
-                </p>
-                <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
-                    {project.stack.map((technology) => (
-                        <span key={technology.name} className="tag">
-                            {technology.name}
-                        </span>
-                    ))}
-                </div>
+            )}
+
+            <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/5 to-transparent" />
+
+            <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 md:inset-x-5 md:bottom-5">
+                <span className="line-clamp-1 rounded-full bg-(--surface) px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.03em] text-(--ink) md:text-xs">
+                    {project.titre}
+                </span>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--surface) text-(--ink) transition-colors group-hover:bg-(--ink) group-hover:text-white md:h-10 md:w-10">
+                    <ArrowUpRight className="h-4 w-4" aria-hidden />
+                </span>
             </div>
         </Link>
     );

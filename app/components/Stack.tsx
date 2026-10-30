@@ -4,38 +4,40 @@ import Reveal from "./Reveal";
 
 export default function Stack() {
     const technologies = getAllTechnologies();
+    const duplicated = [...technologies, ...technologies];
 
     return (
         <section id="stack" className="section">
-            <Reveal className="shell">
-                <div className="flex flex-wrap items-end justify-between gap-3">
-                    <h2 className="heading section-heading text-3xl">
-                        Compétences
-                    </h2>
-                    <p className="text-sm text-(--muted)">
-                        {technologies.length} outils utilisés au quotidien
-                    </p>
+            <div className="shell">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <span className="label">Ma stack</span>
+                    <span className="text-[0.7rem] font-bold uppercase tracking-[0.08em]">
+                        {technologies.length} outils
+                    </span>
                 </div>
+            </div>
 
-                <ul className="mt-8 grid gap-x-10 gap-y-1 sm:grid-cols-2">
-                    {technologies.map((technology) => (
-                        <li
-                            key={technology.name}
-                            className="group flex items-center gap-3 border-b border-(--line) py-3.5"
+            <Reveal delay={0.1} className="marquee mt-5">
+                <div className="marquee-track">
+                    {duplicated.map((technology, index) => (
+                        <div
+                            key={`${technology.name}-${index}`}
+                            className="flex h-28 w-36 shrink-0 flex-col items-center justify-center gap-3 rounded-[1.25rem] bg-(--surface) sm:w-44"
+                            aria-hidden={index >= technologies.length}
                         >
                             <Image
                                 src={technology.icon}
                                 alt=""
-                                width={24}
-                                height={24}
-                                className="h-20 w-6 object-contain"
+                                width={36}
+                                height={36}
+                                className="h-9 w-9 object-contain"
                             />
-                            <span className="text-sm font-medium transition-colors group-hover:text-(--accent)">
+                            <span className="text-xs font-semibold">
                                 {technology.name}
                             </span>
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             </Reveal>
         </section>
     );

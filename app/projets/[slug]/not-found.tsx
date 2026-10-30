@@ -3,7 +3,10 @@ import Link from "next/link";
 
 export default function NotFound() {
     return (
-        <main className="shell flex min-h-[70vh] flex-col items-start justify-center py-16">
+        <main
+            id="contenu"
+            className="shell flex min-h-[70vh] flex-col items-start justify-center pb-16 pt-28"
+        >
             <p className="eyebrow">404</p>
             <h1 className="heading mt-3 text-3xl sm:text-4xl">
                 Projet introuvable

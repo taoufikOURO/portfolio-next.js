@@ -11,6 +11,7 @@ export interface Profile {
         linkedin: string;
     };
     photo: string;
+    transparentPhoto: string;
 }
 
 export interface Technology {
@@ -29,10 +30,22 @@ export interface Project {
     description: string;
     estPublie: boolean;
     lien?: string;
-    image: string;
+    image?: string;
     stack: Technology[];
     slug?: string;
     github?: ProjectRepository[];
+}
+
+export type PublishedProject = Project & { slug: string };
+
+export interface Service {
+    titre: string;
+    description: string;
+}
+
+export interface FaqItem {
+    question: string;
+    reponse: string;
 }
 
 export interface Formation {
