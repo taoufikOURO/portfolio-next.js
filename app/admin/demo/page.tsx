@@ -1,5 +1,5 @@
 // PAGE DE DÉMONSTRATION TEMPORAIRE (étape 5) : à supprimer avec `app/admin/demo/`.
-// Données factices : aucun appel à la base ni à Supabase.
+// Données factices : seule la session est lue en base ; aucun appel à Supabase.
 // Les sections statiques ci-dessous sont rendues côté serveur, pour vérifier
 // que Button, Alert, StatusBadge, Field, DataTable et EmptyState s'utilisent
 // depuis un composant serveur.
@@ -11,6 +11,7 @@ import { DataTable, type DataTableColumn } from "@/components/admin/DataTable";
 import { EmptyState } from "@/components/admin/EmptyState";
 import { Field } from "@/components/admin/Field";
 import { StatusBadge, type Status } from "@/components/admin/StatusBadge";
+import { requireSession } from "@/lib/auth/require-session";
 import { DemoInteractive } from "./demo-interactive";
 
 export const metadata: Metadata = {
@@ -56,7 +57,8 @@ const COLUMNS: DataTableColumn<Row>[] = [
     { key: "status", header: "Statut", cell: (row) => <StatusBadge status={row.status} /> },
 ];
 
-export default function DemoPage() {
+export default async function DemoPage() {
+    await requireSession();
     return (
         <div className="flex flex-col gap-12">
             <header className="flex flex-col gap-2">

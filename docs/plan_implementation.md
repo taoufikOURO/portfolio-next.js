@@ -14,8 +14,11 @@ Références : `CLAUDE.md`, `docs/cahier_des_charges.md` (version 1.2)
 | 7       | 6 novembre 2026 | `@types/node` passé en `^24` (E30 tranché, E35). Étape 5 réalisée (en attente de validation). Décisions E36 à E39 (dialogues natifs, composants serveur ou client, CSS de l'admin limité à ses dossiers, page de démonstration) |
 | 8       | 6 novembre 2026 | Fond des dialogues en crème opaque avec bordure bleu-gris (décision de Taoufik, E37, §3.3). Étape 6 réalisée (en attente de validation). Décisions E40 (Nodemailer 10 sans `@types/nodemailer`) et E41 (API et journaux de `lib/mail/`) |
 | 9       | 6 novembre 2026 | Script de test réel des e-mails ajouté (`scripts/send-test-mail.ts`, `pnpm mail:test`, décision E42) ; en attente de son lancement par Taoufik |
+| 10      | 6 novembre 2026 | Test réel lancé par Taoufik (trois messages reçus) ; étape 6 validée par Taoufik |
+| 11      | 6 novembre 2026 | Étapes 1 à 5 validées par Taoufik ; prochaine action : étape 7 |
+| 12      | 6 novembre 2026 | Étape 7 réalisée (en attente de validation). Décisions E43 à E46 (durée du cookie et échéance glissante, règles du blocage, fichiers ajoutés, connexion) ; E22 et E39 mis à jour |
 
-Statut : **validé**. L'étape 0 est terminée. Les étapes 1 à 6 sont réalisées et en attente de validation par Taoufik (voir §0).
+Statut : **validé**. Les étapes 0 à 6 sont terminées et validées par Taoufik. L'étape 7 est réalisée et attend la validation de Taoufik (voir §0).
 
 ---
 
@@ -33,13 +36,13 @@ Statut : **validé**. L'étape 0 est terminée. Les étapes 1 à 6 sont réalis�
 | Bloc            | Étape                                                                  | Résultat attendu                         | Statut        |
 | --------------- | ---------------------------------------------------------------------- | ---------------------------------------- | ------------- |
 | **Cadrage**     | 0. Arbitrages                                                          | Décisions intégrées aux documents        | ✅ Terminé     |
-| **Préparer**    | 1. Outillage (scripts pnpm, `AGENTS.md`, `.env.example`)               | Dépôt prêt                               | ⏸️ Réalisée, validation en attente |
-|                 | 2. Séparation site public / admin                                      | L'admin a son propre espace              | ⏸️ Réalisée, validation en attente |
-| **Fondations**  | 3. Prisma et base locale (schéma, migration, Vitest)                   | Base en place                            | ⏸️ Réalisée, validation en attente |
-|                 | 4. Seed du compte administrateur                                       | Compte admin créé                        | ⏸️ Réalisée, validation en attente |
-|                 | 5. Interface de base (barre latérale, boutons, champs, dialogues)      | Composants réutilisables                 | ⏸️ Réalisée, validation en attente |
-| **Sécurité**    | 6. Module e-mail (console en dev, Gmail en prod)                       | Envoi selon `APP_ENV`                    | ⏸️ Réalisée, validation en attente |
-|                 | 7. Connexion, sessions, protection `/admin`, anti brute-force          | Admin protégé                            | ⏳ À faire     |
+| **Préparer**    | 1. Outillage (scripts pnpm, `AGENTS.md`, `.env.example`)               | Dépôt prêt                               | ✅ Terminé     |
+|                 | 2. Séparation site public / admin                                      | L'admin a son propre espace              | ✅ Terminé     |
+| **Fondations**  | 3. Prisma et base locale (schéma, migration, Vitest)                   | Base en place                            | ✅ Terminé     |
+|                 | 4. Seed du compte administrateur                                       | Compte admin créé                        | ✅ Terminé     |
+|                 | 5. Interface de base (barre latérale, boutons, champs, dialogues)      | Composants réutilisables                 | ✅ Terminé     |
+| **Sécurité**    | 6. Module e-mail (console en dev, Gmail en prod)                       | Envoi selon `APP_ENV`                    | ✅ Terminé     |
+|                 | 7. Connexion, sessions, protection `/admin`, anti brute-force          | Admin protégé                            | ⏸️ Réalisée, validation en attente |
 |                 | 8. Validation d'e-mail, mot de passe oublié, page « Compte »           | Parcours par lien complets               | ⏳ À faire     |
 | **Contenus**    | 9. Compétences et formations                                           | Premier CRUD, conventions fixées         | ⏳ À faire     |
 |                 | 10. Supabase Storage (uploads sécurisés)                               | Service d'upload                         | ⏳ À faire     |
@@ -55,15 +58,31 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 
 **Pourquoi cet ordre** : les formations passent en premier parmi les contenus parce que c'est le CRUD le plus simple, sans upload. Il fixe les conventions réutilisées ensuite. Les articles passent en dernier parce qu'ils dépendent de tout le reste (interface, sessions, stockage, brouillons).
 
-### 0.2 Prochaine action : étape 7 (après validation des étapes 1 à 6 par Taoufik)
+### 0.2 Prochaine action : validation de l'étape 7 par Taoufik
 
-**Rien n'est à faire tant que Taoufik n'a pas validé les étapes 1 à 6.** Ensuite, une seule étape à la fois :
+**Les étapes 0 à 6 sont validées par Taoufik. L'étape 7 est réalisée : rien d'autre n'est commencé tant qu'elle n'est pas validée.** Une seule étape à la fois :
 
-1. **À faire par Taoufik (étape 6)** : lancer `! pnpm mail:test` (script `scripts/send-test-mail.ts`, accord donné, ajouté, E42), puis vérifier la réception et la lisibilité des trois messages « [Test] » dans Gmail (mobile et desktop). Claude ne lance pas ce script.
-2. **Étape 7 : authentification et protection des routes** (voir §3.6). Dépend des étapes 4 et 5. Avant d'écrire du code, proposer le détail et attendre la validation.
-3. Rappels pour la suite : `pnpm db:reset` demande l'accord explicite de Taoufik (E32) ; `storage:setup` attend `scripts/setup-storage.ts` (étape 10, voir la note de E24) ; l'étape 7 réutilise `lib/auth/password.ts`, `lib/auth/password-policy.ts` et la mise en minuscules de l'adresse (E34), et branche `requireSession()` et la déconnexion sur `AdminShell` (prop `footer`, E36) ; l'étape 8 utilise `sendEmailVerification`, `sendPasswordReset` et `sendEmailChangeNotice` de `lib/mail/send.ts`, les durées `EMAIL_VERIFICATION_TTL_HOURS` et `PASSWORD_RESET_TTL_HOURS` et les chemins des pages exportés par `lib/mail/templates.ts`, et envoie la notification à l'ancienne adresse **au moment de la demande** de changement (E41). La page `app/admin/demo/` est retirée à l'étape 15, ou dès que les vraies sections existent (E39).
+1. **À faire par Taoufik (étape 7)** : se connecter avec son vrai compte dans un navigateur (`http://localhost:3000/admin`), naviguer, se déconnecter ; puis valider l'étape. Les tests de bout en bout ont utilisé un administrateur temporaire, supprimé ensuite, car `ADMIN_PASSWORD` n'est plus dans `.env` (voir §3.6, étape 7).
+2. **Restent à faire par Taoufik, sans bloquer** : vérifications manuelles de l'étape 5 (lecteur d'écran, navigateurs réels, tactile, zoom, contraste élevé : voir §3.6, étape 5).
+3. **Ensuite : étape 8** (validation d'e-mail, mot de passe oublié, page « Compte », voir §3.6). Avant d'écrire du code, proposer le détail et attendre la validation.
+4. Rappels pour la suite : `pnpm db:reset` demande l'accord explicite de Taoufik (E32) ; `storage:setup` attend `scripts/setup-storage.ts` (étape 10, voir la note de E24) ; l'étape 8 ajoute ses pages publiques à `PUBLIC_ADMIN_PATHS` (`lib/auth/routes.ts`), révoque les autres sessions après un changement de mot de passe (ajouter une fonction à `lib/auth/session.ts`) et réutilise `test/fakes.ts` pour ses tests (E45) ; toute nouvelle page ou action de l'admin commence par `requireSession()` (E46), et toute icône passée à un composant client depuis un composant serveur passe par un petit composant client (E36, `LogoutButton`) ; l'étape 8 utilise `sendEmailVerification`, `sendPasswordReset` et `sendEmailChangeNotice` de `lib/mail/send.ts`, les durées `EMAIL_VERIFICATION_TTL_HOURS` et `PASSWORD_RESET_TTL_HOURS` et les chemins des pages exportés par `lib/mail/templates.ts`, et envoie la notification à l'ancienne adresse **au moment de la demande** de changement (E41). La page `app/admin/demo/` est retirée à l'étape 15, ou dès que les vraies sections existent (E39).
 
-**Étape 6 : module e-mail** : réalisée
+**Étape 7 : authentification et protection des routes** : ⏸️ réalisée, validation en attente
+
+- [x] Étape 6 validée par Taoufik, test réel compris (vérifié avant de commencer)
+- [x] `lib/auth/session-cookie.ts` (jeton signé, pur, pour `proxy.ts`), `lib/auth/session.ts`, `lib/auth/require-session.ts`, `lib/auth/rate-limit.ts`, `lib/auth/login.ts`, `lib/auth/routes.ts`, `lib/validation/auth.ts` (E43 à E46)
+- [x] `proxy.ts` ; `app/admin/(auth)/` (layout, `connexion/` : page, formulaire, action) ; `app/admin/(dashboard)/` (layout avec `requireSession()`, page provisoire déplacée par `git mv`, action de déconnexion, fourre-tout `[...slug]` et `not-found.tsx`) ; `components/admin/LogoutButton.tsx` ; `app/admin/demo/` protégé (E39)
+- [x] Tests Vitest : 94 ajoutés (224 au total), doublures dans `test/fakes.ts` ; 6 mutations vérifiées (seuil, hash factice, plafond de 30 jours, `requireSession` retiré de la déconnexion, proxy ouvert, `SameSite=Lax`) : chacune fait échouer des tests
+- [x] curl sur le serveur de développement : toutes les URL `/admin/**` sans session → 307 vers `/admin/connexion`
+- [x] Parcours HTTP réel en développement (port 3000) puis en production (`next start`, port 3100, `APP_ENV=production`) : 46 vérifications conformes dans les deux cas (voir §3.6, étape 7)
+- [x] Chrome headless (CDP) : formulaire au clavier, validation client, message neutre, déconnexion au clavier depuis le panneau « Menu » : 27 vérifications conformes
+- [x] 12 tentatives simultanées : exactement 5 échecs enregistrés, 7 refus pour blocage
+- [x] `.next/static` : ni `SESSION_SECRET`, ni code de signature, ni argon2, ni hash factice
+- [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+- [ ] **Taoufik : connexion et déconnexion avec son vrai compte dans un navigateur**
+- [ ] **Validation par Taoufik**
+
+**Étape 6 : module e-mail** : ✅ terminée (validée par Taoufik)
 
 - [x] Avant l'étape : fond des dialogues en crème opaque, bordure bleu-gris (décision de Taoufik) ; ligne ajoutée au §3.3, E37 mis à jour ; `palette.test.ts` : 8 tests (dont un qui refuse toute variante transparente en fond de dialogue)
 - [x] `SMTP_USER`, `SMTP_PASS` et `MAIL_FROM` présents et non vides dans `.env` (vérifié sans afficher les valeurs ; différents des placeholders ; `SMTP_HOST` = Gmail, `SMTP_PORT` = 587)
@@ -74,10 +93,10 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] Build avec une page jetable qui importe `lib/mail/send.ts` : compilé côté serveur, rien dans `.next/static` ; page supprimée, build relancé sans elle
 - [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 - [x] Script de test réel `scripts/send-test-mail.ts` + script pnpm `mail:test` (accord de Taoufik, E42) ; lint, types et tests passent ; chemins de refus vérifiés sans réseau (voir journal)
-- [ ] **Taoufik lance `! pnpm mail:test`** : trois e-mails reçus et lisibles (Gmail mobile et desktop)
-- [ ] **Validation par Taoufik**
+- [x] **Taoufik lance `pnpm mail:test`** : trois messages envoyés (validation d'adresse, réinitialisation, notification de changement d'adresse), reçus par Taoufik
+- [x] **Validation par Taoufik**
 
-**Étape 5 : fondations de l'interface d'administration** : réalisée
+**Étape 5 : fondations de l'interface d'administration** : ✅ terminée (validée par Taoufik)
 
 - [x] `@types/node` passé de `^20` à `^24` (Node 24 en local), `pnpm typecheck` relancé avant le reste (E35)
 - [x] `lib/cn.ts` + test (5)
@@ -87,10 +106,10 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] Tests Vitest : `lib/cn.test.ts` (5), `components/admin/file-rules.test.ts` (8), `components/admin/palette.test.ts` (7, ratios du §3.3 calculés sur les valeurs réelles de `admin.css`) ; 95 tests au total
 - [x] Clavier seul, largeurs 360 / 768 / 1024 / 1440 px, couples de couleurs, Lighthouse Accessibilité (voir §3.6, étape 5)
 - [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
-- [ ] **Validation par Taoufik**
+- [x] **Validation par Taoufik**
 - [ ] Vérifications à faire à la main (hors de portée d'un navigateur headless) : voir §3.6, étape 5
 
-**Étape 4 : seed du compte administrateur** : réalisée
+**Étape 4 : seed du compte administrateur** : ✅ terminée (validée par Taoufik)
 
 - [x] Vérifier que `ADMIN_EMAIL` et `ADMIN_PASSWORD` sont présents et non vides dans `.env`, mot de passe ≥ 12 caractères (sans afficher les valeurs)
 - [x] Installer `@node-rs/argon2` **2.2.2** (épinglé, `latest` stable du 6 octobre 2026 ; binaire précompilé, aucun script d'installation)
@@ -98,10 +117,10 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] Tests Vitest : `lib/auth/password.test.ts` (13), `lib/seed-env.test.ts` (10) ; 75 tests au total
 - [x] Premier `pnpm db:seed` : compte et profil créés ; second : rien modifié, message clair ; refus vérifiés (mot de passe de 11 caractères, adresse invalide, base distante)
 - [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
-- [ ] **Validation par Taoufik**
-- [ ] Taoufik : retirer `ADMIN_PASSWORD` de `.env` (le seed n'en a plus besoin, E34)
+- [x] **Validation par Taoufik**
+- [x] Taoufik : retirer `ADMIN_PASSWORD` de `.env` (le seed n'en a plus besoin, E34) — constaté absent à l'étape 7 (présence vérifiée sans afficher de valeur)
 
-**Étape 3 : Prisma et base locale** : réalisée
+**Étape 3 : Prisma et base locale** : ✅ terminée (validée par Taoufik)
 
 - [x] Vérifier que `DATABASE_URL`, `DIRECT_URL` et `SESSION_SECRET` sont présents et non vides dans `.env` (sans afficher les valeurs) ; hôtes locaux, secret ≥ 32 caractères
 - [x] Installer en versions épinglées : `prisma`, `@prisma/client`, `@prisma/adapter-pg` 7.10.1, `pg` 8.23.1, `zod` 4.6.7, `server-only` 0.0.1, `vitest` 5.1.0 ; plus `vite` 8.3.6 et `@types/pg` 8.23.1 (E30)
@@ -110,9 +129,9 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] `pnpm db:reset` (avec l'accord explicite de Taoufik, E32) puis `pnpm prisma migrate status` : à jour ; `prisma migrate diff` : aucun écart
 - [x] Tables, index, contraintes uniques et clés étrangères vérifiés par requête en lecture seule
 - [x] `pnpm lint`, `pnpm typecheck`, `pnpm test` (52 tests), `pnpm build`
-- [ ] **Validation par Taoufik**
+- [x] **Validation par Taoufik**
 
-**Étape 1 : outillage** (aucun changement visible) : réalisée
+**Étape 1 : outillage** (aucun changement visible) : ✅ terminée (validée par Taoufik)
 
 - [x] Corriger `.gitignore` (`!.env.example`)
 - [x] Créer `.env.example` (placeholders commentés uniquement)
@@ -120,9 +139,9 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] Ajouter les scripts `package.json` : `typecheck`, `test`, `db:migrate`, `db:deploy`, `db:reset`, `db:seed`, `db:studio`, `storage:setup` (ceux qui dépendent de paquets de l'étape 3 ou 10 ne sont **pas lancés** avant ces étapes)
 - [x] Réduire `AGENTS.md` à un renvoi vers `CLAUDE.md`
 - [x] Vérifier que `pnpm lint`, `pnpm typecheck` et `pnpm build` passent comme avant
-- [ ] **Validation par Taoufik**
+- [x] **Validation par Taoufik**
 
-**Étape 2 : séparation site / admin** : réalisée
+**Étape 2 : séparation site / admin** : ✅ terminée (validée par Taoufik)
 
 - [x] Captures **avant** : accueil, page projet, page article, 404, en mobile (390 px) et en desktop (1440 px), dans `docs/captures/avant/`
 - [x] Déplacer les pages publiques dans `app/(site)/` avec `git mv` (7 fichiers en renommage pur ; `page.tsx` : 10 lignes d'import corrigées, voir E21)
@@ -131,7 +150,7 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 - [x] Exclure `/admin` de l'indexation (`robots.ts` + `noindex`)
 - [x] Captures **après** (`docs/captures/apres/`) et comparaison : les 8 captures sont identiques à l'octet près
 - [x] `pnpm lint`, `pnpm typecheck`, `pnpm build` ; `git diff -M` : 7 renommages purs, `page.tsx` renommé avec 44 % de similarité (imports seulement)
-- [ ] **Validation par Taoufik**
+- [x] **Validation par Taoufik**
 
 **Écart connu (étape 2), accepté** : pour une URL inconnue (ex. `/une-page-inconnue`), le HTML renvoyé par le serveur n'est plus la page 404 complète mais la coquille d'erreur de Next (`<html id="__next_error__">`) ; la page 404 s'affiche ensuite après hydratation, identique à l'écran. Code HTTP 404 et `noindex` inchangés. C'est déjà le comportement des 404 `/articles/inconnu` et `/projets/slug-inconnu` avant l'étape 2. **Décision de Taoufik : accepté, la 404 des URL inconnues reste telle quelle** (E22 et E23 inchangés). Alternative écartée : `experimental.globalNotFound` (voir E22).
 
@@ -161,6 +180,10 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 | 6 novembre 2026 | 5     | Décision de Taoufik avant l'étape 6 : fond des dialogues en crème opaque, bordure bleu-gris. `ConfirmDialog` et panneau « Menu » : `backdrop:bg-cream` (au lieu de bleu-gris à 70 %). Ligne ajoutée au §3.3, E37 mis à jour, test ajouté à `palette.test.ts` (8 tests, passent). |
 | 6 novembre 2026 | 6     | À la demande de Taoufik (étape 6 seule, détaillée dans sa consigne, qui vaut validation du détail). `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` vérifiés présents sans affichage. `nodemailer` 10.3.1 épinglé, sans `@types/nodemailer` (E40) ; `pnpm add` a cette fois écrit `package.json` normalement. `lib/mail/transport.ts`, `templates.ts`, `send.ts` (E41). 34 tests ajoutés (130 au total), dont le câblage réel `send.ts` → `lib/env` → `transport.ts` → `nodemailer` avec sockets interdits. Vérification hors Vitest avec le vrai `.env` (chargé par `node --env-file`, contenu non lu) : aucune connexion, lien affiché. Build contrôlé avec une page jetable important `send.ts`, supprimée ensuite. Lint, types, tests et build passent. Script de test réel proposé, **non ajouté** (attente de l'accord de Taoufik). Aucune base de données ni Supabase touchés. Rien n'est commité. |
 | 6 novembre 2026 | 6     | À la demande de Taoufik : `scripts/send-test-mail.ts` et script pnpm `mail:test` ajoutés (E42). Passe en production pour lui seul (`.env` inchangé), envoie les trois modèles à `ADMIN_EMAIL` avec l'objet préfixé « [Test] » et un jeton factice ; console limitée au type et au résultat. Vérifié sans réseau : sans `ADMIN_EMAIL`/`APP_URL` → sortie 1 ; sans `SMTP_*` → `MailConfigError` qui nomme les variables, sortie 1, aucun transport créé. Lint, types et 130 tests passent. **Script non lancé par Claude** : à lancer par Taoufik (`! pnpm mail:test`). Rien n'est commité. |
+| 6 novembre 2026 | 6     | Consigne de l'étape 6 reçue une seconde fois : rien refait, état vérifié. Fond crème opaque et bordure bleu-gris présents (`ConfirmDialog`, panneau « Menu »), `lib/mail/` et `scripts/send-test-mail.ts` en place, `SMTP_USER`, `SMTP_PASS` et `MAIL_FROM` toujours présents (vérifié sans afficher les valeurs). Lint, types, 130 tests et build passent. Restent le lancement de `! pnpm mail:test` et la validation par Taoufik. |
+| 6 novembre 2026 | 6     | Taoufik a lancé `pnpm mail:test` : trois messages envoyés sans erreur (console limitée au type et au résultat, aucun identifiant ni lien affiché), trois messages reçus. **Étape 6 validée par Taoufik.** Étapes 1 à 5 toujours en attente de validation, donc étape 7 non commencée. |
+| 6 novembre 2026 | 1-5   | **Étapes 1 à 5 validées par Taoufik.** Cases et statuts mis à jour. Restent ouverts, sans bloquer l'étape 7 : retrait de `ADMIN_PASSWORD` de `.env` (étape 4) et vérifications manuelles de l'étape 5. Prochaine action : étape 7. |
+| 6 novembre 2026 | 7     | À la demande de Taoufik (étape 7 seule, détaillée dans sa consigne, qui vaut validation du détail). Étape 6 vérifiée validée avant de commencer. `lib/env` accepte le `.env` actuel (vérifié sans afficher de valeur) ; `ADMIN_PASSWORD` constaté absent. Modules d'authentification, `proxy.ts`, pages et actions (E43 à E46). Défaut trouvé et corrigé en cours de route : `/admin` en erreur 500, l'icône `LogOut` était passée à `SubmitButton` (client) depuis le layout serveur ; `LogoutButton` créé. `.next/types` périmé (ancienne `app/admin/page.tsx`) supprimé avant `pnpm typecheck`. Vérifications réelles par scripts jetables hors du dépôt (`node --env-file=.env`, contenu non lu ni affiché), avec un **administrateur temporaire** (`@example.invalid`, mot de passe aléatoire) créé puis supprimé dans la base locale, et des IP de documentation (198.51.100.x) pour ne bloquer ni le vrai compte ni `localhost` ; tentatives de test supprimées. État final de la base locale vérifié en lecture seule : 1 administrateur, 0 session, 0 tentative. Serveur de développement du port 3000 (lancé par Taoufik) utilisé tel quel ; serveur de production temporaire (3100) arrêté ensuite. Lint, types, 224 tests et build passent. Aucune base Supabase touchée. Rien n'est commité. |
 
 ---
 
@@ -265,7 +288,7 @@ Conformément au cahier des charges (§2), **aucune donnée n'est importée**. C
 | E19 | `AGENTS.md` contredit le code et doublonne `CLAUDE.md`.                                                 | Réduit à un renvoi vers `CLAUDE.md` (étape 1).                                                                                                   |
 | E20 | TypeScript « à confirmer ».                                                                             | Confirmé (déjà en place, mode strict).                                                                                                          |
 | E21 | `app/page.tsx` importe `./lib/data` et `./components/*` en relatif : le déplacement dans `(site)` les casse. | **Corriger les 10 imports de `page.tsx` seulement** (`./` devient `../`). Les 7 autres fichiers déplacés sont des renommages purs. `components/`, `lib/` et `types/` restent dans `app/`. |
-| E22 | Un `not-found.tsx` dans `(site)` ne couvre pas les URL qui ne correspondent à aucune route : Next affiche sa 404 noire par défaut. | **Route fourre-tout** `app/(site)/[...slug]/page.tsx` qui appelle `notFound()`. Captures identiques, HTTP 404 et `noindex` conservés. Effet de bord : le HTML serveur est la coquille d'erreur de Next (comme pour `/articles/inconnu` déjà avant), et `/admin/xyz` inconnu affiche la 404 publique (à traiter à l'étape 7). Alternative non retenue : `experimental.globalNotFound`. **Validé par Taoufik : la 404 reste telle quelle.** |
+| E22 | Un `not-found.tsx` dans `(site)` ne couvre pas les URL qui ne correspondent à aucune route : Next affiche sa 404 noire par défaut. | **Route fourre-tout** `app/(site)/[...slug]/page.tsx` qui appelle `notFound()`. Captures identiques, HTTP 404 et `noindex` conservés. Effet de bord : le HTML serveur est la coquille d'erreur de Next (comme pour `/articles/inconnu` déjà avant), et `/admin/xyz` inconnu affiche la 404 publique (à traiter à l'étape 7). Alternative non retenue : `experimental.globalNotFound`. **Validé par Taoufik : la 404 reste telle quelle.** **Traité à l'étape 7** pour l'admin : fourre-tout `app/admin/(dashboard)/[...slug]/page.tsx` (`requireSession()` puis `notFound()`) et `app/admin/(dashboard)/not-found.tsx` : sans session, retour à la connexion ; avec session, 404 rendue dans la coque de l'admin. Le site public n'est pas touché. |
 | E23 | Les polices Next sont des classes posées sur `<body>`, et `globals.css` lit `--font-*` sur `body`.      | `(site)/layout.tsx` enveloppe le contenu dans `<div class="site-root …polices">`. Dans `globals.css`, les trois `--font-*`, `font-family` et `-webkit-font-smoothing` passent de `body` à `.site-root`. `metadata` et `viewport` passent dans `(site)/layout.tsx` (canonical `/`, Open Graph, `themeColor` ne doivent pas s'appliquer à l'admin). |
 | E24 | `storage:setup` doit lancer un script TypeScript, et `tsx` n'est pas dans les dépendances prévues (§3.8). | `node --env-file=.env scripts/setup-storage.ts` (Node 24 exécute le TypeScript). Le script devra utiliser des **imports relatifs avec extension `.ts`**, pas l'alias `@/`. Pas de dépendance ajoutée. **Note (étape 4, E33)** : `lib/env-schema.ts` importe désormais `./auth/password-policy` sans extension. À l'étape 10, ajouter `--import ./scripts/ts-resolve-hook.mjs` (et `--disable-warning=MODULE_TYPELESS_PACKAGE_JSON`) au script `storage:setup` ; les imports relatifs pourront alors rester sans extension. |
 | E25 | Tailwind 4 déclare par défaut toute sa palette (`red-500`, `slate-700`…) : un réflexe de classe introduirait une couleur hors charte dans l'admin. | `app/admin/admin.css` : `--color-*: initial` en tête du bloc `@theme`, puis les cinq couleurs de la charte. Vérifié par build : `bg-red-500` placé temporairement dans l'admin et dans le site public n'est généré que dans le CSS du site. Aucun impact sur le site public (CSS séparés). `black` et `white` n'existent plus dans l'admin : utiliser `cream` et `slate-blue`. |
@@ -282,7 +305,11 @@ Conformément au cahier des charges (§2), **aucune donnée n'est importée**. C
 | E36 | Barre latérale en panneau sous 1024 px : focus piégé, Échap, retour du focus. Idem pour `ConfirmDialog`. | **Élément natif `<dialog>` + `showModal()`** (fond inerte, Échap, fond cliquable) et hook partagé `components/admin/use-modal-dialog.ts` : boucle explicite de Tab et Maj+Tab dans le dialogue (le navigateur laisserait sinon le focus passer à son interface), focus rendu au déclencheur (`triggerRef`, car Safari ne focalise pas les boutons au clic), focus initial sur `[data-autofocus]` (« Annuler » dans `ConfirmDialog`). Le panneau se ferme tout seul quand la fenêtre dépasse 1024 px. La barre fixe (≥ 1024 px) et le panneau sont deux rendus de la même liste (`SidebarNav`) ; un seul est visible à la fois. `AdminShell` est un composant client : `navItems` (icônes = fonctions) ne peut venir que d'un composant client ; le layout serveur de l'étape 7 utilise la navigation par défaut (`ADMIN_NAV`) et le point d'extension `footer` (déconnexion). `aria-current="page"` est aussi posé sur la section parente d'une sous-page. Sans hook, donc utilisables depuis un composant serveur : `Button`, `Alert`, `Field`, `TextArea`, `Select`, `DataTable`, `EmptyState`, `StatusBadge`. Clients : `SubmitButton`, `MultiSelect`, `FileField`, `Toast`, `ConfirmDialog`, `Sidebar`, `AdminShell`. |
 | E37 | Le tableau §3.3 ne couvre pas tous les états des composants (survol, désactivé, fond des dialogues, contours). | Aucune couleur ajoutée. Survol : soulignement du libellé, sans changement de couleur. **Désactivé : fond crème, texte bleu-gris, bordure en pointillés** (jamais de baisse d'opacité, qui créerait des couleurs hors tableau). En cours d'envoi : `aria-disabled`, couleurs inchangées, spinner et libellé « en cours ». **Fond des dialogues (backdrop) : crème opaque `#f4f1de`** (décision de Taoufik avant l'étape 6, remplace le bleu-gris à 70 % proposé à l'étape 5) ; le dialogue de confirmation, crème lui aussi, s'en détache par sa **bordure bleu-gris de 2 px** (8,87, seuil 3 des éléments non textuels) ; le panneau « Menu », bleu-gris, s'en détache par son propre fond (8,87, bordure bleu-gris inutile car invisible sur ce fond). Plus aucune variante transparente hors séparateurs décoratifs (contrôlé par `components/admin/palette.test.ts`). Séparateurs décoratifs (lignes de tableau, contour des messages, filets de la barre latérale) : bleu-gris ou crème à 20-25 %. Bouton destructif : `text-xl font-bold` (20 px gras) fixé dans le composant. Champs : bordure de 1 px, 2 px en erreur (le padding compense). Texte indicatif (placeholder) en italique et pleine couleur. |
 | E38 | Tailwind 4 scanne tout le projet : le CSS de l'admin embarquait les classes arbitraires du site public (dégradé `#ec2712`, `#f5765b`, `#6358a4`, ombres), donc des couleurs hors charte (40 Ko au lieu de 16). `--color-*: initial` (E25) ne bloque pas les valeurs arbitraires. | `@import "tailwindcss" source(none)` puis `@source "./"` et `@source "../../components/admin"` dans `app/admin/admin.css`. Le CSS de l'admin ne contient plus que les 5 couleurs de la charte et leurs variantes transparentes (séparateurs, fond des dialogues). **Conséquence** : une classe Tailwind utilisée hors de `app/admin/` et `components/admin/` (ex. dans `lib/`) ne sera pas générée dans l'admin. |
-| E39 | La page de démonstration doit exister sans session (étape 7 pas encore faite) et être retirée plus tard. | `app/admin/demo/` (layout, page serveur, parties clientes) : **`notFound()` si `APP_ENV=production`** (lu directement dans `process.env`, car `lib/env.ts` exigerait les variables Supabase), `dynamic = "force-dynamic"`, `noindex` hérité du layout admin. Les sections statiques sont rendues côté serveur pour prouver que Button, Alert, StatusBadge, Field, DataTable et EmptyState s'utilisent depuis un composant serveur. L'entrée « Démonstration » de la navigation n'existe que dans `demo-shell.tsx`. **À supprimer avec le dossier `app/admin/demo/` entier à l'étape 15 ou dès que les vraies sections existent.** Pas de protection par session avant l'étape 7 : en développement, la page est publique. |
+| E39 | La page de démonstration doit exister sans session (étape 7 pas encore faite) et être retirée plus tard. | `app/admin/demo/` (layout, page serveur, parties clientes) : **`notFound()` si `APP_ENV=production`** (lu directement dans `process.env`, car `lib/env.ts` exigerait les variables Supabase), `dynamic = "force-dynamic"`, `noindex` hérité du layout admin. Les sections statiques sont rendues côté serveur pour prouver que Button, Alert, StatusBadge, Field, DataTable et EmptyState s'utilisent depuis un composant serveur. L'entrée « Démonstration » de la navigation n'existe que dans `demo-shell.tsx`. **À supprimer avec le dossier `app/admin/demo/` entier à l'étape 15 ou dès que les vraies sections existent.** Pas de protection par session avant l'étape 7 : en développement, la page est publique. **Depuis l'étape 7** : `requireSession()` dans son layout et sa page (et `proxy.ts`) ; toujours 404 en production. |
+| E43 | Le cahier fixe 7 jours glissants et 30 jours au maximum, mais un composant serveur (layout, page) ne peut pas réécrire un cookie : l'échéance du cookie ne peut pas glisser à chaque visite. | **L'échéance glissante est tenue en base, le cookie vit jusqu'à la limite absolue.** `sessions.expires_at` = min(dernière visite + 7 jours, connexion + 30 jours) ; cookie `Max-Age` = 30 jours. La base est seule juge : une session expirée est refusée et supprimée, même si le navigateur garde son cookie. Écriture de l'échéance au plus toutes les 5 minutes (`SESSION_TOUCH_INTERVAL_MS`). Sessions expirées purgées à chaque connexion. **Cookie** : nom `admin_session` (le préfixe `__Host-` exigerait `Path=/`), valeur `<jeton>.<signature>` : jeton de 32 octets aléatoires (base64url), signature HMAC-SHA256 avec `SESSION_SECRET` et un contexte (`admin-session:v1:`), comparée en temps constant sur la chaîne encodée ; en base, `token_hash` = SHA-256 du jeton. `HttpOnly`, `SameSite=Strict`, `Path=/admin`, `Secure` si `APP_ENV=production`. Changer `SESSION_SECRET` invalide toutes les sessions. Un cookie expiré ou révoqué reste dans le navigateur : `proxy.ts` le laisse passer (signature valide), `requireSession()` renvoie à la connexion, et la page de connexion vérifie la session **en base** (pas seulement la signature) avant de rediriger vers `/admin`, ce qui évite une boucle. |
+| E44 | Le cahier ne précise ni le point de départ du blocage, ni le sort des tentatives faites pendant le blocage, ni l'effet d'une connexion réussie, ni la concurrence. | **Blocage de 15 minutes exactement, à partir du 5e échec** survenu dans une fenêtre de 15 minutes, par adresse **ou** par IP (`computeLoginLock`, pur). Pendant le blocage : refus **sans vérifier le mot de passe** et **sans enregistrer** la tentative (elle ne prolonge pas le blocage) ; le bon mot de passe est refusé aussi. Une connexion réussie remet le compteur à zéro pour cette adresse et cette IP. Après un blocage, 5 nouveaux échecs sont nécessaires. Message : « Trop de tentatives de connexion. Réessayez dans N minutes. » ; il ne dépend que du temps restant, identique pour une adresse inconnue. **Concurrence** : vérification, contrôle du mot de passe et enregistrement dans une transaction qui prend un verrou consultatif PostgreSQL (`pg_advisory_xact_lock`) : des requêtes simultanées passent une par une (12 envoyées en même temps : exactement 5 échecs enregistrés). Les tentatives bloquées ne vérifient pas argon2, donc tiennent le verrou très peu de temps. Purge des tentatives de plus de 30 jours à chaque tentative. **IP** : premier élément de `X-Forwarded-For`, sinon `X-Real-IP`, sinon « inconnue » (comptée comme une IP). Sur Vercel, ces en-têtes sont réécrits par la plateforme ; **en développement, le client peut les imposer** (les tests s'en servent). La limite par adresse n'en dépend pas. |
+| E45 | Fichiers nécessaires en plus de la liste du §3.6. | `lib/auth/session-cookie.ts` (primitives pures du jeton signé, **sans `server-only`** : `proxy.ts` l'importe ; aucun secret, `node:crypto` donc jamais livrable au navigateur) ; `lib/auth/routes.ts` (chemins et `PUBLIC_ADMIN_PATHS`, pur, chemin de connexion repris de `lib/mail/templates.ts`) ; `lib/auth/login.ts` (`authenticate` : verrou, blocage, hash factice, enregistrement) ; `app/admin/(auth)/layout.tsx` (carte centrée, `<main>`) ; `app/admin/(dashboard)/actions.ts` (déconnexion) ; `components/admin/LogoutButton.tsx` (composant client : l'icône ne peut pas être passée à `SubmitButton` depuis un composant serveur, E36) ; fourre-tout et `not-found.tsx` (E22) ; `test/fakes.ts` (base en mémoire limitée aux opérations de l'authentification, variables, cookies, en-têtes, `redirect`), réutilisable aux étapes suivantes. `app/admin/page.tsx` déplacé dans `(dashboard)/` par `git mv` (son `<main>` devient un `<div>`, la coque fournit déjà `<main id="contenu">`). `proxy.ts` lit `process.env.SESSION_SECRET` rogné comme dans `lib/env` (il n'importe pas `lib/env`, qui est `server-only`). |
+| E46 | Détails de la connexion non fixés par le cahier. | **Hash factice** écrit en dur (`DUMMY_PASSWORD_HASH`, argon2id d'un mot de passe aléatoire jeté aussitôt, mêmes paramètres que les vrais : un test le contrôle) pour que la première requête ne paie pas son calcul. Mesuré en production : ~51-55 ms pour une adresse inconnue comme pour un mauvais mot de passe (la toute première requête d'un serveur, ~300-400 ms, est plus lente quelle que soit l'adresse). **Schéma** : adresse rognée et mise en minuscules (comme le seed), 254 caractères au plus ; mot de passe jamais rogné, obligatoire, 1 024 caractères au plus ; la règle des 12 caractères ne s'applique pas à la connexion. Validation client avec le même schéma (`noValidate`, erreurs liées aux champs, focus sur le premier champ en erreur) ; sans JavaScript, l'action valide seule. L'adresse saisie est renvoyée pour réafficher le champ ; le mot de passe, jamais. **Après connexion** : toujours `/admin` (pas de retour à la page demandée, pour ne pas ouvrir de redirection arbitraire ; à envisager plus tard avec une liste blanche). Erreur inattendue : message générique, journal limité au nom de l'erreur. **Déconnexion** : `requireSession()` d'abord ; sans session valide, refus (redirection) sans rien modifier, cookie compris. **Chaque page** appelle aussi `requireSession()` : un layout n'est pas rejoué à chaque navigation côté client. `getCurrentSession` est mis en cache par requête (`React.cache`). |
 | E40 | §3.8 prévoyait `nodemailer` et `@types/nodemailer`. Nodemailer 10 (réécrit en TypeScript) fournit ses propres types ; `@types/nodemailer` (8.0.2) décrit l'ancienne API. | **`nodemailer` 10.3.1 seul**, épinglé (dernière version stable au 6 novembre 2026, publiée le 29 octobre ; aucune dépendance, aucun script d'installation). `@types/nodemailer` non installé. |
 | E41 | Le plan ne fixait ni l'API de `lib/mail/`, ni le contenu des journaux. La consigne demande à la fois « le lien complet dans la console » en développement et « aucun lien complet dans les journaux, en development comme en production ». | **API** : `createMailer(config, { createTransport, logger })` (injectable, testé sans réseau) et trois fonctions prêtes pour l'étape 8 : `sendEmailVerification({ to, token })`, `sendPasswordReset({ to, token })`, `sendEmailChangeNotice({ to, newEmail })`. Elles chargent `lib/env` au premier envoi (import dynamique), pas à l'import. Seule la valeur exacte `production` déclenche un envoi réel ; toute autre valeur suit le chemin de développement. **Journaux** : en développement, le seul message est l'affichage voulu par le cahier §3.2 (type, destinataire, lien complet) ; c'est l'unique exception à la règle « aucun lien ». En production : « Message envoyé (type) » ou « Échec de l'envoi (type) : code » (ex. `EAUTH, SMTP 535`) ; jamais le destinataire, le lien, les identifiants ni le message d'erreur brut de Nodemailer ; `logger: false` et `debug: false` dans le transport (la commande AUTH contient les identifiants). **Production sans identifiants** : `MailConfigError` qui nomme `SMTP_USER`, `SMTP_PASS` ou `MAIL_FROM`, avant toute création de transport (en plus du refus de démarrer de `lib/env`). **Transport** : `SMTP_HOST`/`SMTP_PORT` de `.env` (Gmail et 587 par défaut), `secure: false` + `requireTLS: true` (STARTTLS obligatoire), TLS 1.2 minimum, délais de 10 à 20 s ; créé une seule fois, au premier envoi. Destinataire validé (adresse e-mail, retours à la ligne refusés). **Modèles** : `templates.ts` est pur (ni secret ni entrée/sortie), donc **pas `server-only`** ; `transport.ts` et `send.ts` le sont. Texte brut + HTML (styles en ligne, crème et bleu-gris seulement, `lang="fr"`, bouton et lien en clair). Liens : `APP_URL` + `/admin/verifier-email?token=…`, `/admin/reinitialiser?token=…` ; la notification renvoie vers `/admin/connexion`, sans jeton. **Notification de changement d'adresse** : rédigée pour être envoyée **au moment de la demande** (« ne prendra effet qu'après validation »), ce qui prévient le titulaire avant que le changement soit effectif ; la nouvelle adresse y est masquée (`n***@example.org`). À respecter à l'étape 8. |
 | E42 | Le test réel de l'étape 6 (production, SMTP Gmail) ne pouvait pas passer par `APP_ENV` de `.env`, qui reste `development`. | **`scripts/send-test-mail.ts`** + script `pnpm mail:test` (`node --env-file=.env --conditions=react-server --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve-hook.mjs …`). Le script construit lui-même une configuration `appEnv: "production"` (le `.env` n'est pas modifié) à partir de `ADMIN_EMAIL`, `APP_URL`, `SMTP_*`, `MAIL_FROM`, sans charger `lib/env.ts` (aucune dépendance à Supabase). Il réutilise `createMailer` et `createSmtpTransport` (même transport que l'application), le transport étant enveloppé pour préfixer l'objet par « [Test] ». Trois envois à `ADMIN_EMAIL` : validation, réinitialisation (jeton factice), notification (nouvelle adresse factice `@example.com`). `--conditions=react-server` neutralise `import "server-only"`. **Console** : uniquement le type de chaque message et son résultat, le code d'erreur SMTP en cas d'échec ; jamais adresse, lien, jeton ni identifiant (les liens pointent vers `APP_URL`, donc la page locale en développement). Sortie 1 si une variable manque (noms seulement) ou si un envoi échoue. **Lancé par Taoufik uniquement** (`! pnpm mail:test`) : Claude ne l'exécute pas. |
@@ -365,20 +392,25 @@ app/
     admin.css                   @import "tailwindcss" + @theme (palette)
     layout.tsx                  importe admin.css, noindex
     demo/                       TEMPORAIRE (étape 5, E39) : démonstration des composants, supprimé à l'étape 15
-    (auth)/                     pages accessibles sans session
-      connexion/  mot-de-passe-oublie/  reinitialiser/  verifier-email/
+    (auth)/                     pages accessibles sans session (PUBLIC_ADMIN_PATHS)
+      layout.tsx                carte centrée, sans barre latérale
+      connexion/                page.tsx, login-form.tsx, actions.ts (étape 7)
+      mot-de-passe-oublie/  reinitialiser/  verifier-email/   (étape 8)
     (dashboard)/
-      layout.tsx                requireSession() + AdminShell (barre latérale)
-      page.tsx                  tableau de bord
+      layout.tsx                requireSession() + AdminShell (barre latérale, déconnexion)
+      actions.ts                déconnexion
+      page.tsx                  tableau de bord (provisoire jusqu'à l'étape 15)
+      [...slug]/page.tsx, not-found.tsx   URL inconnue de l'admin (E22)
       articles/  formations/  competences/  profil/  projets/  stack/  compte/
 components/admin/               AdminShell, Sidebar, Button, SubmitButton, Field, TextArea,
                                 Select, MultiSelect, FileField, Alert, Toast, ConfirmDialog,
-                                DataTable, EmptyState, StatusBadge, MarkdownEditor, MarkdownPreview
+                                DataTable, EmptyState, StatusBadge, LogoutButton, MarkdownEditor, MarkdownPreview
 lib/
   env-schema.ts                 schéma des variables + garde-fous (pur, réutilisable hors Next, E28)
   env.ts                        variables validées pour l'application (server-only)
   db.ts                         client Prisma (singleton, adaptateur pg)
-  auth/                         password.ts, password-policy.ts, session.ts, require-session.ts, tokens.ts, rate-limit.ts
+  auth/                         password.ts, password-policy.ts, session-cookie.ts, session.ts, require-session.ts,
+                                rate-limit.ts, login.ts, routes.ts, tokens.ts (étape 8)
   mail/                         transport.ts, templates.ts, send.ts
   storage/                      client.ts, rules.ts, upload.ts, remove.ts
   articles/                     autosave.ts, publish.ts, discard.ts
@@ -393,8 +425,9 @@ scripts/
   send-test-mail.ts             envoi de test réel des trois e-mails, `pnpm mail:test` (E42)
 generated/prisma/              client Prisma généré (ignoré par Git, E29)
 test/server-only.ts             remplace `server-only` dans les tests
+test/fakes.ts                   doublures des tests (base en mémoire, cookies, en-têtes, redirect ; E45)
 prisma.config.ts
-proxy.ts
+proxy.ts                        redirection rapide si cookie absent ou mal signé (jamais suffisant seul)
 vitest.config.mts
 .env.example
 ```
@@ -431,7 +464,7 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
 
 - Décisions intégrées dans `docs/cahier_des_charges.md` (v1.1), `CLAUDE.md` et ce plan.
 
-#### Étape 1 : Hygiène du dépôt et outillage (réalisée, validation en attente)
+#### Étape 1 : Hygiène du dépôt et outillage ✅ terminée
 
 - **Objectif** : préparer le dépôt sans changer le comportement du site.
 - **Fait** : `.gitignore` (`!.env.example`), `.env.example` (placeholders commentés), `.env` créé à partir de l'exemple pour que Taoufik le remplisse (non suivi par Git), scripts `package.json` (`typecheck`, `test`, `db:migrate`, `db:deploy`, `db:reset`, `db:seed`, `db:studio`, `storage:setup`), `AGENTS.md` réduit à un renvoi vers `CLAUDE.md`.
@@ -441,7 +474,7 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - `.env.example` ne contient aucune vraie valeur. ✅
   - `pnpm lint`, `pnpm typecheck` et `pnpm build` passent, comme avant. ✅
 
-#### Étape 2 : Séparation site public / admin (réalisée, validation en attente)
+#### Étape 2 : Séparation site public / admin ✅ terminée
 
 - **Objectif** : l'admin a son propre layout et sa propre feuille de style. Les visiteurs voient exactement le même site public.
 - **Fichiers** : `app/layout.tsx` réduit, `app/(site)/layout.tsx` (metadata, viewport, Header, Footer, JSON-LD, polices, `globals.css`), déplacement par `git mv` de `page.tsx`, `articles/`, `projets/`, `formations/` et `not-found.tsx` dans `app/(site)/`, `app/(site)/[...slug]/page.tsx` (E22), `app/globals.css` (règle `.site-root`, E23), `app/admin/layout.tsx`, `app/admin/admin.css`, page provisoire `app/admin/page.tsx`, `app/robots.ts` (`/admin` exclu).
@@ -452,7 +485,7 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - `/admin` s'affiche sans Header ni Footer publics, fond crème, texte bleu-gris, `noindex`. ✅ (`<meta name="robots" content="noindex, nofollow">`)
   - `git diff -M` ne montre que des renommages pour les fichiers déplacés. ⚠️ 7 sur 8 en renommage pur ; `page.tsx` à 44 % de similarité à cause des 10 imports corrigés (E21).
 
-#### Étape 3 : Prisma et base locale (réalisée, validation en attente)
+#### Étape 3 : Prisma et base locale ✅ terminée
 
 - **Objectif** : schéma complet et première migration sur la base locale `portfolio`.
 - **Fichiers** : `package.json` (`prisma`, `@prisma/client`, `@prisma/adapter-pg`, `pg`, `zod`, `server-only`, `vitest`, en versions stables épinglées, plus `vite` et `@types/pg`, E30 ; scripts `postinstall` et `db:generate`, E29), `pnpm-workspace.yaml` (`allowBuilds`), `prisma.config.ts`, `prisma/schema.prisma`, `prisma/migrations/20261106123149_init/`, `lib/env-schema.ts`, `lib/env.ts` (E28), `lib/db.ts`, `vitest.config.mts` (E31), `test/server-only.ts`, `lib/env.test.ts`, `.gitignore` et `eslint.config.mjs` (`generated/`).
@@ -464,7 +497,7 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - Les garde-fous refusent une URL de base non locale et un bucket sans préfixe `dev-` en développement (tests Vitest). ✅ (52 tests ; garde-fou de la CLI Prisma vérifié à part)
   - Tables, index et contraintes d'unicité vérifiés. ✅ par requête SQL en lecture seule (Prisma Studio est une interface interactive, non pilotable par Claude Code) : 16 tables métier, 27 index uniques ou clés primaires, 10 index, 12 clés étrangères, 25 colonnes `timestamptz`, aucune colonne hors `snake_case` hormis `A`/`B` (E27).
 
-#### Étape 4 : Seed du compte administrateur (réalisée, validation en attente)
+#### Étape 4 : Seed du compte administrateur ✅ terminée
 
 - **Objectif** : créer le compte unique à partir de `ADMIN_EMAIL` et `ADMIN_PASSWORD`, et le profil vide (id 1).
 - **Fichiers** : `prisma/seed.ts`, `lib/auth/password.ts` (argon2id via `@node-rs/argon2` 2.2.2), `lib/auth/password-policy.ts`, `lib/env-schema.ts` (`parseSeedEnv`), `scripts/ts-resolve-hook.mjs`, `prisma.config.ts` (commande de seed), `package.json`, tests `lib/auth/password.test.ts` et `lib/seed-env.test.ts` (E33, E34).
@@ -476,7 +509,7 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - Mot de passe de moins de 12 caractères refusé. ✅ (tests Vitest ; `pnpm db:seed` avec un mot de passe factice de 11 caractères : sortie 1 avant toute connexion, base inchangée)
   - Non vérifié de bout en bout : la création refusée sur base **vide** (mot de passe court ou absent), qui demanderait un `pnpm db:reset`. La validation a lieu avant toute requête : le comportement est le même que sur la base remplie.
 
-#### Étape 5 : Fondations de l'interface d'administration (réalisée, validation en attente)
+#### Étape 5 : Fondations de l'interface d'administration ✅ terminée
 
 - **Objectif** : coque avec **barre latérale** et composants accessibles, réutilisés par toutes les sections.
 - **Barre latérale** : fixe et toujours visible à partir de 1024 px ; en dessous, panneau latéral ouvert par un bouton « Menu » (focus piégé dans le panneau, fermeture par Échap ou par le bouton, focus rendu au déclencheur). Page courante signalée par `aria-current="page"`.
@@ -496,33 +529,39 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - Sélecteur de fichier natif (la boîte de dialogue du système n'est pas pilotable en headless : seuls le rendu du champ et le contrôle de type et de taille par `file-rules.ts` sont testés, ce dernier par Vitest).
   - Rendu des toasts avec plusieurs notifications simultanées sur un vrai mobile.
 
-#### Étape 6 : Module e-mail (réalisée, validation en attente)
+#### Étape 6 : Module e-mail ✅ terminée
 
 - **Objectif** : envoi selon `APP_ENV`.
 - **Fichiers** : `lib/mail/transport.ts` (Nodemailer, `smtp.gmail.com:587` en STARTTLS), `lib/mail/templates.ts` (validation d'adresse, réinitialisation, notification à l'ancienne adresse ; texte brut + HTML simple, en français), `lib/mail/send.ts`, tests `lib/mail/templates.test.ts` et `lib/mail/send.test.ts`, `package.json` (`nodemailer` 10.3.1, E40). Décisions : E41.
 - **Dépend de** : étape 3.
 - **Validation** :
   - En `development` : aucune connexion SMTP, lien complet affiché dans la console. ✅ Vitest : un transport qui échoue s'il est créé n'est jamais appelé (même avec des identifiants renseignés) ; câblage réel (`send.ts` → `lib/env` → `transport.ts` → `nodemailer`) avec `nodemailer.createTransport`, `net.Socket.prototype.connect` et `tls.connect` piégés : aucun appel. Hors Vitest, avec le vrai `.env` (chargé par `node --env-file`, contenu non lu) : aucune tentative de connexion, les trois liens complets affichés. Mutation : forcer l'envoi en développement fait échouer 6 tests.
-  - En `production` : test manuel ponctuel, e-mail reçu et lisible (Gmail mobile et desktop). ⏸️ **Script prêt, envoi non fait** : `scripts/send-test-mail.ts` (`pnpm mail:test`, E42) passe en production pour lui seul, sans modifier `.env`, et envoie les trois modèles à `ADMIN_EMAIL`, objet préfixé « [Test] », jeton factice. À lancer par Taoufik (`! pnpm mail:test`). Le chemin de production est couvert par Vitest avec un transport simulé (options : Gmail, 587, `secure: false`, `requireTLS: true`, `logger: false`, `debug: false`).
+  - En `production` : test manuel ponctuel, e-mail reçu et lisible (Gmail mobile et desktop). ✅ **Lancé par Taoufik** : « 3 messages envoyés à ADMIN_EMAIL », trois messages reçus, étape validée par Taoufik. `scripts/send-test-mail.ts` (`pnpm mail:test`, E42) passe en production pour lui seul, sans modifier `.env`, et envoie les trois modèles à `ADMIN_EMAIL`, objet préfixé « [Test] », jeton factice. À lancer par Taoufik (`! pnpm mail:test`). Le chemin de production est couvert par Vitest avec un transport simulé (options : Gmail, 587, `secure: false`, `requireTLS: true`, `logger: false`, `debug: false`).
   - Aucun identifiant SMTP dans les journaux. ✅ Vitest, en développement comme en production : ni `SMTP_USER`, ni `SMTP_PASS`, ni `MAIL_FROM`, ni (en production) lien, jeton ou destinataire dans les journaux, y compris quand l'erreur SMTP contient ces valeurs ; vérifié aussi sur la sortie réelle (comparaison aux valeurs de `.env`, sans affichage).
   - Refus d'un envoi sans identifiants en production. ✅ `MailConfigError` qui nomme la variable manquante ou vide, aucun transport créé, aucun journal.
   - Modèles : liens présents (texte et HTML), construits sur `APP_URL`, texte en français, couleurs de la charte uniquement, HTML échappé. ✅ (13 tests)
   - `pnpm lint`, `pnpm typecheck`, `pnpm test` (130 tests), `pnpm build`. ✅ Aucune route n'importe encore `lib/mail/` : le build a été contrôlé une fois avec une page jetable qui importe `send.ts` (compilé côté serveur, `nodemailer` et `smtp.gmail.com` absents de `.next/static`), puis la page a été supprimée et le build relancé.
 
-#### Étape 7 : Authentification et protection des routes
+#### Étape 7 : Authentification et protection des routes ⏸️ réalisée, validation en attente
 
 - **Objectif** : connexion, déconnexion, sessions, anti brute-force.
-- **Décisions** : sessions en base, cookie contenant un jeton aléatoire signé avec `SESSION_SECRET` (seul son hash est stocké) ; durée 7 jours glissants, 30 jours au maximum ; `httpOnly`, `secure` en production, `sameSite=strict`, `path=/admin`. Anti brute-force : 5 échecs en 15 minutes par adresse ou par IP, puis blocage de 15 minutes ; tentatives purgées après 30 jours.
-- **Fichiers** : `lib/auth/session.ts`, `lib/auth/require-session.ts`, `lib/auth/rate-limit.ts`, `proxy.ts` (redirection vers `/admin/connexion` si le cookie est absent ou mal signé), `app/admin/(auth)/connexion/`, `app/admin/(dashboard)/layout.tsx`, action de déconnexion, `lib/validation/auth.ts`.
+- **Décisions** : sessions en base, cookie contenant un jeton aléatoire signé avec `SESSION_SECRET` (seul son hash est stocké) ; durée 7 jours glissants, 30 jours au maximum ; `httpOnly`, `secure` en production, `sameSite=strict`, `path=/admin`. Anti brute-force : 5 échecs en 15 minutes par adresse ou par IP, puis blocage de 15 minutes ; tentatives purgées après 30 jours. Adresse mise en minuscules avant la recherche ; message neutre, hash factice vérifié pour une adresse inconnue. Détails : E43 à E46.
+- **Fichiers** : `lib/auth/session.ts`, `lib/auth/require-session.ts`, `lib/auth/rate-limit.ts`, `proxy.ts` (redirection vers `/admin/connexion` si le cookie est absent ou mal signé), `app/admin/(auth)/connexion/`, `app/admin/(dashboard)/layout.tsx`, action de déconnexion, `lib/validation/auth.ts`. Ajoutés (E45) : `lib/auth/session-cookie.ts`, `lib/auth/routes.ts`, `lib/auth/login.ts`, `app/admin/(auth)/layout.tsx`, `app/admin/(dashboard)/actions.ts`, `page.tsx` (déplacé), `[...slug]/page.tsx`, `not-found.tsx`, `components/admin/LogoutButton.tsx`, `test/fakes.ts` ; modifiés : `app/admin/demo/layout.tsx` et `page.tsx` (E39). Tests : `lib/auth/session-cookie.test.ts` (15), `session.test.ts` (20), `require-session.test.ts` (4), `rate-limit.test.ts` (14), `login.test.ts` (9), `lib/validation/auth.test.ts` (9), `app/admin/(auth)/connexion/actions.test.ts` (8), `app/admin/(dashboard)/actions.test.ts` (3), `proxy.test.ts` (12).
 - **Dépend de** : étapes 4 et 5.
+- **Méthode de vérification** : scripts jetables hors du dépôt, lancés par `node --env-file=.env` (contenu non lu ni affiché) ; **administrateur temporaire** créé puis supprimé dans la base locale (`ADMIN_PASSWORD` n'est plus dans `.env`, le vrai mot de passe n'est pas connu de Claude) ; IP de documentation (198.51.100.x) en `X-Forwarded-For` ; tentatives de test supprimées. Parcours HTTP sur le serveur de développement (port 3000) puis sur un serveur de production temporaire (`APP_ENV=production next start -p 3100`, arrêté ensuite). Chrome 157 headless piloté par CDP pour le formulaire.
 - **Validation** :
-  - Sans session, toute URL `/admin/**` hors pages de connexion redirige vers `/admin/connexion`, y compris en requête directe (`curl -i`).
-  - Une Server Action appelée sans session valide est refusée, même si le proxy est contourné.
-  - Cookie : `HttpOnly`, `SameSite=Strict`, `Secure` en production.
-  - Au 6e échec, refus pendant 15 minutes, avec un message neutre qui ne révèle pas si l'adresse existe.
-  - Déconnexion : session supprimée en base, cookie effacé.
-  - Session expirée ou révoquée : retour à la connexion.
-  - Tests Vitest sur les sessions et la limitation des tentatives.
+  - Sans session, toute URL `/admin/**` hors pages de connexion redirige vers `/admin/connexion`, y compris en requête directe (`curl -i`). ✅ `curl -i` : `/admin`, `/admin/formations`, `/admin/demo`, `/admin/xyz/abc` → `307`, `location: /admin/connexion` ; `/admin/connexion` → 200. Avec un cookie révoqué ou expiré (signature valide, le proxy laisse passer) : `/admin`, `/admin/formations` → 307 vers `/admin/connexion` par `requireSession()`.
+  - Une Server Action appelée sans session valide est refusée, même si le proxy est contourné. ✅ Déconnexion appelée directement avec un cookie révoqué (signature valide) : formulaire sans JavaScript (303 vers `/admin/connexion`), appel `Next-Action` sur `/admin` (redirection `/admin/connexion`), appel `Next-Action` **par la page publique `/admin/connexion`, que le proxy ne contrôle pas**, avec et sans cookie : à chaque fois aucune session supprimée, aucun cookie modifié. Vitest : appel direct de `logout()` sans cookie et avec un cookie signé inconnu : redirection, base inchangée.
+  - Cookie : `HttpOnly`, `SameSite=Strict`, `Secure` en production. ✅ En développement : `Path=/admin; Max-Age=2592000; HttpOnly; SameSite=strict` (sans `Secure`) ; en production : `…; Secure; HttpOnly; SameSite=strict`. `document.cookie` ne voit pas le cookie dans Chrome.
+  - Au 6e échec, refus pendant 15 minutes, avec un message neutre qui ne révèle pas si l'adresse existe. ✅ 5 échecs → « Adresse e-mail ou mot de passe incorrect. » ; 6e → « Trop de tentatives de connexion. Réessayez dans 15 minutes. » ; même IP avec le bon compte et le bon mot de passe : refusé ; même adresse depuis une autre IP : refusé ; tentatives bloquées non enregistrées. Même message pour une adresse inconnue et un mauvais mot de passe ; temps mesurés en production : 52 ms (adresse inconnue) contre 51-55 ms (mauvais mot de passe). 12 tentatives simultanées : exactement 5 échecs enregistrés.
+  - Déconnexion : session supprimée en base, cookie effacé. ✅ 303 vers `/admin/connexion`, cookie renvoyé vide avec `Max-Age=0; Path=/admin`, session supprimée, l'autre session du compte conservée. Au clavier dans Chrome (390 px, panneau « Menu ») : retour à la connexion, session supprimée, `/admin` renvoie ensuite à la connexion.
+  - Session expirée ou révoquée : retour à la connexion. ✅ Révoquée (cookie rejoué après déconnexion) et expirée (`expires_at` forcée dans le passé) : 307 vers `/admin/connexion`, session expirée supprimée en base. Vitest : 7 jours sans visite, 30 jours malgré des visites quotidiennes, révocation.
+  - Tests Vitest sur les sessions et la limitation des tentatives. ✅ 94 tests ajoutés (224 au total) : création (seul le hash est stocké), expiration glissante, plafond de 30 jours, révocation, jeton falsifié ou signé avec un autre secret refusé sans requête en base, blocage (seuil, durée, par adresse, par IP, remise à zéro), hash factice, message neutre. 6 mutations du code font chacune échouer des tests.
+  - En plus : formulaire au clavier (ordre adresse, mot de passe, bouton ; anneau de focus), validation client sans requête, erreurs liées aux champs (`aria-invalid`, `aria-describedby`, « Erreur : »), focus sur le premier champ en erreur, adresse conservée et mot de passe vidé après un refus, aucun débordement à 390 et 1440 px ; `/admin/page-inexistante` : 404 dans la coque de l'admin (E22) ; `.next/static` sans `SESSION_SECRET`, code de signature, argon2 ni hash factice ; `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. ✅
+- **Non vérifié, à faire par Taoufik** :
+  - Connexion avec **son vrai compte** dans un vrai navigateur (Claude n'a pas le mot de passe) ; le parcours est identique à celui de l'administrateur temporaire.
+  - Lecteur d'écran sur la page de connexion (annonce de l'alerte et des erreurs).
+- **Remarque** : le serveur de production a journalisé « Missing `origin` header from a forwarded Server Actions request » pour les requêtes des scripts (Node n'envoie pas d'en-tête `Origin`, contrairement à un navigateur) ; sans effet sur l'application.
 
 #### Étape 8 : Validation d'e-mail, réinitialisation, compte
 
