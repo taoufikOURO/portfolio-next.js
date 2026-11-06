@@ -29,7 +29,8 @@ export type ConfirmDialogProps = {
  * Dialogue de confirmation modal (suppression, publication, abandon des
  * modifications…). Focus piégé, Échap pour fermer, focus rendu au déclencheur,
  * focus initial sur « Annuler » pour éviter une confirmation par réflexe.
- * Le panneau a une bordure bleu-gris de 2 px sur fond crème.
+ * Fond du dialogue (backdrop) crème opaque ; le panneau, crème lui aussi, se
+ * détache par sa bordure bleu-gris de 2 px (8,87, E37).
  */
 export function ConfirmDialog({
     open,
@@ -65,7 +66,7 @@ export function ConfirmDialog({
             aria-describedby={description ? descriptionId : undefined}
             onKeyDown={onKeyDown}
             onMouseDown={onMouseDown}
-            className="m-auto w-[calc(100%-2rem)] max-w-md rounded-md border-2 border-slate-blue bg-cream p-0 text-slate-blue backdrop:bg-slate-blue/70"
+            className="m-auto w-[calc(100%-2rem)] max-w-md rounded-md border-2 border-slate-blue bg-cream p-0 text-slate-blue backdrop:bg-cream"
         >
             <div className="flex flex-col gap-4 p-6">
                 <h2 id={titleId} className="text-xl font-bold">

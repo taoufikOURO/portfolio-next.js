@@ -145,7 +145,7 @@ export function Sidebar({
                 data-surface="dark"
                 onKeyDown={onKeyDown}
                 onMouseDown={onMouseDown}
-                className="m-0 h-dvh max-h-dvh w-72 max-w-[85vw] border-0 bg-slate-blue p-0 text-cream backdrop:bg-slate-blue/70 open:flex open:flex-col lg:hidden"
+                className="m-0 h-dvh max-h-dvh w-72 max-w-[85vw] border-0 bg-slate-blue p-0 text-cream backdrop:bg-cream open:flex open:flex-col lg:hidden"
             >
                 <div className="flex items-center justify-between gap-3 border-b border-cream/20 px-4 py-3">
                     <p className="text-lg font-bold">Administration</p>

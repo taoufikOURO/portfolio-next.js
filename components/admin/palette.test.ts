@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -57,6 +57,18 @@ describe("palette de l'admin : contrastes du plan §3.3", () => {
 
     it("filet terracotta sur bleu-gris : 3,42 (élément non textuel, seuil 3)", () => {
         expect(ratio("terracotta", "slate-blue")).toBeGreaterThanOrEqual(3);
+    });
+
+    it("fond des dialogues : crème opaque, panneau détaché par une bordure bleu-gris (8,87, seuil 3)", () => {
+        const dir = new URL("./", import.meta.url);
+        const backdrops = readdirSync(dir)
+            .filter((file) => file.endsWith(".tsx"))
+            .flatMap((file) => [...readFileSync(new URL(file, dir), "utf8").matchAll(/backdrop:bg-([\w/-]+)/g)])
+            .map((m) => m[1]);
+        expect(backdrops.length).toBeGreaterThan(0);
+        // Aucune variante transparente : seules les valeurs opaques « cream » sont admises.
+        expect(new Set(backdrops)).toEqual(new Set(["cream"]));
+        expect(ratio("slate-blue", "cream")).toBeGreaterThanOrEqual(3);
     });
 
     it("les couples interdits restent sous 4,5 (texte terracotta, sauge ou sable sur crème)", () => {
