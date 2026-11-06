@@ -10,8 +10,9 @@ Références : `CLAUDE.md`, `docs/cahier_des_charges.md` (version 1.2)
 | 3       | 6 novembre 2026 | Étapes 1 et 2 réalisées (en attente de validation). Décisions E21 à E24 (imports de `page.tsx`, 404 des URL inconnues, polices, `storage:setup`) |
 | 4       | 6 novembre 2026 | Décisions de Taoufik sur les étapes 1 et 2 : brouillon pour toute modification d'article (E5 précisé), stockage de développement dans le même projet Supabase (E17 précisé), couleurs Tailwind par défaut bloquées dans l'admin (E25), 404 des URL inconnues conservée (E22 et E23 inchangés) |
 | 5       | 6 novembre 2026 | Étape 3 réalisée (en attente de validation). Décisions E26 à E32 (identifiants, tables de jointure, découpage de `lib/env`, client Prisma généré, dépendances ajoutées, `vitest.config.mts`, consentement exigé par Prisma pour `migrate reset`) |
+| 6       | 6 novembre 2026 | Étape 4 réalisée (en attente de validation). Décisions E33 (exécution du seed par Node, hook de résolution, modules de mot de passe) et E34 (comportement du seed) ; note ajoutée à E24 pour l'étape 10 |
 
-Statut : **validé**. L'étape 0 est terminée. Les étapes 1, 2 et 3 sont réalisées et en attente de validation par Taoufik (voir §0).
+Statut : **validé**. L'étape 0 est terminée. Les étapes 1, 2, 3 et 4 sont réalisées et en attente de validation par Taoufik (voir §0).
 
 ---
 
@@ -32,7 +33,7 @@ Statut : **validé**. L'étape 0 est terminée. Les étapes 1, 2 et 3 sont réal
 | **Préparer**    | 1. Outillage (scripts pnpm, `AGENTS.md`, `.env.example`)               | Dépôt prêt                               | ⏸️ Réalisée, validation en attente |
 |                 | 2. Séparation site public / admin                                      | L'admin a son propre espace              | ⏸️ Réalisée, validation en attente |
 | **Fondations**  | 3. Prisma et base locale (schéma, migration, Vitest)                   | Base en place                            | ⏸️ Réalisée, validation en attente |
-|                 | 4. Seed du compte administrateur                                       | Compte admin créé                        | ⏳ À faire     |
+|                 | 4. Seed du compte administrateur                                       | Compte admin créé                        | ⏸️ Réalisée, validation en attente |
 |                 | 5. Interface de base (barre latérale, boutons, champs, dialogues)      | Composants réutilisables                 | ⏳ À faire     |
 | **Sécurité**    | 6. Module e-mail (console en dev, Gmail en prod)                       | Envoi selon `APP_ENV`                    | ⏳ À faire     |
 |                 | 7. Connexion, sessions, protection `/admin`, anti brute-force          | Admin protégé                            | ⏳ À faire     |
@@ -51,14 +52,24 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 
 **Pourquoi cet ordre** : les formations passent en premier parmi les contenus parce que c'est le CRUD le plus simple, sans upload. Il fixe les conventions réutilisées ensuite. Les articles passent en dernier parce qu'ils dépendent de tout le reste (interface, sessions, stockage, brouillons).
 
-### 0.2 Prochaine action : étape 4 (après validation des étapes 1, 2 et 3 par Taoufik)
+### 0.2 Prochaine action : étape 5 (après validation des étapes 1 à 4 par Taoufik)
 
-**Rien n'est à faire tant que Taoufik n'a pas validé les étapes 1, 2 et 3.** Ensuite, une seule étape à la fois :
+**Rien n'est à faire tant que Taoufik n'a pas validé les étapes 1, 2, 3 et 4.** Ensuite, une seule étape à la fois :
 
-1. **Étape 4 : seed du compte administrateur** (voir §3.6). Prérequis : `ADMIN_EMAIL` et `ADMIN_PASSWORD` remplis dans `.env` par Taoufik (§0.3).
-2. Avant d'écrire du code, proposer le détail (version épinglée de `@node-rs/argon2`, commande de seed dans `prisma.config.ts`, client Prisma du seed) et attendre la validation.
-3. Le seed tourne hors de Next.js : il ne peut pas importer `lib/env.ts` ni `lib/db.ts` (`server-only`). Il réutilise `lib/env-schema.ts` (garde-fous) et crée son propre client avec l'adaptateur pg (E28).
-4. `pnpm db:reset` est bloqué par Prisma quand il est lancé par Claude Code : demander l'accord explicite de Taoufik à chaque fois (E32). `storage:setup` attend `scripts/setup-storage.ts` (étape 10).
+1. **Étape 5 : fondations de l'interface d'administration** (voir §3.6). Dépend seulement de l'étape 2. Aucun prérequis dans `.env`.
+2. Avant d'écrire du code, proposer le détail (liste et API des composants de `components/admin/`, page de démonstration temporaire, méthode de vérification du clavier, des largeurs et de Lighthouse) et attendre la validation.
+3. Rappels pour la suite : `pnpm db:reset` demande l'accord explicite de Taoufik (E32) ; `storage:setup` attend `scripts/setup-storage.ts` (étape 10, voir la note de E24) ; l'étape 7 réutilise `lib/auth/password.ts`, `lib/auth/password-policy.ts` et la mise en minuscules de l'adresse (E34).
+
+**Étape 4 : seed du compte administrateur** : réalisée
+
+- [x] Vérifier que `ADMIN_EMAIL` et `ADMIN_PASSWORD` sont présents et non vides dans `.env`, mot de passe ≥ 12 caractères (sans afficher les valeurs)
+- [x] Installer `@node-rs/argon2` **2.2.2** (épinglé, `latest` stable du 6 octobre 2026 ; binaire précompilé, aucun script d'installation)
+- [x] `lib/auth/password-policy.ts`, `lib/auth/password.ts` (argon2id, m = 19 456 Kio, t = 2, p = 1), `lib/env-schema.ts` (`parseSeedEnv`), `prisma/seed.ts`, `scripts/ts-resolve-hook.mjs`, commande de seed dans `prisma.config.ts` (E33, E34)
+- [x] Tests Vitest : `lib/auth/password.test.ts` (13), `lib/seed-env.test.ts` (10) ; 75 tests au total
+- [x] Premier `pnpm db:seed` : compte et profil créés ; second : rien modifié, message clair ; refus vérifiés (mot de passe de 11 caractères, adresse invalide, base distante)
+- [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+- [ ] **Validation par Taoufik**
+- [ ] Taoufik : retirer `ADMIN_PASSWORD` de `.env` (le seed n'en a plus besoin, E34)
 
 **Étape 3 : Prisma et base locale** : réalisée
 
@@ -99,7 +110,7 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 | Pour l'étape | Variables à remplir dans `.env`                                   | Fait |
 | ------------ | ----------------------------------------------------------------- | ---- |
 | 3            | `DATABASE_URL`, `DIRECT_URL` (même lien local), `SESSION_SECRET` | [x]  |
-| 4            | `ADMIN_EMAIL`, `ADMIN_PASSWORD`                                   | [ ]  |
+| 4            | `ADMIN_EMAIL`, `ADMIN_PASSWORD`                                   | [x]  |
 | 10           | `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`           | [ ]  |
 | 17           | Variables de production (Vercel), `SMTP_*`                        | [ ]  |
 
@@ -114,6 +125,7 @@ Légende : ✅ terminé · 🔄 en cours · ⏳ à faire · ⏸️ en attente d'
 | 6 novembre 2026 | 1-2   | Décisions de Taoufik appliquées : (1) modifier un article publié passe par un brouillon, seul « Publier » + confirmation met en ligne (E5, cahier §3.3 déjà conformes, libellé de E5 précisé, `CLAUDE.md` règle 10 inchangée) ; (2) stockage de développement dans le même projet Supabase que la production, buckets `dev-*`, plus aucune mention de la CLI Supabase dans le cahier (E17 conservé, précisé) ; (3) `--color-*: initial` dans `app/admin/admin.css`, `bg-red-500` vérifié absent du CSS admin et présent dans le CSS du site (E25) ; (4) 404 des URL inconnues conservée (E22, E23 inchangés). `docs/captures/` ajouté au `.gitignore`. Cahier passé en v1.2, plan en v4. Lint, types et build passent. Rien n'est commité. Étapes 1 et 2 toujours en attente de validation. |
 | 6 novembre 2026 | 3     | À la demande de Taoufik (étape 3 seule, détaillée dans sa consigne). Variables vérifiées sans affichage. Dépendances installées en versions épinglées ; `allowBuilds` autorise `prisma` et `@prisma/engines` (téléchargement du moteur de migration). Schéma, `prisma.config.ts`, migration `20261106123149_init` créée et appliquée sur la base locale `portfolio` (PostgreSQL 18.6). `lib/env-schema.ts`, `lib/env.ts`, `lib/db.ts`, `vitest.config.mts`, 52 tests Vitest. Garde-fou de la CLI vérifié (DIRECT_URL distante factice : commande annulée avant toute connexion). Décisions E26 à E32. |
 | 6 novembre 2026 | 3     | `pnpm db:reset` refusé par Prisma (détection d'un agent IA) ; relancé après accord explicite de Taoufik : migration rejouée sans erreur. `migrate status` à jour, `migrate diff` sans écart, 17 tables (dont `_prisma_migrations`), 27 index uniques ou clés primaires, 10 index, 12 clés étrangères, 25 colonnes `timestamptz`. Lint, types, tests et build passent. Aucune base Supabase touchée. Rien n'est commité. |
+| 6 novembre 2026 | 4     | À la demande de Taoufik (étape 4 seule, détaillée dans sa consigne, qui vaut validation du détail). `ADMIN_EMAIL` et `ADMIN_PASSWORD` vérifiés sans affichage. `@node-rs/argon2` 2.2.2 épinglé. Node ne résout pas les imports sans extension du client généré (`ERR_MODULE_NOT_FOUND`) : hook `scripts/ts-resolve-hook.mjs` plutôt que `tsx` (E33). Premier seed : 1 administrateur (hash `$argon2id$v=19$m=19456,t=2,p=1$…`, qui vérifie le mot de passe de `.env` et ne le contient pas), profil id 1 vide. Second seed : état identique (`updated_at` inchangé). Refus vérifiés avec des valeurs factices passées en variables d'environnement (mot de passe de 11 caractères, adresse invalide, `DATABASE_URL` distante : sortie 1 avant toute connexion) ; adresse différente : avertissement, rien modifié ; `ADMIN_PASSWORD` vide : compte existant conservé. Journaux du seed : ni mot de passe, ni hash, ni adresse. Lint, types, 75 tests et build passent. Vérifications en lecture seule (`BEGIN READ ONLY`). Aucune base Supabase touchée. Rien n'est commité. |
 
 ---
 
@@ -220,7 +232,7 @@ Conformément au cahier des charges (§2), **aucune donnée n'est importée**. C
 | E21 | `app/page.tsx` importe `./lib/data` et `./components/*` en relatif : le déplacement dans `(site)` les casse. | **Corriger les 10 imports de `page.tsx` seulement** (`./` devient `../`). Les 7 autres fichiers déplacés sont des renommages purs. `components/`, `lib/` et `types/` restent dans `app/`. |
 | E22 | Un `not-found.tsx` dans `(site)` ne couvre pas les URL qui ne correspondent à aucune route : Next affiche sa 404 noire par défaut. | **Route fourre-tout** `app/(site)/[...slug]/page.tsx` qui appelle `notFound()`. Captures identiques, HTTP 404 et `noindex` conservés. Effet de bord : le HTML serveur est la coquille d'erreur de Next (comme pour `/articles/inconnu` déjà avant), et `/admin/xyz` inconnu affiche la 404 publique (à traiter à l'étape 7). Alternative non retenue : `experimental.globalNotFound`. **Validé par Taoufik : la 404 reste telle quelle.** |
 | E23 | Les polices Next sont des classes posées sur `<body>`, et `globals.css` lit `--font-*` sur `body`.      | `(site)/layout.tsx` enveloppe le contenu dans `<div class="site-root …polices">`. Dans `globals.css`, les trois `--font-*`, `font-family` et `-webkit-font-smoothing` passent de `body` à `.site-root`. `metadata` et `viewport` passent dans `(site)/layout.tsx` (canonical `/`, Open Graph, `themeColor` ne doivent pas s'appliquer à l'admin). |
-| E24 | `storage:setup` doit lancer un script TypeScript, et `tsx` n'est pas dans les dépendances prévues (§3.8). | `node --env-file=.env scripts/setup-storage.ts` (Node 24 exécute le TypeScript). Le script devra utiliser des **imports relatifs avec extension `.ts`**, pas l'alias `@/`. Pas de dépendance ajoutée. |
+| E24 | `storage:setup` doit lancer un script TypeScript, et `tsx` n'est pas dans les dépendances prévues (§3.8). | `node --env-file=.env scripts/setup-storage.ts` (Node 24 exécute le TypeScript). Le script devra utiliser des **imports relatifs avec extension `.ts`**, pas l'alias `@/`. Pas de dépendance ajoutée. **Note (étape 4, E33)** : `lib/env-schema.ts` importe désormais `./auth/password-policy` sans extension. À l'étape 10, ajouter `--import ./scripts/ts-resolve-hook.mjs` (et `--disable-warning=MODULE_TYPELESS_PACKAGE_JSON`) au script `storage:setup` ; les imports relatifs pourront alors rester sans extension. |
 | E25 | Tailwind 4 déclare par défaut toute sa palette (`red-500`, `slate-700`…) : un réflexe de classe introduirait une couleur hors charte dans l'admin. | `app/admin/admin.css` : `--color-*: initial` en tête du bloc `@theme`, puis les cinq couleurs de la charte. Vérifié par build : `bg-red-500` placé temporairement dans l'admin et dans le site public n'est généré que dans le CSS du site. Aucun impact sur le site public (CSS séparés). `black` et `white` n'existent plus dans l'admin : utiliser `cream` et `slate-blue`. |
 | E26 | §3.5 ne fixe ni le type des identifiants ni la façon de garantir le profil unique.                       | **UUID v7** générés par Prisma (`@default(uuid(7)) @db.Uuid`), non devinables dans les URL de l'admin et triables par date. `Profile.id` : `Int @default(1)` ; l'unicité est assurée par l'application (`upsert` sur l'id 1), pas par une contrainte `CHECK` que Prisma ne sait pas décrire. Champs texte obligatoires du profil à `""` par défaut (profil vide du seed). `Education`, `Skill`, `Profile`, `ProjectLink`, `Technology` et `Collaborator` n'ont pas de `createdAt`/`updatedAt`, conformément au §3.5. |
 | E27 | Les tables des relations plusieurs-à-plusieurs implicites ne peuvent pas recevoir `@@map`.              | Nommées par la relation : `_education_skills`, `_project_technologies`, `_project_collaborators`. Leurs colonnes `A` et `B` sont imposées par Prisma : **seule exception** au `snake_case`. Passer à des modèles de jointure explicites demanderait une nouvelle migration. |
@@ -229,6 +241,8 @@ Conformément au cahier des charges (§2), **aucune donnée n'est importée**. C
 | E30 | Dépendances nécessaires non listées au §3.8.                                                            | `vite` 8.3.6 (dépendance pair **obligatoire** de `vitest` 5, épinglée plutôt qu'installée implicitement) et `@types/pg` 8.23.1 (types de `pg`). `pnpm-workspace.yaml` : `allowBuilds` pour `prisma` et `@prisma/engines` (pnpm 12 bloque leurs scripts ; le second télécharge le moteur de migration). Avertissement non bloquant : `vitest` 5 attend `@types/node` ≥ 22 (pair facultatif), le projet a `^20` alors que Node 24 tourne en local ; non modifié, à trancher. |
 | E31 | `vitest.config.ts` en syntaxe ESM dans un paquet CommonJS : Vite 8 affiche un avertissement.           | **`vitest.config.mts`**, plutôt que `"type": "module"` dans `package.json` (impact sur tout le projet). `server-only` remplacé par un module vide (`test/server-only.ts`) dans les tests. Alias `@/` en expression régulière pour ne pas capturer `@prisma/…`. |
 | E32 | Prisma 7 refuse `migrate reset` lancé par un agent IA sans consentement explicite.                      | Avant chaque `pnpm db:reset`, Claude Code demande l'accord explicite de Taoufik (commande, base visée, perte des données) ; la commande est relancée avec la variable `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION` contenant sa réponse. En non interactif, `--force` est nécessaire. Taoufik peut aussi lancer `! pnpm db:reset` lui-même. Remarque pour l'étape 10 : Node exécute les `.ts` de `lib/` avec un avertissement `MODULE_TYPELESS_PACKAGE_JSON` (sans effet). |
+| E33 | Le seed tourne hors de Next.js, sans `tsx` (E24). Or Node 24 n'ajoute pas l'extension aux imports relatifs, et le client généré (`generated/prisma/`) importe `./enums`, `../models`… sans extension : `ERR_MODULE_NOT_FOUND`. | **Hook de résolution `scripts/ts-resolve-hook.mjs`** (`module.registerHooks`, natif Node) : un import relatif sans extension est réessayé avec `.ts`, puis `/index.ts`. Commande : `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve-hook.mjs prisma/seed.ts`, déclarée dans `prisma.config.ts` (`migrations.seed`). Aucune dépendance ajoutée ; ni le générateur Prisma ni `tsconfig.json` ne sont modifiés. Alternatives écartées : `tsx` (dépendance non prévue), `importFileExtension = "ts"` dans le générateur (touche le client utilisé par Next et `tsc`). **`lib/auth/password.ts` n'est pas `server-only`** (le seed l'importe hors de Next) ; il ne peut pas fuiter vers le navigateur, car `@node-rs/argon2` est un module natif que Next garde côté serveur. La règle des 12 caractères est isolée dans **`lib/auth/password-policy.ts`** (pur, sans argon2), pour que les schémas Zod partagés client/serveur des étapes 7 et 8 l'importent sans embarquer argon2. Longueur comptée en points de code (un emoji compte pour un). |
+| E34 | Comportement du seed non précisé : compte existant avec une autre adresse, `ADMIN_PASSWORD` à retirer après le premier seed, variables Supabase pas encore remplies. | **Compte unique** : si un administrateur existe, le seed ne crée rien et ne modifie rien, même si `ADMIN_EMAIL` a changé (avertissement qui renvoie vers la page « Compte »). `ADMIN_PASSWORD` n'est exigé que pour créer le compte ; s'il est fourni, il doit faire au moins 12 caractères (sinon refus avant toute connexion). **`ADMIN_EMAIL` est enregistré en minuscules** (et sans espaces autour) : l'étape 7 doit normaliser l'adresse saisie de la même façon. Le mot de passe n'est jamais rogné. Le seed ne valide que ses variables (`parseSeedEnv` dans `lib/env-schema.ts` : `APP_ENV`, `DATABASE_URL` locale en développement, `ADMIN_EMAIL`, `ADMIN_PASSWORD`), pas tout le schéma de l'application, qui exige déjà Supabase. Il utilise `DATABASE_URL` (la CLI garde son propre garde-fou sur `DIRECT_URL`). La console ne cite que les noms des variables ; le message brut des erreurs Prisma n'est jamais affiché (il peut reprendre les arguments de la requête), seulement leur code avec une explication. Profil id 1 créé vide s'il manque, jamais modifié. |
 
 ---
 
@@ -319,7 +333,7 @@ lib/
   env-schema.ts                 schéma des variables + garde-fous (pur, réutilisable hors Next, E28)
   env.ts                        variables validées pour l'application (server-only)
   db.ts                         client Prisma (singleton, adaptateur pg)
-  auth/                         password.ts, session.ts, require-session.ts, tokens.ts, rate-limit.ts
+  auth/                         password.ts, password-policy.ts, session.ts, require-session.ts, tokens.ts, rate-limit.ts
   mail/                         transport.ts, templates.ts, send.ts
   storage/                      client.ts, rules.ts, upload.ts, remove.ts
   articles/                     autosave.ts, publish.ts, discard.ts
@@ -330,6 +344,7 @@ prisma/
   schema.prisma, migrations/, seed.ts
 scripts/
   setup-storage.ts              création idempotente des buckets
+  ts-resolve-hook.mjs           résolution des imports sans extension pour Node (E33)
 generated/prisma/              client Prisma généré (ignoré par Git, E29)
 test/server-only.ts             remplace `server-only` dans les tests
 prisma.config.ts
@@ -403,16 +418,17 @@ Chaque étape liste : **Objectif**, **Fichiers**, **Dépend de**, **Critères de
   - Les garde-fous refusent une URL de base non locale et un bucket sans préfixe `dev-` en développement (tests Vitest). ✅ (52 tests ; garde-fou de la CLI Prisma vérifié à part)
   - Tables, index et contraintes d'unicité vérifiés. ✅ par requête SQL en lecture seule (Prisma Studio est une interface interactive, non pilotable par Claude Code) : 16 tables métier, 27 index uniques ou clés primaires, 10 index, 12 clés étrangères, 25 colonnes `timestamptz`, aucune colonne hors `snake_case` hormis `A`/`B` (E27).
 
-#### Étape 4 : Seed du compte administrateur
+#### Étape 4 : Seed du compte administrateur (réalisée, validation en attente)
 
 - **Objectif** : créer le compte unique à partir de `ADMIN_EMAIL` et `ADMIN_PASSWORD`, et le profil vide (id 1).
-- **Fichiers** : `prisma/seed.ts`, `lib/auth/password.ts` (argon2id via `@node-rs/argon2`), `prisma.config.ts` (commande de seed).
+- **Fichiers** : `prisma/seed.ts`, `lib/auth/password.ts` (argon2id via `@node-rs/argon2` 2.2.2), `lib/auth/password-policy.ts`, `lib/env-schema.ts` (`parseSeedEnv`), `scripts/ts-resolve-hook.mjs`, `prisma.config.ts` (commande de seed), `package.json`, tests `lib/auth/password.test.ts` et `lib/seed-env.test.ts` (E33, E34).
 - **Dépend de** : étape 3.
 - **Validation** :
-  - Premier lancement : administrateur créé, mot de passe stocké uniquement sous forme de hash.
-  - Second lancement : aucun doublon, mot de passe existant **non écrasé**, message clair.
-  - Rien de sensible dans la console (ni mot de passe, ni hash).
-  - Mot de passe de moins de 12 caractères refusé.
+  - Premier lancement : administrateur créé, mot de passe stocké uniquement sous forme de hash. ✅ (une ligne dans `admins`, hash `$argon2id$v=19$m=19456,t=2,p=1$…` qui vérifie le mot de passe de `.env` et ne le contient pas ; profil id 1 aux champs vides)
+  - Second lancement : aucun doublon, mot de passe existant **non écrasé**, message clair. ✅ (état de la base identique, `updated_at` inchangé ; « Compte administrateur déjà présent pour ADMIN_EMAIL : aucun compte créé, mot de passe existant conservé. »)
+  - Rien de sensible dans la console (ni mot de passe, ni hash). ✅ (journaux des deux lancements vérifiés : ni mot de passe, ni hash, ni adresse)
+  - Mot de passe de moins de 12 caractères refusé. ✅ (tests Vitest ; `pnpm db:seed` avec un mot de passe factice de 11 caractères : sortie 1 avant toute connexion, base inchangée)
+  - Non vérifié de bout en bout : la création refusée sur base **vide** (mot de passe court ou absent), qui demanderait un `pnpm db:reset`. La validation a lieu avant toute requête : le comportement est le même que sur la base remplie.
 
 #### Étape 5 : Fondations de l'interface d'administration
 

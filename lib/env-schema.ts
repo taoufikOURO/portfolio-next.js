@@ -4,13 +4,17 @@
 // hors de Next.js (prisma.config.ts, seed, scripts lancés par `node`).
 // L'application, elle, passe par `lib/env.ts`.
 //
-// Contraintes (exécution directe par Node, voir E24) : imports relatifs avec
-// extension, pas d'alias `@/`, pas d'`enum` ni de propriétés de paramètre.
+// Contraintes (exécution directe par Node, voir E24 et E33) : imports relatifs
+// seulement (sans extension : Node les résout grâce à
+// `scripts/ts-resolve-hook.mjs`), pas d'alias `@/`, pas d'`enum` ni de
+// propriétés de paramètre.
 //
 // Règle de sécurité : aucun message d'erreur ne contient la valeur d'une
 // variable, seulement son nom.
 
 import { z } from "zod";
+
+import { isPasswordLongEnough, PASSWORD_TOO_SHORT_MESSAGE } from "./auth/password-policy";
 
 /** Hôtes acceptés pour la base de données en développement. */
 export const LOCAL_DATABASE_HOSTS: readonly string[] = ["localhost", "127.0.0.1", "::1"];
@@ -116,12 +120,17 @@ const databaseUrl = requiredString().refine(
   "doit être une URL PostgreSQL (postgresql://…).",
 );
 
+const appEnv = z.enum(["development", "production"], {
+  error: (issue) =>
+    issue.input === undefined ? MISSING : "doit valoir « development » ou « production ».",
+});
+
+const LOCAL_DATABASE_MESSAGE =
+  "doit pointer vers une base locale (localhost, 127.0.0.1 ou ::1) quand APP_ENV=development.";
+
 const envSchema = z
   .object({
-    APP_ENV: z.enum(["development", "production"], {
-      error: (issue) =>
-        issue.input === undefined ? MISSING : "doit valoir « development » ou « production ».",
-    }),
+    APP_ENV: appEnv,
     APP_URL: httpUrl("doit être une URL http(s) valide."),
     NEXT_PUBLIC_SITE_URL: optionalString(),
 
@@ -158,8 +167,7 @@ const envSchema = z
           ctx.addIssue({
             code: "custom",
             path: [key],
-            message:
-              "doit pointer vers une base locale (localhost, 127.0.0.1 ou ::1) quand APP_ENV=development.",
+            message: LOCAL_DATABASE_MESSAGE,
           });
         }
       }
@@ -200,11 +208,14 @@ export class EnvError extends Error {
   /** Noms des variables en cause (jamais leurs valeurs). */
   readonly variables: string[];
 
-  constructor(problems: { variable: string; message: string }[]) {
+  constructor(
+    problems: { variable: string; message: string }[],
+    consequence = "l'application ne peut pas démarrer",
+  ) {
     const lines = problems.map((problem) => `  - ${problem.variable} : ${problem.message}`);
     super(
       [
-        "Configuration invalide : l'application ne peut pas démarrer.",
+        `Configuration invalide : ${consequence}.`,
         ...lines,
         "Corrigez le fichier .env (voir .env.example).",
       ].join("\n"),
@@ -214,14 +225,33 @@ export class EnvError extends Error {
   }
 }
 
-/** Ne garde que les variables connues, sans espaces autour ; une chaîne vide compte comme absente. */
-function pickKnownVariables(source: EnvSource): Record<string, string> {
+/**
+ * Ne garde que les variables connues, sans espaces autour ; une chaîne vide
+ * (ou faite d'espaces) compte comme absente. Les variables de `keepAsIs`
+ * (mots de passe) ne sont pas rognées : leurs espaces font partie de la valeur.
+ */
+function pickVariables(
+  source: EnvSource,
+  keys: readonly string[],
+  keepAsIs: readonly string[] = [],
+): Record<string, string> {
   const picked: Record<string, string> = {};
-  for (const key of Object.keys(envSchema.shape)) {
-    const value = source[key]?.trim();
-    if (value) picked[key] = value;
+  for (const key of keys) {
+    const raw = source[key];
+    if (raw === undefined || raw.trim() === "") continue;
+    picked[key] = keepAsIs.includes(key) ? raw : raw.trim();
   }
   return picked;
+}
+
+function toEnvError(error: z.ZodError, consequence?: string): EnvError {
+  return new EnvError(
+    error.issues.map((issue) => ({
+      variable: String(issue.path[0] ?? "configuration"),
+      message: issue.message,
+    })),
+    consequence,
+  );
 }
 
 /**
@@ -230,13 +260,57 @@ function pickKnownVariables(source: EnvSource): Record<string, string> {
  * si une variable obligatoire manque ou si un garde-fou est enfreint.
  */
 export function parseEnv(source: EnvSource): Env {
-  const result = envSchema.safeParse(pickKnownVariables(source));
+  const result = envSchema.safeParse(pickVariables(source, Object.keys(envSchema.shape)));
   if (result.success) return result.data;
+  throw toEnvError(result.error);
+}
 
-  throw new EnvError(
-    result.error.issues.map((issue) => ({
-      variable: String(issue.path[0] ?? "configuration"),
-      message: issue.message,
-    })),
-  );
+// ---------------------------------------------------------------------------
+// Seed (prisma/seed.ts)
+// ---------------------------------------------------------------------------
+
+/** Conséquence affichée dans les erreurs du seed. */
+export const SEED_FAILURE = "le seed n'a rien écrit en base";
+
+/**
+ * Variables du seed seulement : il tourne avant que Supabase ou le SMTP soient
+ * configurés, il ne peut donc pas exiger tout le schéma de l'application.
+ * `ADMIN_PASSWORD` est facultatif ici (il doit être retiré de `.env` après le
+ * premier seed) ; le seed l'exige seulement s'il doit créer le compte.
+ */
+const seedEnvSchema = z
+  .object({
+    APP_ENV: appEnv,
+    DATABASE_URL: databaseUrl,
+    ADMIN_EMAIL: requiredString()
+      .toLowerCase()
+      .pipe(z.email({ error: "doit être une adresse e-mail valide." })),
+    ADMIN_PASSWORD: optionalString().refine(
+      (value) => value === undefined || isPasswordLongEnough(value),
+      PASSWORD_TOO_SHORT_MESSAGE,
+    ),
+  })
+  .superRefine((env, ctx) => {
+    if (
+      env.APP_ENV === "development" &&
+      isPostgresUrl(env.DATABASE_URL) &&
+      !isLocalDatabaseUrl(env.DATABASE_URL)
+    ) {
+      ctx.addIssue({ code: "custom", path: ["DATABASE_URL"], message: LOCAL_DATABASE_MESSAGE });
+    }
+  });
+
+export type SeedEnv = z.infer<typeof seedEnvSchema>;
+
+/**
+ * Valide les variables du seed. `ADMIN_EMAIL` est rendu en minuscules.
+ * Lève une `EnvError` (noms des variables seulement, jamais leurs valeurs) si
+ * une variable manque, si le mot de passe fourni est trop court ou si la base
+ * n'est pas locale en développement.
+ */
+export function parseSeedEnv(source: EnvSource): SeedEnv {
+  const keys = Object.keys(seedEnvSchema.shape);
+  const result = seedEnvSchema.safeParse(pickVariables(source, keys, ["ADMIN_PASSWORD"]));
+  if (result.success) return result.data;
+  throw toEnvError(result.error, SEED_FAILURE);
 }

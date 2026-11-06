@@ -31,6 +31,13 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    // `pnpm db:seed` (`prisma db seed`). Node 24 exécute le TypeScript sans
+    // transpileur ; le hook résout les imports sans extension du client généré
+    // (`generated/prisma/`) et de `lib/` (E33). Les variables chargées ci-dessus
+    // (`.env`) sont transmises au processus du seed.
+    seed:
+      "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON " +
+      "--import ./scripts/ts-resolve-hook.mjs prisma/seed.ts",
   },
   datasource: {
     url: directUrl,
