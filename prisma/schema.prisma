@@ -1,0 +1,271 @@
+// Schéma de la base du portfolio (phase 1 : administration).
+// Référence : docs/plan_implementation.md §3.5.
+//
+// Conventions :
+// - modèles, champs et énumérations en anglais (camelCase) ;
+// - tables au pluriel et colonnes en snake_case (@@map, @map) ;
+// - toutes les dates en timestamptz (UTC) ;
+// - tokens et sessions : seul le hash SHA-256 est stocké ;
+// - fichiers : chemin dans le bucket (`...Path`), URL publique calculée à l'affichage.
+//
+// Toute modification passe par une nouvelle migration (`pnpm db:migrate`).
+// Ne jamais modifier une migration déjà créée.
+//
+// L'URL de connexion n'est pas ici (Prisma 7) :
+// - CLI (migrations) : `datasource.url` dans prisma.config.ts (DIRECT_URL) ;
+// - application : adaptateur pg dans lib/db.ts (DATABASE_URL).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Authentification
+// ---------------------------------------------------------------------------
+
+enum AuthTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+
+  @@map("auth_token_type")
+}
+
+model Admin {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(3)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  sessions   Session[]
+  authTokens AuthToken[]
+
+  @@map("admins")
+}
+
+model Session {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  adminId    String   @map("admin_id") @db.Uuid
+  tokenHash  String   @unique @map("token_hash")
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  lastSeenAt DateTime @map("last_seen_at") @db.Timestamptz(3)
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@map("sessions")
+}
+
+model AuthToken {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  adminId     String        @map("admin_id") @db.Uuid
+  type        AuthTokenType
+  tokenHash   String        @unique @map("token_hash")
+  targetEmail String?       @map("target_email")
+  expiresAt   DateTime      @map("expires_at") @db.Timestamptz(3)
+  usedAt      DateTime?     @map("used_at") @db.Timestamptz(3)
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, type])
+  @@map("auth_tokens")
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  email     String
+  ipAddress String   @map("ip_address")
+  succeeded Boolean
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
+  @@map("login_attempts")
+}
+
+// ---------------------------------------------------------------------------
+// Articles : au plus deux versions (publiée et brouillon), voir plan §3.2
+// ---------------------------------------------------------------------------
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+
+  @@map("article_status")
+}
+
+model Article {
+  id                 String        @id @default(uuid(7)) @db.Uuid
+  // Slug de la version publiée (null tant que l'article n'a jamais été publié).
+  slug               String?       @unique
+  status             ArticleStatus @default(DRAFT)
+  publishedVersionId String?       @unique @map("published_version_id") @db.Uuid
+  draftVersionId     String?       @unique @map("draft_version_id") @db.Uuid
+  // « Publié le » : fixée à la première publication, jamais modifiée ensuite.
+  publishedAt        DateTime?     @map("published_at") @db.Timestamptz(3)
+  // « Mis à jour le » : actualisée à chaque republication.
+  lastPublishedAt    DateTime?     @map("last_published_at") @db.Timestamptz(3)
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  publishedVersion ArticleVersion?  @relation("ArticlePublishedVersion", fields: [publishedVersionId], references: [id], onDelete: SetNull)
+  draftVersion     ArticleVersion?  @relation("ArticleDraftVersion", fields: [draftVersionId], references: [id], onDelete: SetNull)
+  versions         ArticleVersion[] @relation("ArticleVersions")
+
+  @@map("articles")
+}
+
+model ArticleVersion {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  articleId      String   @map("article_id") @db.Uuid
+  title          String
+  // Pas unique ici : brouillon et version publiée d'un même article partagent souvent le slug.
+  slug           String
+  description    String
+  category       String
+  author         String
+  // Contenu en Markdown.
+  content        String
+  coverImagePath String?  @map("cover_image_path")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  article             Article  @relation("ArticleVersions", fields: [articleId], references: [id], onDelete: Cascade)
+  publishedForArticle Article? @relation("ArticlePublishedVersion")
+  draftForArticle     Article? @relation("ArticleDraftVersion")
+
+  @@index([articleId])
+  @@index([slug])
+  @@map("article_versions")
+}
+
+// ---------------------------------------------------------------------------
+// Formations et compétences
+// ---------------------------------------------------------------------------
+
+model Education {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  title       String
+  description String
+  // Dates au mois près, stockées au 1er du mois (UTC).
+  startDate   DateTime  @map("start_date") @db.Timestamptz(3)
+  endDate     DateTime? @map("end_date") @db.Timestamptz(3)
+  institution String
+  location    String
+  honors      String?
+  // Moyenne sur 20.
+  grade       Decimal?  @db.Decimal(4, 2)
+  position    Int
+
+  skills Skill[] @relation("education_skills")
+
+  @@map("educations")
+}
+
+model Skill {
+  id             String @id @default(uuid(7)) @db.Uuid
+  name           String
+  // Minuscules, sans accents ni espaces superflus : garantit l'unicité du nom.
+  normalizedName String @unique @map("normalized_name")
+
+  educations Education[] @relation("education_skills")
+
+  @@map("skills")
+}
+
+// ---------------------------------------------------------------------------
+// Profil (enregistrement unique, id = 1)
+// ---------------------------------------------------------------------------
+
+model Profile {
+  id              Int     @id @default(1)
+  firstName       String  @default("") @map("first_name")
+  lastName        String  @default("") @map("last_name")
+  email           String  @default("")
+  jobTitle        String  @default("") @map("job_title")
+  bio             String  @default("")
+  about           String  @default("")
+  githubUrl       String? @map("github_url")
+  linkedinUrl     String? @map("linkedin_url")
+  photoPath       String? @map("photo_path")
+  cutoutPhotoPath String? @map("cutout_photo_path")
+  // CV : lien externe ou PDF uploadé, au choix.
+  resumeUrl       String? @map("resume_url")
+  resumePath      String? @map("resume_path")
+
+  @@map("profiles")
+}
+
+// ---------------------------------------------------------------------------
+// Projets, liens, stack technique et collaborateurs
+// ---------------------------------------------------------------------------
+
+model Project {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  slug        String    @unique
+  title       String
+  description String
+  imagePath   String?   @map("image_path")
+  isPublished Boolean   @default(false) @map("is_published")
+  date        DateTime? @db.Timestamptz(3)
+  position    Int
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  links         ProjectLink[]
+  technologies  Technology[]   @relation("project_technologies")
+  collaborators Collaborator[] @relation("project_collaborators")
+
+  @@map("projects")
+}
+
+model ProjectLink {
+  id        String @id @default(uuid(7)) @db.Uuid
+  projectId String @map("project_id") @db.Uuid
+  label     String
+  url       String
+  position  Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_links")
+}
+
+model Technology {
+  id             String @id @default(uuid(7)) @db.Uuid
+  name           String
+  normalizedName String @unique @map("normalized_name")
+  iconPath       String @map("icon_path")
+  position       Int
+
+  projects Project[] @relation("project_technologies")
+
+  @@map("technologies")
+}
+
+model Collaborator {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  // Toujours en minuscules.
+  githubUsername String    @unique @map("github_username")
+  name           String?
+  avatarUrl      String?   @map("avatar_url")
+  profileUrl     String?   @map("profile_url")
+  // Dernière récupération réussie du profil GitHub, et dernière erreur éventuelle.
+  syncedAt       DateTime? @map("synced_at") @db.Timestamptz(3)
+  syncError      String?   @map("sync_error")
+
+  projects Project[] @relation("project_collaborators")
+
+  @@map("collaborators")
+}

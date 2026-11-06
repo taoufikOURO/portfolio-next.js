@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Palette de la charte graphique (CLAUDE.md). Aucune autre couleur sans validation. */
+@theme {
+    /* Retire toutes les couleurs Tailwind par défaut (red-500, slate-700, etc.) :
+       seules les cinq couleurs ci-dessous existent dans l'admin. */
+    --color-*: initial;
+
+    --color-cream: #f4f1de;
+    --color-terracotta: #e07a5f;
+    --color-slate-blue: #3d405b;
+    --color-sage: #81b29a;
+    --color-sand: #f2cc8f;
+}
