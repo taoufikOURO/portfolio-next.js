@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* Le CSS de l'admin ne scanne que les dossiers de l'admin : sans cela, Tailwind
+   y ajouterait aussi les classes du site public (dégradés, ombres hors charte). */
+@import "tailwindcss" source(none);
+@source "./";
+@source "../../components/admin";
 
 /* Palette de la charte graphique (CLAUDE.md). Aucune autre couleur sans validation. */
 @theme {
@@ -11,4 +15,38 @@
     --color-slate-blue: #3d405b;
     --color-sage: #81b29a;
     --color-sand: #f2cc8f;
+}
+
+@layer base {
+    html {
+        color-scheme: light;
+    }
+
+    /* Anneau de focus : bleu-gris sur crème (8,87). Jamais supprimé. */
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 3px solid var(--color-slate-blue);
+        outline-offset: 2px;
+    }
+
+    /* Surfaces bleu-gris foncé (barre latérale) : anneau sable (6,63). */
+    :where([data-surface="dark"]) :focus-visible {
+        outline-color: var(--color-sand);
+    }
+
+    /* Pas de défilement de la page derrière un dialogue modal. */
+    html:has(dialog[open]) {
+        overflow: hidden;
+    }
+
+    /* Respecte la préférence « réduire les animations ». */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }
