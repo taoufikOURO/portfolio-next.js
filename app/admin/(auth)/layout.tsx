@@ -1,6 +1,6 @@
 /**
- * Pages accessibles sans session (connexion ; à l'étape 8 : mot de passe
- * oublié, réinitialisation, validation d'adresse). Pas de barre latérale.
+ * Pages accessibles sans session (connexion, mot de passe oublié,
+ * réinitialisation, validation d'adresse). Pas de barre latérale.
  */
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

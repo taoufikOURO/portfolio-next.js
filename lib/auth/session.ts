@@ -200,3 +200,42 @@ export async function validateSessionCookie(
 export async function revokeSession(sessionId: string): Promise<void> {
   await db.session.deleteMany({ where: { id: sessionId } });
 }
+
+/**
+ * Révoque toutes les sessions de l'administrateur, sauf `keepSessionId` s'il
+ * est fourni (session courante). Après une réinitialisation, rien n'est gardé ;
+ * après un changement de mot de passe, la session courante l'est.
+ * `client` : transaction en cours, pour révoquer en même temps que l'écriture
+ * du mot de passe.
+ */
+export async function revokeOtherSessions(
+  adminId: string,
+  keepSessionId: string | null,
+  client: Pick<typeof db, "session"> = db,
+): Promise<number> {
+  const { count } = await client.session.deleteMany({
+    where: keepSessionId ? { adminId, id: { not: keepSessionId } } : { adminId },
+  });
+  return count;
+}
+
+export type ActiveSession = {
+  id: string;
+  createdAt: Date;
+  lastSeenAt: Date;
+  ipAddress: string | null;
+  userAgent: string | null;
+};
+
+/** Sessions encore valides de l'administrateur, de la plus récente à la plus ancienne. */
+export async function listActiveSessions(adminId: string, now = new Date()): Promise<ActiveSession[]> {
+  return db.session.findMany({
+    where: {
+      adminId,
+      expiresAt: { gt: now },
+      createdAt: { gt: new Date(now.getTime() - SESSION_MAX_LIFETIME_MS) },
+    },
+    orderBy: [{ lastSeenAt: "desc" }, { id: "desc" }],
+    select: { id: true, createdAt: true, lastSeenAt: true, ipAddress: true, userAgent: true },
+  });
+}

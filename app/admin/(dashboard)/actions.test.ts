@@ -1,10 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { verifyEmail } from "@/lib/auth/account";
 import { createSession } from "@/lib/auth/session";
 import { generateSessionToken, signSessionToken } from "@/lib/auth/session-cookie";
-import { fakeDb, fakeId, fakeRequest, RedirectError, resetFakes, TEST_SESSION_SECRET } from "@/test/fakes";
+import { ACCOUNT_MESSAGES } from "@/lib/validation/auth";
+import {
+  fakeDb,
+  fakeId,
+  fakeRequest,
+  mailbox,
+  RedirectError,
+  resetFakes,
+  revalidatedPaths,
+  TEST_SESSION_SECRET,
+} from "@/test/fakes";
 
-import { logout } from "./actions";
+import { logout, resendVerification } from "./actions";
 
 vi.mock("@/lib/db", async () => ({ db: (await import("@/test/fakes")).fakeDb.client }));
 vi.mock("@/lib/env", async () => ({ env: (await import("@/test/fakes")).testEnv }));
@@ -13,6 +24,8 @@ vi.mock("next/headers", async () => {
   return { cookies: fakes.fakeCookies, headers: fakes.fakeHeaders };
 });
 vi.mock("next/navigation", async () => ({ redirect: (await import("@/test/fakes")).fakeRedirect }));
+vi.mock("next/cache", async () => ({ revalidatePath: (await import("@/test/fakes")).fakeRevalidatePath }));
+vi.mock("@/lib/mail/send", async () => (await import("@/test/fakes")).fakeMail);
 
 let adminId: string;
 
@@ -66,5 +79,68 @@ describe("logout", () => {
     expect(await callLogout()).toBe("/admin/connexion");
     expect(fakeDb.sessions).toHaveLength(1);
     expect(fakeRequest.setCookies).toHaveLength(0);
+  });
+});
+
+describe("resendVerification (« Renvoyer le lien » de la bannière)", () => {
+  async function signIn() {
+    const { cookieValue } = await createSession(adminId);
+    fakeRequest.cookies.set("admin_session", cookieValue);
+  }
+
+  it("envoie un nouveau lien à l'adresse du compte, qui la valide", async () => {
+    await signIn();
+
+    expect(await resendVerification()).toEqual({
+      ok: true,
+      message: ACCOUNT_MESSAGES.verificationSent,
+      fieldErrors: {},
+    });
+    expect(mailbox.sent).toEqual([
+      { type: "email-verification", to: "admin@example.com", token: expect.any(String) },
+    ]);
+
+    const [mail] = mailbox.sent;
+    if (mail.type !== "email-verification") throw new Error("Lien absent.");
+    expect(await verifyEmail(mail.token)).toEqual({ status: "verified", email: "admin@example.com" });
+  });
+
+  it("deuxième clic dans la minute : refusé avec un message, aucun envoi", async () => {
+    await signIn();
+    await resendVerification();
+    expect(await resendVerification()).toEqual({
+      ok: false,
+      message: ACCOUNT_MESSAGES.verificationCooldown,
+      fieldErrors: {},
+    });
+    expect(mailbox.sent).toHaveLength(1);
+  });
+
+  it("adresse déjà validée : rien n'est envoyé, l'affichage est rafraîchi (la bannière disparaît)", async () => {
+    fakeDb.admins[0].emailVerifiedAt = new Date();
+    await signIn();
+    expect(await resendVerification()).toMatchObject({ ok: true, message: ACCOUNT_MESSAGES.alreadyVerified });
+    expect(mailbox.sent).toHaveLength(0);
+    expect(revalidatedPaths).toEqual(["/admin (layout)"]);
+  });
+
+  it("échec de l'envoi : message d'erreur explicite", async () => {
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    await signIn();
+    mailbox.failNext = true;
+    expect(await resendVerification()).toMatchObject({ ok: false, message: ACCOUNT_MESSAGES.mailFailed });
+    errors.mockRestore();
+  });
+
+  it("sans session valide : refusé (redirection), aucun lien créé", async () => {
+    let url: string | undefined;
+    try {
+      await resendVerification();
+    } catch (error) {
+      if (error instanceof RedirectError) url = error.url;
+      else throw error;
+    }
+    expect(url).toBe("/admin/connexion");
+    expect(fakeDb.authTokens).toHaveLength(0);
   });
 });

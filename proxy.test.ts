@@ -41,6 +41,22 @@ describe("proxy", () => {
   });
 
   it.each([
+    "/admin/mot-de-passe-oublie",
+    "/admin/reinitialiser",
+    "/admin/reinitialiser/",
+    "/admin/verifier-email",
+  ])("laisse passer les pages des liens par e-mail sans session (%s)", (path) => {
+    expect(passes(proxy(request(path)))).toBe(true);
+  });
+
+  it.each(["/admin/compte", "/admin/reinitialiser/autre", "/admin/verifier-email-x"])(
+    "les autres pages restent protégées (%s)",
+    (path) => {
+      expect(proxy(request(path)).status).toBe(307);
+    },
+  );
+
+  it.each([
     ["illisible", "n-importe-quoi"],
     ["signé avec un autre secret", signSessionToken(generateSessionToken(), "autre-secret-factice-0123456789-abcdef")],
   ])("cookie %s : redirection", (_label, cookie) => {
