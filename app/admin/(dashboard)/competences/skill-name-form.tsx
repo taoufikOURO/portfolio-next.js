@@ -24,7 +24,12 @@ export function SkillNameForm({ skill }: { skill?: { id: string; name: string } 
     null,
   );
   const fieldId = mode === "create" ? "competence-nouvelle" : "competence-nom";
-  const { clientErrors, onSubmit } = useClientValidation(skillSchema, [["name", fieldId]] as const);
+  const { clientErrors, onSubmit } = useClientValidation(
+    skillSchema,
+    [["name", fieldId]] as const,
+    undefined,
+    state?.fieldErrors,
+  );
 
   const fieldErrors = clientErrors ?? state?.fieldErrors ?? {};
   const message = clientErrors ? SKILL_MESSAGES.formInvalid : state?.message;

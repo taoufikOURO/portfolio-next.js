@@ -63,6 +63,20 @@ export type FakeEducation = {
   position: number;
 };
 
+export type FakeTechnology = {
+  id: string;
+  name: string;
+  normalizedName: string;
+  iconPath: string;
+  position: number;
+};
+
+/** Projet minimal : l'étape 11 ne lit que son titre et sa position (rattachement des technologies). */
+export type FakeProject = { id: string; title: string; position: number };
+
+/** Ligne de la table de liaison implicite `_project_technologies`. */
+export type FakeProjectTechnology = { projectId: string; technologyId: string };
+
 /** Ligne de la table de liaison implicite `_education_skills`. */
 export type FakeEducationSkill = { educationId: string; skillId: string };
 
@@ -169,6 +183,9 @@ function createFakeDb() {
   const skills: FakeSkill[] = [];
   const educations: FakeEducation[] = [];
   const educationSkills: FakeEducationSkill[] = [];
+  const technologies: FakeTechnology[] = [];
+  const projects: FakeProject[] = [];
+  const projectTechnologies: FakeProjectTechnology[] = [];
   const admins: FakeAdmin[] = [];
   const sessions: FakeSession[] = [];
   const loginAttempts: FakeLoginAttempt[] = [];
@@ -201,6 +218,22 @@ function createFakeDb() {
       { normalizedName: "asc" },
     ).map(({ id, name }) => ({ id, name })),
   });
+
+  const technologyWithRelations = (technology: FakeTechnology) => ({
+    ...technology,
+    projects: sortRows(
+      projectTechnologies
+        .filter((link) => link.technologyId === technology.id)
+        .map((link) => projects.find((project) => project.id === link.projectId)!),
+      [{ position: "asc" }, { id: "asc" }],
+    ).map(({ id, title }) => ({ id, title })),
+  });
+
+  const assertUniqueTechnology = (normalizedName: string, except?: FakeTechnology) => {
+    if (technologies.some((other) => other !== except && other.normalizedName === normalizedName)) {
+      throw prismaError("P2002", "nom de technologie en double");
+    }
+  };
 
   const assertUniqueSkill = (normalizedName: string, except?: FakeSkill) => {
     if (skills.some((other) => other !== except && other.normalizedName === normalizedName)) {
@@ -262,6 +295,47 @@ function createFakeDb() {
         skills.splice(skills.indexOf(skill), 1);
         // Clé étrangère en cascade : les liens partent avec la compétence.
         removeWhere(educationSkills, { skillId: skill.id });
+        return result;
+      },
+    },
+    technology: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          technologies.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map(technologyWithRelations);
+      },
+      async findUnique({ where }: { where: Row }) {
+        const technology = technologies.find((candidate) => matches(candidate, where));
+        return technology ? technologyWithRelations(technology) : null;
+      },
+      async findFirst({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        const [first] = sortRows(
+          technologies.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        );
+        return first ? technologyWithRelations(first) : null;
+      },
+      async create({ data }: { data: Omit<FakeTechnology, "id"> }) {
+        assertUniqueTechnology(data.normalizedName);
+        const row: FakeTechnology = { ...data, id: fakeId() };
+        technologies.push(row);
+        return technologyWithRelations(row);
+      },
+      async update({ where, data }: { where: Row; data: Partial<Omit<FakeTechnology, "id">> }) {
+        const technology = technologies.find((candidate) => matches(candidate, where));
+        if (!technology) throw prismaError("P2025", "technologie introuvable");
+        if (data.normalizedName) assertUniqueTechnology(data.normalizedName, technology);
+        Object.assign(technology, data);
+        return technologyWithRelations(technology);
+      },
+      async delete({ where }: { where: Row }) {
+        const technology = technologies.find((candidate) => matches(candidate, where));
+        if (!technology) throw prismaError("P2025", "technologie introuvable");
+        const result = technologyWithRelations(technology);
+        technologies.splice(technologies.indexOf(technology), 1);
+        // Clé étrangère en cascade : les liens partent avec la technologie.
+        removeWhere(projectTechnologies, { technologyId: technology.id });
         return result;
       },
     },
@@ -409,7 +483,20 @@ function createFakeDb() {
     },
   };
 
-  return { client, admins, sessions, loginAttempts, authTokens, skills, educations, educationSkills, calls };
+  return {
+    client,
+    admins,
+    sessions,
+    loginAttempts,
+    authTokens,
+    skills,
+    educations,
+    educationSkills,
+    technologies,
+    projects,
+    projectTechnologies,
+    calls,
+  };
 }
 
 export const fakeDb = createFakeDb();
@@ -526,7 +613,60 @@ export function fakeRevalidatePath(path: string, type?: string): void {
   revalidatedPaths.push(type ? `${path} (${type})` : path);
 }
 
+// ---------------------------------------------------------------------------
+// Supabase Storage en mémoire
+// ---------------------------------------------------------------------------
+
+/**
+ * Faux Storage : `files` associe « bucket/chemin » au contenu. À brancher avec
+ * `vi.mock("@/lib/storage/client")` (`getStorageContext` → `fakeStorage.context`) ;
+ * `lib/storage/upload.ts` et `remove.ts` tournent alors pour de vrai (type
+ * réel, taille, SVG, garde-fou `dev-`), seul le réseau est remplacé.
+ */
+export const fakeStorage = {
+  files: new Map<string, Uint8Array>(),
+  /** Refus simulés de Supabase (message d'erreur renvoyé). */
+  failUpload: null as string | null,
+  failRemove: null as string | null,
+  errors: [] as string[],
+  context: {
+    config: {
+      appEnv: "development",
+      supabaseUrl: "https://projet.supabase.co",
+      serviceRoleKey: "cle-factice",
+      buckets: { articles: "dev-articles", projects: "dev-projets", profile: "dev-profil", stack: "dev-stack" },
+    },
+    api: {
+      from(bucket: string) {
+        return {
+          async upload(path: string, body: Uint8Array) {
+            if (fakeStorage.failUpload) return { error: { message: fakeStorage.failUpload } };
+            fakeStorage.files.set(`${bucket}/${path}`, body);
+            return { error: null };
+          },
+          async remove(paths: string[]) {
+            if (fakeStorage.failRemove) return { error: { message: fakeStorage.failRemove } };
+            for (const path of paths) fakeStorage.files.delete(`${bucket}/${path}`);
+            return { error: null };
+          },
+        };
+      },
+      async listBuckets() {
+        return { data: [], error: null };
+      },
+      async createBucket() {
+        return { error: null };
+      },
+    },
+    logger: { error: (message: string) => void fakeStorage.errors.push(message) },
+  },
+};
+
 export function resetFakes() {
+  fakeStorage.files.clear();
+  fakeStorage.failUpload = null;
+  fakeStorage.failRemove = null;
+  fakeStorage.errors.length = 0;
   fakeDb.admins.length = 0;
   fakeDb.sessions.length = 0;
   fakeDb.loginAttempts.length = 0;
@@ -534,6 +674,9 @@ export function resetFakes() {
   fakeDb.skills.length = 0;
   fakeDb.educations.length = 0;
   fakeDb.educationSkills.length = 0;
+  fakeDb.technologies.length = 0;
+  fakeDb.projects.length = 0;
+  fakeDb.projectTechnologies.length = 0;
   fakeDb.calls.executeRaw.length = 0;
   fakeDb.calls.sessionFindUnique = 0;
   fakeDb.calls.authTokenFindUnique = 0;

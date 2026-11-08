@@ -106,7 +106,7 @@ describe("uploadFile", () => {
 
   it("refuse un fichier trop lourd sans le lire ni rien écrire", async () => {
     const context = fakeContext();
-    const heavy = new Blob([new Uint8Array(5 * 1024 * 1024 + 1)]);
+    const heavy = new Blob([new Uint8Array(1024 * 1024 + 1)]);
     let read = false;
     const spy = Object.assign(heavy, {
       arrayBuffer: () => {

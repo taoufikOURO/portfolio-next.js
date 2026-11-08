@@ -27,22 +27,27 @@ export type FileKindRules = Required<Pick<FileRules, "accept" | "maxSizeMB">> &
         hint: string;
     };
 
+/**
+ * Taille maximale de tout fichier envoyé, en Mo (E52). Identique à
+ * `MAX_FILE_BYTES` côté serveur (un test le vérifie).
+ */
+export const MAX_FILE_MB = 1;
+
 export const FILE_KIND_RULES: Readonly<Record<FileKind, FileKindRules>> = {
     image: {
         accept: "image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp",
-        maxSizeMB: 5,
-        hint: "PNG, JPG ou WebP, 5 Mo au maximum.",
+        maxSizeMB: MAX_FILE_MB,
+        hint: "PNG, JPG ou WebP, 1 Mo au maximum.",
     },
     icon: {
         accept: "image/png,image/webp,image/svg+xml,.png,.webp,.svg",
-        maxSizeMB: 5,
-        maxSizeMBByType: { "image/svg+xml": 1, ".svg": 1 },
-        hint: "PNG ou WebP (5 Mo au maximum), ou SVG (1 Mo au maximum).",
+        maxSizeMB: MAX_FILE_MB,
+        hint: "PNG, WebP ou SVG, 1 Mo au maximum.",
     },
     resume: {
         accept: "application/pdf,.pdf",
-        maxSizeMB: 5,
-        hint: "PDF, 5 Mo au maximum.",
+        maxSizeMB: MAX_FILE_MB,
+        hint: "PDF, 1 Mo au maximum.",
     },
 };
 

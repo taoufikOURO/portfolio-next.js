@@ -5,13 +5,14 @@ import { GraduationCap, Pencil, Plus } from "lucide-react";
 import { ButtonLink } from "@/components/admin/Button";
 import { DataTable } from "@/components/admin/DataTable";
 import { EmptyState } from "@/components/admin/EmptyState";
+import { MoveButtons } from "@/components/admin/MoveButtons";
 import { ResultAlert } from "@/components/admin/ResultAlert";
 import { requireSession } from "@/lib/auth/require-session";
 import { listEducations, type Education } from "@/lib/educations";
 
+import { moveEducationAction } from "./actions";
 import { DeleteEducationButton } from "./delete-education";
 import { formatGradeOutOf20, formatPeriod } from "./format";
-import { MoveButtons } from "./move-buttons";
 import { educationPath, educationResultMessage, NEW_EDUCATION_PATH } from "./routes";
 
 export const metadata: Metadata = {
@@ -110,7 +111,7 @@ export default async function EducationsPage({
             header: "Actions",
             cell: ({ education, index }) => (
               <div className="flex flex-col gap-2">
-                <MoveButtons id={education.id} title={education.title} index={index} total={total} />
+                <MoveButtons action={moveEducationAction} id={education.id} label={education.title} index={index} total={total} />
                 <div className="flex flex-wrap gap-2">
                   <ButtonLink href={educationPath(education.id)} variant="secondary" icon={Pencil}>
                     Modifier<span className="sr-only"> « {education.title} »</span>

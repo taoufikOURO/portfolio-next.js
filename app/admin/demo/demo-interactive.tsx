@@ -110,9 +110,9 @@ export function DemoInteractive() {
                         label="Image de couverture"
                         name="cover"
                         accept="image/png,image/jpeg,image/webp"
-                        maxSizeMB={5}
+                        maxSizeMB={1}
                         preview
-                        hint="PNG, JPG ou WebP, 5 Mo au maximum."
+                        hint="PNG, JPG ou WebP, 1 Mo au maximum."
                     />
                     <div className="flex flex-wrap gap-3">
                         <SubmitButton icon={Save} pending={isPending}>

@@ -8,7 +8,9 @@ import {
   buildPublicUrl,
   checkSvg,
   FILE_MESSAGES,
+  BUCKET_FILE_SIZE_LIMIT_BYTES,
   FORMAT_RULES,
+  MAX_FILE_BYTES,
   formatsOf,
   generateObjectPath,
   inspectFile,
@@ -42,12 +44,15 @@ function padded(bytes: Uint8Array, size: number): Uint8Array {
 }
 
 describe("règles de format", () => {
-  it("fixe 5 Mo pour PNG, JPG, WebP et PDF, 1 Mo pour SVG", () => {
-    expect(FORMAT_RULES.png.maxBytes).toBe(5 * MB);
-    expect(FORMAT_RULES.jpg.maxBytes).toBe(5 * MB);
-    expect(FORMAT_RULES.webp.maxBytes).toBe(5 * MB);
-    expect(FORMAT_RULES.pdf.maxBytes).toBe(5 * MB);
-    expect(FORMAT_RULES.svg.maxBytes).toBe(1 * MB);
+  it("fixe 1 Mo pour PNG, JPG, WebP, SVG et PDF (E52)", () => {
+    expect(MAX_FILE_BYTES).toBe(1 * MB);
+    for (const format of ["png", "jpg", "webp", "svg", "pdf"] as const) {
+      expect(FORMAT_RULES[format].maxBytes, format).toBe(1 * MB);
+    }
+  });
+
+  it("garde la limite de 1 Mo sous celle des Server Actions de Next.js (1 Mo de corps)", () => {
+    expect(MAX_FILE_BYTES).toBeLessThanOrEqual(1024 * 1024);
   });
 
   it("n'accepte le SVG que pour les icônes et le PDF que pour le CV", () => {
@@ -60,7 +65,9 @@ describe("règles de format", () => {
     expect(bucketContentTypes("articles")).toEqual(["image/png", "image/jpeg", "image/webp"]);
     expect(bucketContentTypes("profile")).toEqual(["image/png", "image/jpeg", "image/webp", "application/pdf"]);
     expect(bucketContentTypes("stack")).toEqual(["image/png", "image/webp", "image/svg+xml"]);
+    // Les buckets restent à 5 Mo : seule la limite de l'application (1 Mo) compte (E52).
     expect(bucketMaxBytes("stack")).toBe(5 * MB);
+    expect(BUCKET_FILE_SIZE_LIMIT_BYTES).toBeGreaterThan(MAX_FILE_BYTES);
   });
 });
 
@@ -112,28 +119,43 @@ describe("inspectFile : type réel", () => {
 });
 
 describe("inspectFile : taille", () => {
-  it("accepte un PNG de 5 Mo exactement et refuse 5 Mo + 1 octet", async () => {
-    expect((await inspectFile(padded(PNG, 5 * MB), "image")).ok).toBe(true);
-    expect(await inspectFile(padded(PNG, 5 * MB + 1), "image")).toEqual({
+  it("accepte un PNG de 1 Mo exactement et refuse 1 Mo + 1 octet", async () => {
+    expect((await inspectFile(padded(PNG, 1 * MB), "image")).ok).toBe(true);
+    expect(await inspectFile(padded(PNG, 1 * MB + 1), "image")).toEqual({
       ok: false,
       error: FILE_MESSAGES.tooLargeForKind("image"),
     });
   });
 
-  it("refuse un PDF de plus de 5 Mo", async () => {
-    expect((await inspectFile(padded(PDF, 5 * MB + 1), "resume")).ok).toBe(false);
+  it("accepte un PDF de 1 Mo exactement et refuse 1 Mo + 1 octet", async () => {
+    expect((await inspectFile(padded(PDF, 1 * MB), "resume")).ok).toBe(true);
+    expect(await inspectFile(padded(PDF, 1 * MB + 1), "resume")).toEqual({
+      ok: false,
+      error: FILE_MESSAGES.tooLargeForKind("resume"),
+    });
   });
 
-  it("limite le SVG à 1 Mo, même parmi des icônes acceptées jusqu'à 5 Mo", async () => {
+  it.each([
+    ["JPG", JPG, "image"],
+    ["WebP", WEBP, "image"],
+    ["WebP (icône)", WEBP, "icon"],
+    ["PNG (icône)", PNG, "icon"],
+  ] as const)("refuse un %s de plus de 1 Mo", async (_label, bytes, kind) => {
+    expect((await inspectFile(padded(bytes, 1 * MB), kind)).ok).toBe(true);
+    expect((await inspectFile(padded(bytes, 1 * MB + 1), kind)).ok).toBe(false);
+  });
+
+  it("limite aussi le SVG à 1 Mo", async () => {
     const big = svgBytes(SVG.replace("</svg>", `<!--${"x".repeat(MB)}--></svg>`));
-    expect(await inspectFile(big, "icon")).toEqual({ ok: false, error: FILE_MESSAGES.tooLarge("svg") });
-    expect((await inspectFile(padded(PNG, 2 * MB), "icon")).ok).toBe(true);
+    expect(await inspectFile(big, "icon")).toEqual({ ok: false, error: FILE_MESSAGES.tooLargeForKind("icon") });
   });
 
   it("annonce la limite en Mo dans le message", () => {
     expect(FILE_MESSAGES.tooLarge("svg")).toMatch(/1 Mo/);
-    expect(FILE_MESSAGES.tooLargeForKind("image")).toMatch(/5 Mo/);
-    expect(maxBytesOf("icon")).toBe(5 * MB);
+    expect(FILE_MESSAGES.tooLarge("png")).toMatch(/1 Mo/);
+    expect(FILE_MESSAGES.tooLargeForKind("image")).toMatch(/1 Mo/);
+    expect(maxBytesOf("icon")).toBe(1 * MB);
+    expect(maxBytesOf("resume")).toBe(1 * MB);
   });
 });
 

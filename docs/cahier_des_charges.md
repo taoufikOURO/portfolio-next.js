@@ -124,7 +124,7 @@ Règles :
 - Buckets en lecture publique, écriture réservée au serveur.
 - En développement, l'application refuse de démarrer si un nom de bucket ne commence pas par `dev-`.
 - Les buckets sont créés par un script idempotent (`pnpm storage:setup`).
-- Types autorisés et tailles maximales : PNG, JPG, WebP (5 Mo), SVG pour les icônes (1 Mo), PDF pour le CV (5 Mo).
+- Types autorisés et tailles maximales : PNG, JPG, WebP, SVG pour les icônes et PDF pour le CV, **1 Mo au maximum chacun** (limite des Server Actions de Next.js, voir E52 du plan).
 - Vérification du type réel du fichier côté serveur, pas seulement de l'extension.
 - SVG contenant un script, un gestionnaire d'événement, un `<foreignObject>` ou une référence externe : refusé.
 - Nom de fichier généré (pas de nom d'origine conservé tel quel).
@@ -250,6 +250,6 @@ Les fichiers sont référencés par leur **chemin** dans le bucket ; l'URL publi
 | Stockage                 | Supabase Storage en ligne, dans le même projet que la production ; buckets `dev-*` en développement. |
 | Base de développement    | PostgreSQL local uniquement.                                                                      |
 | Éditeur Markdown         | Zone de texte native + barre d'outils, aperçu `react-markdown` assaini.                           |
-| Tailles de fichiers      | 5 Mo (images, PDF), 1 Mo (SVG).                                                                   |
+| Tailles de fichiers      | 1 Mo pour tous les fichiers (E52 du plan).                                                                   |
 | Tests                    | Vitest pour la logique serveur.                                                                   |
 | Middleware               | `proxy.ts` (convention Next.js 16).                                                               |

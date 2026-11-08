@@ -58,7 +58,12 @@ export function EducationForm({ educationId, initialValues, skillOptions }: Educ
     educationId ? updateEducationAction : createEducationAction,
     null,
   );
-  const { clientErrors, onSubmit } = useClientValidation(educationSchema, FIELDS, educationInputFromFormData);
+  const { clientErrors, onSubmit } = useClientValidation(
+    educationSchema,
+    FIELDS,
+    educationInputFromFormData,
+    state?.fieldErrors,
+  );
 
   const fieldErrors = clientErrors ?? state?.fieldErrors ?? {};
   const message = clientErrors ? EDUCATION_MESSAGES.formInvalid : state?.message;

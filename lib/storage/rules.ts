@@ -10,7 +10,7 @@ import { DEV_BUCKET_PREFIX, isDevBucketName } from "../env-schema";
  * Règles des fichiers envoyés vers Supabase Storage (cahier §3.8, étape 10).
  *
  * Tout est vérifié ici, côté serveur, AVANT toute écriture :
- * - taille (5 Mo pour PNG, JPG, WebP et PDF, 1 Mo pour SVG) ;
+ * - taille (1 Mo pour tous les formats, E52) ;
  * - type réel, lu dans le contenu (`file-type`), jamais déduit de l'extension
  *   ni du type MIME annoncé par le navigateur ;
  * - SVG : refusé s'il contient un script, un attribut `on*`, un
@@ -25,6 +25,20 @@ import { DEV_BUCKET_PREFIX, isDevBucketName } from "../env-schema";
  */
 
 const MB = 1024 * 1024;
+
+/**
+ * Taille maximale d'un fichier envoyé par l'application, tous formats : 1 Mo
+ * (E52). C'est la limite par défaut du corps d'une Server Action de Next.js,
+ * qui n'est pas relevée (`next.config.ts` inchangé).
+ */
+export const MAX_FILE_BYTES = 1 * MB;
+
+/**
+ * Taille maximale réglée sur les buckets (`fileSizeLimit`) : 5 Mo, plus large
+ * que la limite de l'application (E52). Seule `MAX_FILE_BYTES` compte pour
+ * l'application ; les buckets existants n'ont pas à être modifiés.
+ */
+export const BUCKET_FILE_SIZE_LIMIT_BYTES = 5 * MB;
 
 // ---------------------------------------------------------------------------
 // Formats et usages
@@ -43,11 +57,11 @@ export type FormatRule = {
 };
 
 export const FORMAT_RULES: Readonly<Record<FileFormat, FormatRule>> = {
-  png: { extension: "png", contentType: "image/png", maxBytes: 5 * MB, label: "PNG" },
-  jpg: { extension: "jpg", contentType: "image/jpeg", maxBytes: 5 * MB, label: "JPG" },
-  webp: { extension: "webp", contentType: "image/webp", maxBytes: 5 * MB, label: "WebP" },
-  svg: { extension: "svg", contentType: "image/svg+xml", maxBytes: 1 * MB, label: "SVG" },
-  pdf: { extension: "pdf", contentType: "application/pdf", maxBytes: 5 * MB, label: "PDF" },
+  png: { extension: "png", contentType: "image/png", maxBytes: MAX_FILE_BYTES, label: "PNG" },
+  jpg: { extension: "jpg", contentType: "image/jpeg", maxBytes: MAX_FILE_BYTES, label: "JPG" },
+  webp: { extension: "webp", contentType: "image/webp", maxBytes: MAX_FILE_BYTES, label: "WebP" },
+  svg: { extension: "svg", contentType: "image/svg+xml", maxBytes: MAX_FILE_BYTES, label: "SVG" },
+  pdf: { extension: "pdf", contentType: "application/pdf", maxBytes: MAX_FILE_BYTES, label: "PDF" },
 };
 
 /** Usage d'un fichier : détermine les formats acceptés. */
@@ -100,7 +114,8 @@ export function bucketContentTypes(bucket: BucketKey): string[] {
 
 /** Plus grande taille acceptée par un bucket (réglage `fileSizeLimit`). */
 export function bucketMaxBytes(bucket: BucketKey): number {
-  return Math.max(...BUCKET_KINDS[bucket].map((kind) => maxBytesOf(kind)));
+  void bucket;
+  return BUCKET_FILE_SIZE_LIMIT_BYTES;
 }
 
 // ---------------------------------------------------------------------------
