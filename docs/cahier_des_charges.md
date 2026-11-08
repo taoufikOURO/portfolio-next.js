@@ -9,6 +9,7 @@ Périmètre de cette version : **phase 1, interface d'administration**. La parti
 | 1.1     | 6 novembre 2026 | Décisions prises après l'état des lieux (voir §12) : schéma en anglais, brouillon pour toute modification d'article, barre latérale, Supabase Storage en ligne, rôles des couleurs, points ouverts tranchés |
 | 1.2     | 6 novembre 2026 | Stockage de développement précisé (même projet Supabase que la production, buckets `dev-*`), mention de la CLI Supabase retirée, couleurs Tailwind par défaut bloquées dans l'admin |
 | 1.3     | 7 novembre 2026 | Étape 8 : changer l'adresse e-mail exige le mot de passe actuel (proposition appliquée, à valider par Taoufik) |
+| 1.4     | 7 novembre 2026 | Mot de passe actuel exigé pour changer d'adresse : validé par Taoufik avec l'étape 8 |
 
 Plan de réalisation : `docs/plan_implementation.md`.
 
@@ -41,7 +42,7 @@ Remplacer le portfolio actuel, qui s'appuie sur des fichiers JSON et Markdown ve
 - **Validation de l'adresse e-mail** : lien envoyé après création ou changement d'adresse, valable 24 h.
   - Un compte dont l'adresse n'est pas validée peut se connecter, avec une bannière persistante et un bouton « Renvoyer le lien ».
   - Une nouvelle adresse n'est prise en compte qu'après clic sur le lien. L'ancienne adresse reçoit une notification.
-  - Changer d'adresse exige le mot de passe actuel (proposition appliquée à l'étape 8, **à valider par Taoufik**).
+  - Changer d'adresse exige le mot de passe actuel (validé par Taoufik avec l'étape 8).
 - **Réinitialisation du mot de passe** par lien envoyé par e-mail, à usage unique, valable 1 h. Le message affiché est le même que l'adresse existe ou non.
 - Après une réinitialisation ou un changement de mot de passe, toutes les autres sessions sont révoquées. Changer son mot de passe exige le mot de passe actuel.
 - **Pas de 2FA** pour l'instant.

@@ -1,8 +1,10 @@
-// Doublures pour les tests Vitest de l'authentification (étapes 7 et 8).
+// Doublures pour les tests Vitest (étapes 7 à 9).
 //
 // - `fakeDb` : base en mémoire qui imite le sous-ensemble du client Prisma
 //   utilisé par `lib/auth/` (administrateurs, sessions, tentatives, jetons des
-//   liens) ;
+//   liens), `lib/skills.ts` et `lib/educations.ts` (compétences, formations et
+//   leurs liens). Les options `select` sont ignorées : les lignes sont
+//   renvoyées entières, avec leurs relations ;
 // - `testEnv` : variables d'environnement factices, modifiables par test ;
 // - `fakeRequest` : cookies et en-têtes de la requête (`next/headers`) ;
 // - `RedirectError` : remplace l'exception levée par `redirect()`.
@@ -45,6 +47,25 @@ export type FakeAuthToken = {
   createdAt: Date;
 };
 
+export type FakeSkill = { id: string; name: string; normalizedName: string };
+
+export type FakeEducation = {
+  id: string;
+  title: string;
+  description: string;
+  institution: string;
+  location: string;
+  startDate: Date;
+  endDate: Date | null;
+  honors: string | null;
+  /** `Decimal` côté Prisma ; chaîne ici (seul `toString()` est utilisé). */
+  grade: string | null;
+  position: number;
+};
+
+/** Ligne de la table de liaison implicite `_education_skills`. */
+export type FakeEducationSkill = { educationId: string; skillId: string };
+
 export type FakeLoginAttempt = {
   id: string;
   email: string;
@@ -78,6 +99,8 @@ function matchesOperator(operator: string, value: unknown, operand: unknown): bo
       return a !== null && b !== null && a >= b;
     case "not":
       return b === null ? a !== null : a !== null && a !== b;
+    case "in":
+      return (operand as unknown[]).includes(value);
     default:
       throw new Error(`Opérateur non pris en charge par la doublure : ${operator}`);
   }
@@ -137,7 +160,15 @@ function sortRows<T extends Row>(rows: T[], orderBy?: OrderBy): T[] {
   });
 }
 
+/** Erreur connue de Prisma (seul `code` est lu par l'application). */
+function prismaError(code: "P2002" | "P2025", message: string): Error {
+  return Object.assign(new Error(`Doublure : ${message} (${code}).`), { code });
+}
+
 function createFakeDb() {
+  const skills: FakeSkill[] = [];
+  const educations: FakeEducation[] = [];
+  const educationSkills: FakeEducationSkill[] = [];
   const admins: FakeAdmin[] = [];
   const sessions: FakeSession[] = [];
   const loginAttempts: FakeLoginAttempt[] = [];
@@ -151,7 +182,137 @@ function createFakeDb() {
 
   const calls = { executeRaw: [] as string[], sessionFindUnique: 0, authTokenFindUnique: 0 };
 
+  const skillWithRelations = (skill: FakeSkill) => ({
+    ...skill,
+    educations: sortRows(
+      educationSkills
+        .filter((link) => link.skillId === skill.id)
+        .map((link) => educations.find((education) => education.id === link.educationId)!),
+      [{ position: "asc" }, { id: "asc" }],
+    ).map(({ id, title }) => ({ id, title })),
+  });
+
+  const educationWithRelations = (education: FakeEducation) => ({
+    ...education,
+    skills: sortRows(
+      educationSkills
+        .filter((link) => link.educationId === education.id)
+        .map((link) => skills.find((skill) => skill.id === link.skillId)!),
+      { normalizedName: "asc" },
+    ).map(({ id, name }) => ({ id, name })),
+  });
+
+  const assertUniqueSkill = (normalizedName: string, except?: FakeSkill) => {
+    if (skills.some((other) => other !== except && other.normalizedName === normalizedName)) {
+      throw prismaError("P2002", "nom de compétence en double");
+    }
+  };
+
+  /** `connect` et `set` : chaque compétence doit exister, comme dans Prisma. */
+  const assertSkillsExist = (ids: { id: string }[]) => {
+    if (ids.some(({ id }) => !skills.some((skill) => skill.id === id))) {
+      throw prismaError("P2025", "compétence introuvable pour le lien");
+    }
+  };
+
+  const linkSkills = (educationId: string, ids: { id: string }[]) => {
+    for (const { id } of ids) {
+      if (!educationSkills.some((link) => link.educationId === educationId && link.skillId === id)) {
+        educationSkills.push({ educationId, skillId: id });
+      }
+    }
+  };
+
+  type EducationData = Partial<Omit<FakeEducation, "id">> & {
+    skills?: { connect?: { id: string }[]; set?: { id: string }[] };
+  };
+
   const client = {
+    skill: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          skills.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map(skillWithRelations);
+      },
+      async findUnique({ where }: { where: Row }) {
+        const skill = skills.find((candidate) => matches(candidate, where));
+        return skill ? skillWithRelations(skill) : null;
+      },
+      async count({ where }: { where?: Row } = {}) {
+        return skills.filter((candidate) => matches(candidate, where)).length;
+      },
+      async create({ data }: { data: Omit<FakeSkill, "id"> }) {
+        assertUniqueSkill(data.normalizedName);
+        const row: FakeSkill = { ...data, id: fakeId() };
+        skills.push(row);
+        return skillWithRelations(row);
+      },
+      async update({ where, data }: { where: Row; data: Partial<Omit<FakeSkill, "id">> }) {
+        const skill = skills.find((candidate) => matches(candidate, where));
+        if (!skill) throw prismaError("P2025", "compétence introuvable");
+        if (data.normalizedName) assertUniqueSkill(data.normalizedName, skill);
+        Object.assign(skill, data);
+        return skillWithRelations(skill);
+      },
+      async delete({ where }: { where: Row }) {
+        const skill = skills.find((candidate) => matches(candidate, where));
+        if (!skill) throw prismaError("P2025", "compétence introuvable");
+        const result = skillWithRelations(skill);
+        skills.splice(skills.indexOf(skill), 1);
+        // Clé étrangère en cascade : les liens partent avec la compétence.
+        removeWhere(educationSkills, { skillId: skill.id });
+        return result;
+      },
+    },
+    education: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          educations.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map(educationWithRelations);
+      },
+      async findUnique({ where }: { where: Row }) {
+        const education = educations.find((candidate) => matches(candidate, where));
+        return education ? educationWithRelations(education) : null;
+      },
+      async findFirst({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        const [first] = sortRows(
+          educations.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        );
+        return first ? educationWithRelations(first) : null;
+      },
+      async create({ data }: { data: EducationData }) {
+        const { skills: relation, ...fields } = data;
+        assertSkillsExist(relation?.connect ?? []);
+        const row = { ...fields, id: fakeId() } as FakeEducation;
+        educations.push(row);
+        linkSkills(row.id, relation?.connect ?? []);
+        return educationWithRelations(row);
+      },
+      async update({ where, data }: { where: Row; data: EducationData }) {
+        const education = educations.find((candidate) => matches(candidate, where));
+        if (!education) throw prismaError("P2025", "formation introuvable");
+        const { skills: relation, ...fields } = data;
+        if (relation?.set) {
+          assertSkillsExist(relation.set);
+          removeWhere(educationSkills, { educationId: education.id });
+          linkSkills(education.id, relation.set);
+        }
+        Object.assign(education, fields);
+        return educationWithRelations(education);
+      },
+      async delete({ where }: { where: Row }) {
+        const education = educations.find((candidate) => matches(candidate, where));
+        if (!education) throw prismaError("P2025", "formation introuvable");
+        const result = educationWithRelations(education);
+        educations.splice(educations.indexOf(education), 1);
+        // Clé étrangère en cascade : les liens partent avec la formation.
+        removeWhere(educationSkills, { educationId: education.id });
+        return result;
+      },
+    },
     admin: {
       async findUnique({ where }: { where: Row }) {
         const admin = admins.find((candidate) => matches(candidate, where));
@@ -248,7 +409,7 @@ function createFakeDb() {
     },
   };
 
-  return { client, admins, sessions, loginAttempts, authTokens, calls };
+  return { client, admins, sessions, loginAttempts, authTokens, skills, educations, educationSkills, calls };
 }
 
 export const fakeDb = createFakeDb();
@@ -370,6 +531,9 @@ export function resetFakes() {
   fakeDb.sessions.length = 0;
   fakeDb.loginAttempts.length = 0;
   fakeDb.authTokens.length = 0;
+  fakeDb.skills.length = 0;
+  fakeDb.educations.length = 0;
+  fakeDb.educationSkills.length = 0;
   fakeDb.calls.executeRaw.length = 0;
   fakeDb.calls.sessionFindUnique = 0;
   fakeDb.calls.authTokenFindUnique = 0;
