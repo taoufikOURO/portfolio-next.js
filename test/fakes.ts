@@ -80,6 +80,37 @@ export type FakeProjectTechnology = { projectId: string; technologyId: string };
 /** Ligne de la table de liaison implicite `_education_skills`. */
 export type FakeEducationSkill = { educationId: string; skillId: string };
 
+export type FakeProfile = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  jobTitle: string;
+  bio: string;
+  about: string;
+  githubUrl: string | null;
+  linkedinUrl: string | null;
+  photoPath: string | null;
+  cutoutPhotoPath: string | null;
+  resumeUrl: string | null;
+  resumePath: string | null;
+};
+
+const EMPTY_FAKE_PROFILE: Omit<FakeProfile, "id"> = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  jobTitle: "",
+  bio: "",
+  about: "",
+  githubUrl: null,
+  linkedinUrl: null,
+  photoPath: null,
+  cutoutPhotoPath: null,
+  resumeUrl: null,
+  resumePath: null,
+};
+
 export type FakeLoginAttempt = {
   id: string;
   email: string;
@@ -184,6 +215,7 @@ function createFakeDb() {
   const educations: FakeEducation[] = [];
   const educationSkills: FakeEducationSkill[] = [];
   const technologies: FakeTechnology[] = [];
+  const profiles: FakeProfile[] = [];
   const projects: FakeProject[] = [];
   const projectTechnologies: FakeProjectTechnology[] = [];
   const admins: FakeAdmin[] = [];
@@ -197,7 +229,12 @@ function createFakeDb() {
     return { ...session, admin: { email: admin.email, emailVerifiedAt: admin.emailVerifiedAt } };
   };
 
-  const calls = { executeRaw: [] as string[], sessionFindUnique: 0, authTokenFindUnique: 0 };
+  const calls = {
+    executeRaw: [] as string[],
+    sessionFindUnique: 0,
+    authTokenFindUnique: 0,
+    profileUpsert: [] as { where: Row; create: Row }[],
+  };
 
   const skillWithRelations = (skill: FakeSkill) => ({
     ...skill,
@@ -474,6 +511,25 @@ function createFakeDb() {
         return { count: removeWhere(loginAttempts, where) };
       },
     },
+    profile: {
+      async findUnique({ where }: { where: Row }) {
+        const profile = profiles.find((candidate) => matches(candidate, where));
+        return profile ? { ...profile } : null;
+      },
+      /** Comme Prisma : crée la ligne si l'identifiant est absent, la met à jour sinon (clé primaire unique). */
+      async upsert({ where, create, update }: { where: Row; create: Partial<FakeProfile>; update: Partial<FakeProfile> }) {
+        calls.profileUpsert.push({ where, create });
+        const existing = profiles.find((candidate) => matches(candidate, where));
+        if (existing) {
+          Object.assign(existing, update);
+          return { ...existing };
+        }
+        if (profiles.some((other) => other.id === create.id)) throw prismaError("P2002", "profil en double");
+        const row: FakeProfile = { ...EMPTY_FAKE_PROFILE, ...create, id: create.id as number };
+        profiles.push(row);
+        return { ...row };
+      },
+    },
     async $executeRaw(strings: TemplateStringsArray) {
       calls.executeRaw.push(strings.join("?"));
       return 0;
@@ -493,6 +549,7 @@ function createFakeDb() {
     educations,
     educationSkills,
     technologies,
+    profiles,
     projects,
     projectTechnologies,
     calls,
@@ -677,6 +734,8 @@ export function resetFakes() {
   fakeDb.technologies.length = 0;
   fakeDb.projects.length = 0;
   fakeDb.projectTechnologies.length = 0;
+  fakeDb.profiles.length = 0;
+  fakeDb.calls.profileUpsert.length = 0;
   fakeDb.calls.executeRaw.length = 0;
   fakeDb.calls.sessionFindUnique = 0;
   fakeDb.calls.authTokenFindUnique = 0;
