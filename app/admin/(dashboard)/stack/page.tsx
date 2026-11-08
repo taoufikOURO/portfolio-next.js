@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Layers, Pencil, Plus } from "lucide-react";
 
 import { ButtonLink } from "@/components/admin/Button";
@@ -8,6 +9,8 @@ import { MoveButtons } from "@/components/admin/MoveButtons";
 import { ResultAlert } from "@/components/admin/ResultAlert";
 import { requireSession } from "@/lib/auth/require-session";
 import { listTechnologies, type Technology } from "@/lib/technologies";
+
+import { projectPath } from "../projets/routes";
 
 import { moveTechnologyAction } from "./actions";
 import { DeleteTechnologyButton } from "./delete-technology";
@@ -24,7 +27,10 @@ function Usage({ technology }: { technology: Technology }) {
     <ul className="flex flex-col gap-1">
       {technology.projects.map((project) => (
         <li key={project.id} className="break-words">
-          {project.title}
+          <Link href={projectPath(project.id)} className="underline">
+            {project.title}
+            <span className="sr-only"> (modifier le projet)</span>
+          </Link>
         </li>
       ))}
     </ul>

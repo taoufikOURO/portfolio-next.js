@@ -20,5 +20,7 @@ export default defineConfig({
     exclude: ["node_modules/**", ".next/**", "generated/**"],
     // Les tests ne doivent jamais dépendre du .env local.
     unstubEnvs: true,
+    // Aucun appel réseau réel : le `fetch` global lève une erreur (étape 13).
+    setupFiles: ["./test/no-network.ts"],
   },
 });

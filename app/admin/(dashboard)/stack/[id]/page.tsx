@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { requireSession } from "@/lib/auth/require-session";
 import { technologyIconUrl } from "@/lib/technologies";
 
+import { projectPath } from "../../projets/routes";
 import { DeleteTechnologyButton } from "../delete-technology";
 import { loadTechnologyOrNotFound } from "../load-technology";
 import { STACK_PATH } from "../routes";
@@ -43,7 +44,10 @@ export default async function EditTechnologyPage({ params }: { params: Promise<{
           <ul className="mt-4 list-disc pl-6">
             {technology.projects.map((project) => (
               <li key={project.id} className="break-words">
-                {project.title}
+                <Link href={projectPath(project.id)} className="underline">
+                  {project.title}
+                  <span className="sr-only"> (modifier le projet)</span>
+                </Link>
               </li>
             ))}
           </ul>

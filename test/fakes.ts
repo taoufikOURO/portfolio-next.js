@@ -71,8 +71,36 @@ export type FakeTechnology = {
   position: number;
 };
 
-/** Projet minimal : l'étape 11 ne lit que son titre et sa position (rattachement des technologies). */
-export type FakeProject = { id: string; title: string; position: number };
+/**
+ * Projet : l'étape 11 n'utilise que le titre et la position (rattachement des
+ * technologies) ; les autres champs, facultatifs ici, prennent leur valeur par
+ * défaut à la lecture (étape 13).
+ */
+export type FakeProject = {
+  id: string;
+  title: string;
+  position: number;
+  slug?: string;
+  description?: string;
+  imagePath?: string | null;
+  isPublished?: boolean;
+  date?: Date | null;
+};
+
+export type FakeProjectLink = { id: string; projectId: string; label: string; url: string; position: number };
+
+export type FakeCollaborator = {
+  id: string;
+  githubUsername: string;
+  name: string | null;
+  avatarUrl: string | null;
+  profileUrl: string | null;
+  syncedAt: Date | null;
+  syncError: string | null;
+};
+
+/** Ligne de la table de liaison implicite `_project_collaborators`. */
+export type FakeProjectCollaborator = { projectId: string; collaboratorId: string };
 
 /** Ligne de la table de liaison implicite `_project_technologies`. */
 export type FakeProjectTechnology = { projectId: string; technologyId: string };
@@ -218,6 +246,9 @@ function createFakeDb() {
   const profiles: FakeProfile[] = [];
   const projects: FakeProject[] = [];
   const projectTechnologies: FakeProjectTechnology[] = [];
+  const projectLinks: FakeProjectLink[] = [];
+  const collaborators: FakeCollaborator[] = [];
+  const projectCollaborators: FakeProjectCollaborator[] = [];
   const admins: FakeAdmin[] = [];
   const sessions: FakeSession[] = [];
   const loginAttempts: FakeLoginAttempt[] = [];
@@ -234,6 +265,8 @@ function createFakeDb() {
     sessionFindUnique: 0,
     authTokenFindUnique: 0,
     profileUpsert: [] as { where: Row; create: Row }[],
+    /** Écritures sur les collaborateurs : création, `upsert` sur une ligne existante, `update`. */
+    collaboratorWrites: [] as { op: "create" | "upsert-existing" | "update"; githubUsername: string }[],
   };
 
   const skillWithRelations = (skill: FakeSkill) => ({
@@ -265,6 +298,88 @@ function createFakeDb() {
       [{ position: "asc" }, { id: "asc" }],
     ).map(({ id, title }) => ({ id, title })),
   });
+
+  const projectWithRelations = (project: FakeProject) => ({
+    slug: `projet-${project.id}`,
+    description: "",
+    imagePath: null as string | null,
+    isPublished: false,
+    date: null as Date | null,
+    ...project,
+    links: sortRows(
+      projectLinks.filter((link) => link.projectId === project.id),
+      [{ position: "asc" }, { id: "asc" }],
+    ).map(({ id, label, url, position }) => ({ id, label, url, position })),
+    technologies: sortRows(
+      projectTechnologies
+        .filter((link) => link.projectId === project.id)
+        .map((link) => technologies.find((technology) => technology.id === link.technologyId)!),
+      [{ position: "asc" }, { id: "asc" }],
+    ).map(({ id, name }) => ({ id, name })),
+    collaborators: sortRows(
+      projectCollaborators
+        .filter((link) => link.projectId === project.id)
+        .map((link) => collaborators.find((collaborator) => collaborator.id === link.collaboratorId)!),
+      { githubUsername: "asc" },
+    ).map((collaborator) => ({
+      ...collaborator,
+      // Projets auxquels le collaborateur est rattaché (orphelins annoncés avant une suppression).
+      projects: projectCollaborators
+        .filter((link) => link.collaboratorId === collaborator.id)
+        .map((link) => ({ id: link.projectId })),
+    })),
+  });
+
+  const assertUniqueSlug = (slug: string | undefined, except?: FakeProject) => {
+    if (projects.some((other) => other !== except && projectWithRelations(other).slug === slug)) {
+      throw prismaError("P2002", "slug de projet en double");
+    }
+  };
+
+  /** `connect` et `set` : chaque ligne reliée doit exister, comme dans Prisma. */
+  const assertExist = (ids: { id: string }[], rows: { id: string }[], what: string) => {
+    if (ids.some(({ id }) => !rows.some((row) => row.id === id))) {
+      throw prismaError("P2025", `${what} introuvable pour le lien`);
+    }
+  };
+
+  type ProjectData = Partial<Omit<FakeProject, "id">> & {
+    links?: { deleteMany?: Row; create?: Omit<FakeProjectLink, "id" | "projectId">[] };
+    technologies?: { connect?: { id: string }[]; set?: { id: string }[] };
+    collaborators?: { connect?: { id: string }[]; set?: { id: string }[] };
+  };
+
+  const applyProjectRelations = (projectId: string, data: ProjectData) => {
+    const technologyIds = data.technologies?.set ?? data.technologies?.connect;
+    const collaboratorIds = data.collaborators?.set ?? data.collaborators?.connect;
+    if (technologyIds) assertExist(technologyIds, technologies, "technologie");
+    if (collaboratorIds) assertExist(collaboratorIds, collaborators, "collaborateur");
+    if (data.links?.deleteMany) removeWhere(projectLinks, { projectId });
+    for (const link of data.links?.create ?? []) projectLinks.push({ ...link, id: fakeId(), projectId });
+    if (data.technologies?.set) removeWhere(projectTechnologies, { projectId });
+    for (const { id } of technologyIds ?? []) {
+      if (!projectTechnologies.some((link) => link.projectId === projectId && link.technologyId === id)) {
+        projectTechnologies.push({ projectId, technologyId: id });
+      }
+    }
+    if (data.collaborators?.set) removeWhere(projectCollaborators, { projectId });
+    for (const { id } of collaboratorIds ?? []) {
+      if (!projectCollaborators.some((link) => link.projectId === projectId && link.collaboratorId === id)) {
+        projectCollaborators.push({ projectId, collaboratorId: id });
+      }
+    }
+  };
+
+  const projectFields = (data: ProjectData): Partial<FakeProject> => {
+    const fields: Row = { ...data };
+    delete fields.links;
+    delete fields.technologies;
+    delete fields.collaborators;
+    return fields as Partial<FakeProject>;
+  };
+
+  const findProject = (where: Row | undefined) =>
+    projects.find((candidate) => matches(projectWithRelations(candidate), where));
 
   const assertUniqueTechnology = (normalizedName: string, except?: FakeTechnology) => {
     if (technologies.some((other) => other !== except && other.normalizedName === normalizedName)) {
@@ -335,7 +450,119 @@ function createFakeDb() {
         return result;
       },
     },
+    project: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          projects.filter((candidate) => matches(projectWithRelations(candidate), where)).map(projectWithRelations),
+          orderBy,
+        );
+      },
+      async findUnique({ where }: { where: Row }) {
+        const project = findProject(where);
+        return project ? projectWithRelations(project) : null;
+      },
+      async findFirst({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        const [first] = sortRows(
+          projects.filter((candidate) => matches(projectWithRelations(candidate), where)).map(projectWithRelations),
+          orderBy,
+        );
+        return first ?? null;
+      },
+      async create({ data }: { data: ProjectData }) {
+        const fields = projectFields(data);
+        assertUniqueSlug(fields.slug);
+        // Liens contrôlés avant l'insertion : un rattachement impossible annule tout, comme dans Prisma.
+        assertExist(data.technologies?.connect ?? [], technologies, "technologie");
+        assertExist(data.collaborators?.connect ?? [], collaborators, "collaborateur");
+        const row = { ...fields, id: fakeId() } as FakeProject;
+        projects.push(row);
+        applyProjectRelations(row.id, data);
+        return projectWithRelations(row);
+      },
+      async update({ where, data }: { where: Row; data: ProjectData }) {
+        const project = findProject(where);
+        if (!project) throw prismaError("P2025", "projet introuvable");
+        const fields = projectFields(data);
+        if (fields.slug !== undefined) assertUniqueSlug(fields.slug, project);
+        applyProjectRelations(project.id, data);
+        Object.assign(project, fields);
+        return projectWithRelations(project);
+      },
+      async delete({ where }: { where: Row }) {
+        const project = findProject(where);
+        if (!project) throw prismaError("P2025", "projet introuvable");
+        const result = projectWithRelations(project);
+        projects.splice(projects.indexOf(project), 1);
+        // Clés étrangères en cascade : liens et rattachements partent avec le projet.
+        removeWhere(projectLinks, { projectId: project.id });
+        removeWhere(projectTechnologies, { projectId: project.id });
+        removeWhere(projectCollaborators, { projectId: project.id });
+        return result;
+      },
+    },
+    collaborator: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          collaborators.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map((row) => ({ ...row }));
+      },
+      async findUnique({ where }: { where: Row }) {
+        const collaborator = collaborators.find((candidate) => matches(candidate, where));
+        return collaborator ? { ...collaborator } : null;
+      },
+      async upsert({
+        where,
+        create,
+        update,
+      }: {
+        where: Row;
+        create: Omit<FakeCollaborator, "id">;
+        update: Partial<Omit<FakeCollaborator, "id">>;
+      }) {
+        const existing = collaborators.find((candidate) => matches(candidate, where));
+        if (existing) {
+          calls.collaboratorWrites.push({ op: "upsert-existing", githubUsername: existing.githubUsername });
+          Object.assign(existing, update);
+          return { ...existing };
+        }
+        if (collaborators.some((other) => other.githubUsername === create.githubUsername)) {
+          throw prismaError("P2002", "collaborateur en double");
+        }
+        calls.collaboratorWrites.push({ op: "create", githubUsername: create.githubUsername });
+        const row: FakeCollaborator = { ...create, id: fakeId() };
+        collaborators.push(row);
+        return { ...row };
+      },
+      async update({ where, data }: { where: Row; data: Partial<Omit<FakeCollaborator, "id">> }) {
+        const collaborator = collaborators.find((candidate) => matches(candidate, where));
+        if (!collaborator) throw prismaError("P2025", "collaborateur introuvable");
+        calls.collaboratorWrites.push({ op: "update", githubUsername: collaborator.githubUsername });
+        Object.assign(collaborator, data);
+        return { ...collaborator };
+      },
+      /** `projects: { none: {} }` : seuls les collaborateurs rattachés à aucun projet sont supprimés. */
+      async deleteMany({ where }: { where: Row }) {
+        const { projects: relation, ...rest } = where as Row & { projects?: { none?: Row } };
+        if (relation !== undefined && !(relation.none && Object.keys(relation.none).length === 0)) {
+          throw new Error("Doublure : filtre de relation non pris en charge.");
+        }
+        let count = 0;
+        for (let index = collaborators.length - 1; index >= 0; index -= 1) {
+          const collaborator = collaborators[index];
+          if (!matches(collaborator, rest)) continue;
+          if (relation && projectCollaborators.some((link) => link.collaboratorId === collaborator.id)) continue;
+          collaborators.splice(index, 1);
+          removeWhere(projectCollaborators, { collaboratorId: collaborator.id });
+          count += 1;
+        }
+        return { count };
+      },
+    },
     technology: {
+      async count({ where }: { where?: Row } = {}) {
+        return technologies.filter((candidate) => matches(candidate, where)).length;
+      },
       async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
         return sortRows(
           technologies.filter((candidate) => matches(candidate, where)),
@@ -552,6 +779,9 @@ function createFakeDb() {
     profiles,
     projects,
     projectTechnologies,
+    projectLinks,
+    collaborators,
+    projectCollaborators,
     calls,
   };
 }
@@ -719,6 +949,58 @@ export const fakeStorage = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// API GitHub (étape 13)
+// ---------------------------------------------------------------------------
+
+export type FakeGitHubFailure = "not-found" | "rate-limited" | "timeout" | "server-error";
+
+/**
+ * Faux `fetch` de l'API GitHub, à passer à `fetchGitHubUser` (`lib/github.ts`) :
+ * `users` donne le nom affiché des comptes existants (avatar et profil
+ * construits sur les hôtes de GitHub) ; `failures` force un échec par nom ;
+ * `requests` : noms demandés, dans l'ordre. Aucun appel réseau.
+ */
+export const fakeGitHub = {
+  users: new Map<string, { name: string | null }>(),
+  failures: new Map<string, FakeGitHubFailure>(),
+  requests: [] as string[],
+  async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
+    const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
+    if (url.origin !== "https://api.github.com" || !url.pathname.startsWith("/users/")) {
+      throw new Error(`Doublure GitHub : adresse inattendue ${url.href}`);
+    }
+    const username = decodeURIComponent(url.pathname.slice("/users/".length));
+    fakeGitHub.requests.push(username);
+    const failure = fakeGitHub.failures.get(username);
+    if (failure === "timeout") {
+      // Délai dépassé : la requête n'aboutit pas, elle est interrompue par le signal de `fetchGitHubUser`.
+      return new Promise((_, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new DOMException("Interrompu", "AbortError")));
+      });
+    }
+    if (failure === "rate-limited") {
+      return new Response(JSON.stringify({ message: "API rate limit exceeded" }), {
+        status: 403,
+        headers: { "x-ratelimit-remaining": "0" },
+      });
+    }
+    if (failure === "server-error") return new Response("", { status: 502 });
+    const user = fakeGitHub.users.get(username);
+    if (failure === "not-found" || !user) return new Response(JSON.stringify({ message: "Not Found" }), { status: 404 });
+    return new Response(
+      JSON.stringify({
+        login: username,
+        id: 1,
+        name: user.name,
+        avatar_url: `https://avatars.githubusercontent.com/u/1?v=4&s=${username.length}`,
+        html_url: `https://github.com/${username}`,
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  },
+};
+
 export function resetFakes() {
   fakeStorage.files.clear();
   fakeStorage.failUpload = null;
@@ -734,6 +1016,13 @@ export function resetFakes() {
   fakeDb.technologies.length = 0;
   fakeDb.projects.length = 0;
   fakeDb.projectTechnologies.length = 0;
+  fakeDb.projectLinks.length = 0;
+  fakeDb.collaborators.length = 0;
+  fakeDb.projectCollaborators.length = 0;
+  fakeDb.calls.collaboratorWrites.length = 0;
+  fakeGitHub.users.clear();
+  fakeGitHub.failures.clear();
+  fakeGitHub.requests.length = 0;
   fakeDb.profiles.length = 0;
   fakeDb.calls.profileUpsert.length = 0;
   fakeDb.calls.executeRaw.length = 0;
