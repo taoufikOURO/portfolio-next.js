@@ -38,7 +38,7 @@ export default async function ArticlePublicationPage({ params }: { params: Promi
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={articlePath(article.id)} className="inline-flex items-center gap-2 underline">
+        <Link href={articlePath(article.id)} className="inline-flex min-h-11 items-center gap-2 underline">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir à l’éditeur
         </Link>

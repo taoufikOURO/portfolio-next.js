@@ -10,6 +10,7 @@ Périmètre de cette version : **phase 1, interface d'administration**. La parti
 | 1.2     | 6 novembre 2026 | Stockage de développement précisé (même projet Supabase que la production, buckets `dev-*`), mention de la CLI Supabase retirée, couleurs Tailwind par défaut bloquées dans l'admin |
 | 1.3     | 7 novembre 2026 | Étape 8 : changer l'adresse e-mail exige le mot de passe actuel (proposition appliquée, à valider par Taoufik) |
 | 1.4     | 7 novembre 2026 | Mot de passe actuel exigé pour changer d'adresse : validé par Taoufik avec l'étape 8 |
+| 1.5     | 13 novembre 2026 | §3.3 Articles : champs exigés pour publier et image de couverture envoyée à part (E55), décisions E57 : avertissement de sortie avec modifications non enregistrées, création en deux temps, slug refusé avec enregistrement des autres champs, description à 500 caractères, abandon sans JavaScript par une page de confirmation. Acceptés par Taoufik avec l'étape 14 |
 
 Plan de réalisation : `docs/plan_implementation.md`.
 
@@ -72,6 +73,13 @@ Remplacer le portfolio actuel, qui s'appuie sur des fichiers JSON et Markdown ve
   - `lastPublishedAt` (« mis à jour le ») : mise à jour à chaque nouvelle publication d'un article déjà publié.
 - Champs : titre, slug (généré et modifiable, unique), description, catégorie (texte libre avec suggestions), auteur (prérempli avec le nom du profil), image de couverture, contenu Markdown, statut, dates.
 - Image de couverture uploadée vers Supabase Storage. L'image de la version en ligne n'est remplacée qu'à la publication.
+- **Champs exigés pour publier** : « Publier » est refusé si le titre, le slug ou le contenu de la version de travail est vide. Les erreurs sont liées aux champs, avec le même message avec et sans JavaScript.
+- **Image de couverture envoyée à part** : le fichier est envoyé dès qu'il est choisi, dans un formulaire séparé de l'éditeur (même principe que la photo du profil) ; son chemin est ensuite enregistré dans la version de travail. La sauvegarde automatique ne renvoie jamais le fichier. Une couverture remplacée pendant l'édition : l'ancienne image, si elle n'appartient pas à la version publiée, est supprimée dès que la nouvelle est enregistrée ; celle de la version publiée n'est supprimée qu'à la publication.
+- **Avertissement de sortie** : tant qu'un enregistrement est en attente (frappe pas encore envoyée, envoi en cours, y compris celui de la couverture) ou n'a pas abouti (échec, refus, conflit), l'éditeur affiche l'avertissement du navigateur à la fermeture ou à la sortie de la page. Il ne s'affiche pas après un enregistrement réussi. Aucune sauvegarde hors ligne.
+- **Création en deux temps** : la page de création ne demande que le titre (obligatoire) ; le slug (proposé à partir du titre, suffixé `-2`, `-3`… s'il est déjà pris) et l'auteur (prénom et nom du profil) en sont tirés, puis l'éditeur s'ouvre. Fonctionne sans JavaScript.
+- **Slug refusé, autres champs enregistrés** : un slug non conforme ou déjà pris est refusé, avec un message sous le champ, mais les autres champs sont enregistrés (le brouillon garde son slug précédent), pour ne pas bloquer la sauvegarde automatique du texte.
+- **Description** : 500 caractères au plus.
+- **Abandon du brouillon sans JavaScript** : avec JavaScript, l'abandon passe par un dialogue de confirmation ; sans JavaScript, par une page de confirmation dédiée (`[id]/abandonner`).
 - Suppression d'un article : définitive, après confirmation, images comprises.
 - Images dans le corps de l'article : hors phase 1.
 

@@ -55,7 +55,9 @@ export function DataTable<Row>({
             aria-labelledby={captionId}
             tabIndex={0}
             className={cn(
-                "overflow-x-auto rounded-md border border-slate-blue/25",
+                // `relative` : les textes `sr-only` (position absolue) des cellules restent dans la zone défilante
+                // au lieu d'élargir la page.
+                "relative overflow-x-auto rounded-md border border-slate-blue/25",
                 className,
             )}
         >

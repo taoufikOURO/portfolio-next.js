@@ -7,7 +7,8 @@ Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le 
 - Interface éditoriale avec micro-interactions et animations discrètes
 - Rendu optimisé grâce à Next.js 16 (App Router)
 - Design responsive, adapté à tous les formats d'écran
-- Architecture basée sur des fichiers JSON, sans base de données
+- Site public : contenus lus dans `data/` (fichiers JSON et Markdown), en attendant la refonte de la phase 2
+- Administration (`/admin`) : interface protégée, responsive et accessible au clavier, connectée à PostgreSQL et à Supabase Storage (phase 1)
 - Structure SEO optimisée
 - Code entièrement typé avec TypeScript
 - Composants modulaires et réutilisables
@@ -21,6 +22,14 @@ Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le 
 - TypeScript - Typage statique
 - Tailwind CSS 4 - Framework CSS utility-first
 
+### Administration (phase 1)
+
+- Prisma 7 (migrations versionnées, adaptateur `@prisma/adapter-pg`) et PostgreSQL
+- Supabase Storage - Images et icônes
+- Zod - Validation des entrées côté serveur
+- Nodemailer - E-mails par SMTP (Gmail)
+- Vitest - Tests
+
 ### Outils
 
 - ESLint - Linting et qualité de code
@@ -31,29 +40,87 @@ Portfolio personnel développé avec Next.js 16, React 19 et Tailwind CSS 4. Le 
 
 ### Prérequis
 
-- Node.js 18 ou supérieur
-- pnpm (recommandé) ou npm
+- Node.js 24
+- pnpm (seul gestionnaire de paquets du projet : ni npm ni yarn)
+- PostgreSQL en local (PostgreSQL 18, base `portfolio`)
+- Un projet Supabase pour Supabase Storage (images et icônes de l'administration). En développement, seuls les buckets préfixés `dev-` sont utilisés.
 
-### Étapes
+### Démarrage
 
 ```bash
 git clone https://github.com/taoufikOURO/portfolio.git
 cd portfolio
+pnpm install
 ```
 
+1. Copier `.env.example` en `.env`, puis remplacer chaque valeur factice (voir « Variables d'environnement »). `.env` n'est jamais commité.
+2. Créer la base locale `portfolio` dans PostgreSQL. L'application refuse de démarrer en développement si `DATABASE_URL` ou `DIRECT_URL` ne pointe pas vers une base locale.
+3. Appliquer les migrations et créer les buckets de développement :
+
 ```bash
-pnpm install
-# ou
-npm install
+pnpm db:migrate
+pnpm storage:setup
 ```
+
+4. Créer le compte administrateur. `ADMIN_EMAIL` est lu dans `.env` ; le mot de passe est fourni **dans la session du terminal seulement**, jamais écrit dans `.env` ni dans un fichier :
+
+```powershell
+$env:ADMIN_PASSWORD = '<mot de passe de 12 caractères minimum>'
+pnpm db:seed
+```
+
+Le seed n'écrase jamais un compte existant.
+
+5. Lancer le projet :
 
 ```bash
 pnpm dev
-# ou
-npm run dev
 ```
 
-Le site est ensuite accessible sur `http://localhost:3000`.
+Le site est accessible sur `http://localhost:3000` et l'administration sur `http://localhost:3000/admin/connexion`.
+
+Avec `APP_ENV=development`, aucun e-mail n'est envoyé : le lien de validation ou de réinitialisation est affiché dans la console du serveur. Avec `APP_ENV=production`, les e-mails sont envoyés par SMTP.
+
+## Variables d'environnement
+
+Les noms des variables (les valeurs ne figurent jamais dans le dépôt : `.env.example` ne contient que des valeurs factices).
+
+| Variable | Rôle |
+| -------- | ---- |
+| `APP_ENV` | `development` ou `production` |
+| `APP_URL` | URL publique de l'application (liens des e-mails) |
+| `NEXT_PUBLIC_SITE_URL` | URL utilisée par le site public existant |
+| `DATABASE_URL` | Connexion Prisma |
+| `DIRECT_URL` | Connexion directe pour les migrations |
+| `SESSION_SECRET` | Signature du cookie de session |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé publique Supabase (facultative) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé serveur Supabase (jamais côté client) |
+| `SUPABASE_STORAGE_BUCKET_ARTICLES` | Bucket des images d'articles |
+| `SUPABASE_STORAGE_BUCKET_PROJECTS` | Bucket des images de projets |
+| `SUPABASE_STORAGE_BUCKET_PROFILE` | Bucket du profil (photo, CV) |
+| `SUPABASE_STORAGE_BUCKET_STACK` | Bucket des icônes de technologies |
+| `SMTP_HOST` | Serveur SMTP |
+| `SMTP_PORT` | Port SMTP |
+| `SMTP_USER` | Adresse Gmail |
+| `SMTP_PASS` | Mot de passe d'application Gmail |
+| `MAIL_FROM` | Expéditeur des e-mails |
+| `ADMIN_EMAIL` | E-mail du compte administrateur (seed) |
+| `ADMIN_PASSWORD` | Mot de passe initial du compte (seed ; à fournir dans la session du terminal, pas dans `.env`) |
+| `GITHUB_TOKEN` | Facultatif : augmente la limite de l'API GitHub |
+
+## Buckets de stockage (Supabase Storage)
+
+| Usage | Variable | Développement |
+| ----- | -------- | ------------- |
+| Images d'articles | `SUPABASE_STORAGE_BUCKET_ARTICLES` | `dev-articles` |
+| Images de projets | `SUPABASE_STORAGE_BUCKET_PROJECTS` | `dev-projets` |
+| Profil (photo, CV) | `SUPABASE_STORAGE_BUCKET_PROFILE` | `dev-profil` |
+| Icônes de technologies | `SUPABASE_STORAGE_BUCKET_STACK` | `dev-stack` |
+
+- En développement, les noms de buckets doivent commencer par `dev-` : l'application refuse tout autre nom. Le projet Supabase est le même qu'en production ; les buckets de production ne sont jamais utilisés en développement.
+- `pnpm storage:setup` crée les buckets manquants et ne modifie jamais un bucket existant.
+- Les fichiers sont référencés par leur chemin dans le bucket ; l'URL publique est calculée à l'affichage. Taille maximale : 1 Mo.
 
 ## Structure du projet
 
@@ -152,6 +219,8 @@ Les variables de thème sont définies dans `app/globals.css` :
 
 ### Vercel
 
+> La mise en production de l'administration n'a lieu que sur demande explicite de Taoufik. **Aucun push ni déploiement tant qu'un balayage complet de l'historique Git n'a pas été fait** (voir `docs/recette_phase1.md`, section sur les secrets).
+
 1. Pousser le code sur GitHub
 2. Connecter le dépôt à Vercel
 3. Vercel détecte automatiquement Next.js et déploie le projet
@@ -166,11 +235,31 @@ pnpm start
 ## Scripts disponibles
 
 ```bash
-pnpm dev        # Serveur de développement
-pnpm build      # Build de production
-pnpm start      # Lancement en production
-pnpm lint       # Vérification ESLint
+pnpm dev          # Serveur de développement
+pnpm build        # Build de production
+pnpm start        # Lancement du build en production
+pnpm lint         # Vérification ESLint
+pnpm typecheck    # Vérification des types (tsc --noEmit)
+pnpm test         # Tests Vitest
+pnpm db:migrate   # Nouvelle migration / migrations en développement (prisma migrate dev)
+pnpm db:deploy    # Applique les migrations existantes (prisma migrate deploy)
+pnpm db:reset     # Détruit et recrée la base locale (prisma migrate reset)
+pnpm db:seed      # Crée le compte administrateur et le profil vide
+pnpm db:generate  # Régénère le client Prisma
+pnpm db:studio    # Prisma Studio
+pnpm storage:setup # Crée les buckets de stockage manquants
+pnpm mail:test    # Envoie les trois modèles d'e-mail en SMTP réel à ADMIN_EMAIL
 ```
+
+- `pnpm db:reset` supprime toutes les données de la base locale : à ne lancer qu'après une sauvegarde. Il refuse toute base qui n'est pas locale.
+- `pnpm mail:test` envoie de vrais e-mails (objet préfixé « [Test] ») ; leurs liens utilisent un jeton factice et ne mènent à rien d'utilisable.
+- Toute modification du schéma Prisma passe par une nouvelle migration (`pnpm db:migrate`) ; une migration déjà créée n'est jamais modifiée.
+
+## Documentation
+
+- `docs/cahier_des_charges.md` : cahier des charges (fonctionnel)
+- `docs/plan_implementation.md` : plan d'implémentation et suivi d'avancement
+- `docs/recette_phase1.md` : recette de la phase 1 (administration)
 
 ## Fonctionnalités
 

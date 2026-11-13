@@ -32,7 +32,7 @@ export function AdminShell({
         <ToastProvider>
             <a
                 href="#contenu"
-                className="sr-only rounded-md border-2 border-slate-blue bg-cream px-4 py-2 font-semibold text-slate-blue focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
+                className="sr-only rounded-md border-2 border-slate-blue bg-cream px-4 py-2 font-semibold text-slate-blue focus:not-sr-only focus:fixed focus:inline-flex focus:min-h-11 focus:items-center focus:left-4 focus:top-4 focus:z-50"
             >
                 Aller au contenu principal
             </a>

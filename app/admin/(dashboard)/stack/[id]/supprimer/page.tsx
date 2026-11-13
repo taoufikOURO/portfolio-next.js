@@ -23,7 +23,7 @@ export default async function DeleteTechnologyPage({ params }: { params: Promise
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={STACK_PATH} className="inline-flex items-center gap-2 underline">
+        <Link href={STACK_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir à la stack
         </Link>

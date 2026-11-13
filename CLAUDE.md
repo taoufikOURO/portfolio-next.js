@@ -7,9 +7,16 @@ Références : `docs/cahier_des_charges.md` (fonctionnel) et `docs/plan_implemen
 ## Contexte
 
 - Refonte complète du portfolio personnel en Next.js.
-- **Phase 1 (en cours)** : interface d'administration complète, protégée et responsive.
+- **Phase 1 : étapes 0 à 16 validées par Taoufik le 13 novembre 2026 ; étape 17 (production) en attente d'une demande explicite** : interface d'administration complète, protégée et responsive.
 - **Phase 2 (plus tard)** : refonte de la partie visible du site. Pendant la phase 1, on n'y touche pas. Seule exception : le déplacement des pages publiques dans `app/(site)/` pour isoler l'admin, sans aucun changement visible pour les visiteurs.
 - Le site public lit encore `data/` et `public/images/` : ne pas les supprimer avant la phase 2.
+
+## État du projet (13 novembre 2026)
+
+- **Phase 1** : étapes 0 à 16 terminées et validées par Taoufik. **Étape 16 (recette et documentation)** : **validée par Taoufik le 13 novembre 2026**, par écrit dans la conversation (« je valide l'etape 16 »). Parcours automatisés, confirmations de Taoufik (mobile, connexion, vérifications manuelles) et documentation D1 à D3 faits ; **D4 fermé** (cases et statuts de l'étape 16 cochés dans `docs/plan_implementation.md`). Détail : `docs/recette_phase1.md`.
+- **Étape 17 (mise en production)** : **en attente d'une demande explicite de Taoufik**, aucune action sans cette demande. **Phase 2** : pas commencée.
+- **Dépôt** : jamais poussé, les commits sont locaux. La recherche de secrets dans l'historique est fermée pour les lignes lues seulement (13 commits non classés). **Aucun push ni déploiement tant qu'un balayage complet de l'historique n'a pas été fait.**
+- **Cahier des charges** : version 1.5.
 
 ## Stack
 
@@ -72,7 +79,7 @@ Rôles validés (ratios WCAG calculés, détail dans `docs/plan_implementation.m
 
 ## Commandes
 
-Tous les scripts sont déclarés dans `package.json` depuis l'étape 1, mais `db:*` et `test` ne fonctionnent qu'après l'étape 3 (installation de `prisma` et `vitest`) et `storage:setup` qu'après l'étape 10 (`scripts/setup-storage.ts`). Ne pas les lancer avant.
+Tous les scripts de `package.json` sont opérationnels (étapes 0 à 16 validées). `pnpm db:reset` détruit la base locale : seulement avec l'accord explicite de Taoufik (E32). `pnpm mail:test` envoie de vrais e-mails à `ADMIN_EMAIL` : seulement sur demande de Taoufik.
 
 - Base locale : service Windows `postgresql-x64-18`, démarré automatiquement (sinon `Start-Service postgresql-x64-18` dans un terminal administrateur)
 - Installer les dépendances : `pnpm install`
@@ -85,6 +92,7 @@ Tous les scripts sont déclarés dans `package.json` depuis l'étape 1, mais `db
 - Rejouer les migrations sur base vide : `pnpm db:reset`
 - Seed (compte admin) : `pnpm db:seed`
 - Buckets de stockage : `pnpm storage:setup`
+- E-mails de test (SMTP réel, jeton factice) : `pnpm mail:test`
 
 ## Méthode de travail
 

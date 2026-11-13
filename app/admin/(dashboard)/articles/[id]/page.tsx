@@ -42,7 +42,7 @@ export default async function EditArticlePage({
   return (
     <div className="flex max-w-7xl flex-col gap-8">
       <div>
-        <Link href={ARTICLES_PATH} className="inline-flex items-center gap-2 underline">
+        <Link href={ARTICLES_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux articles
         </Link>

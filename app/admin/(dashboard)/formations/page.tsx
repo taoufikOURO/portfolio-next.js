@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 function Summary({ education }: { education: Education }) {
   return (
     <div className="flex flex-col gap-1">
-      <Link href={educationPath(education.id)} className="font-semibold underline break-words">
+      <Link href={educationPath(education.id)} className="inline-flex min-h-11 items-center self-start font-semibold underline break-words">
         {education.title}
       </Link>
       <span className="font-normal break-words">

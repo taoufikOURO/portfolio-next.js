@@ -79,15 +79,21 @@ export default async function ArticlesPage({
             header: "Article",
             isRowHeader: true,
             cell: (row) => (
+              // Sous 768 px, le statut passe sous le titre (la colonne « Statut » est masquée) : « Modifier » et « Supprimer » restent entiers à 390 px.
               <span className="flex flex-col gap-1">
-                <span className="font-semibold break-words">{row.title}</span>
+                {/* `anywhere` (et non `break-words`) : un titre sans espace ne fixe plus la largeur minimale du tableau. */}
+                <span className="font-semibold [overflow-wrap:anywhere]">{row.title}</span>
                 {row.slug ? <span className="text-sm break-all">/{row.slug}</span> : <span className="text-sm">Sans slug</span>}
+                <span className="mt-1 md:hidden">
+                  <ArticleStatus status={row.status} />
+                </span>
               </span>
             ),
           },
           {
             key: "status",
             header: "Statut",
+            hideBelow: "md",
             cell: (row) => <ArticleStatus status={row.status} />,
           },
           {

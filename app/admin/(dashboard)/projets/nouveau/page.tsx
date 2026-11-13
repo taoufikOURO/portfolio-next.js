@@ -19,7 +19,7 @@ export default async function NewProjectPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={PROJECTS_PATH} className="inline-flex items-center gap-2 underline">
+        <Link href={PROJECTS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux projets
         </Link>
