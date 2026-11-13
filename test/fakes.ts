@@ -473,11 +473,15 @@ function createFakeDb() {
 
   const client = {
     article: {
-      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
-        return sortRows(
+      async count({ where }: { where?: Row } = {}) {
+        return articles.filter((candidate) => matches(candidate, where)).length;
+      },
+      async findMany({ where, orderBy, take }: { where?: Row; orderBy?: OrderBy; take?: number } = {}) {
+        const sorted = sortRows(
           articles.filter((candidate) => matches(candidate, where)),
           orderBy,
-        ).map(articleWithRelations);
+        );
+        return (take === undefined ? sorted : sorted.slice(0, take)).map(articleWithRelations);
       },
       async findUnique({ where }: { where: Row }) {
         const article = findArticle(where);
@@ -620,6 +624,9 @@ function createFakeDb() {
       },
     },
     project: {
+      async count({ where }: { where?: Row } = {}) {
+        return projects.filter((candidate) => matches(projectWithRelations(candidate), where)).length;
+      },
       async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
         return sortRows(
           projects.filter((candidate) => matches(projectWithRelations(candidate), where)).map(projectWithRelations),
@@ -773,6 +780,9 @@ function createFakeDb() {
       },
     },
     education: {
+      async count({ where }: { where?: Row } = {}) {
+        return educations.filter((candidate) => matches(candidate, where)).length;
+      },
       async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
         return sortRows(
           educations.filter((candidate) => matches(candidate, where)),

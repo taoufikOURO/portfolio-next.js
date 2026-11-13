@@ -46,7 +46,7 @@ export type Article = Prisma.ArticleGetPayload<{ select: typeof ARTICLE_SELECT }
  * Version affichée dans l'éditeur : le brouillon s'il existe, sinon la version
  * publiée. `null` seulement si l'invariant est rompu (article sans version).
  */
-export function workingVersionOf(article: Pick<Article, "draftVersion" | "publishedVersion">): ArticleVersion | null {
+export function workingVersionOf<V>(article: { draftVersion: V | null; publishedVersion: V | null }): V | null {
   return article.draftVersion ?? article.publishedVersion;
 }
 

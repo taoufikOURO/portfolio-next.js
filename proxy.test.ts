@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 describe("proxy", () => {
-  it.each(["/admin", "/admin/formations", "/admin/articles/123/modifier", "/admin/demo", "/admin/xyz"])(
+  it.each(["/admin", "/admin/formations", "/admin/articles/123/modifier", "/admin/projets", "/admin/xyz"])(
     "sans cookie, %s redirige vers /admin/connexion",
     (path) => {
       const response = proxy(request(path));
