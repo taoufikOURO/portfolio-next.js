@@ -50,3 +50,100 @@
         }
     }
 }
+
+/* Aperçu Markdown (MarkdownPreview) : mise en forme minimale du contenu, dans
+   la palette (le reset de Tailwind retire marges, puces et tailles de titre).
+   Coloration du code par graisse et style seulement : aucune couleur ajoutée. */
+@layer components {
+    .markdown-preview {
+        overflow-wrap: anywhere;
+        line-height: 1.6;
+    }
+
+    .markdown-preview > * + * {
+        margin-top: 1em;
+    }
+
+    .markdown-preview :is(h1, h2, h3, h4, h5, h6) {
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .markdown-preview h1 {
+        font-size: 1.875rem;
+    }
+
+    .markdown-preview h2 {
+        font-size: 1.5rem;
+    }
+
+    .markdown-preview h3 {
+        font-size: 1.25rem;
+    }
+
+    .markdown-preview :is(ul, ol) {
+        padding-left: 1.5rem;
+    }
+
+    .markdown-preview ul {
+        list-style: disc;
+    }
+
+    .markdown-preview ol {
+        list-style: decimal;
+    }
+
+    .markdown-preview li + li {
+        margin-top: 0.25em;
+    }
+
+    .markdown-preview a {
+        text-decoration: underline;
+    }
+
+    .markdown-preview blockquote {
+        border-left: 4px solid var(--color-slate-blue);
+        padding-left: 1rem;
+        font-style: italic;
+    }
+
+    .markdown-preview code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.875em;
+    }
+
+    .markdown-preview :not(pre) > code {
+        border: 1px solid var(--color-slate-blue);
+        border-radius: 0.25rem;
+        padding: 0 0.25em;
+    }
+
+    .markdown-preview pre {
+        overflow-x: auto;
+        border: 1px solid var(--color-slate-blue);
+        border-radius: 0.375rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .markdown-preview table {
+        border-collapse: collapse;
+    }
+
+    .markdown-preview :is(th, td) {
+        border: 1px solid var(--color-slate-blue);
+        padding: 0.25rem 0.5rem;
+        text-align: left;
+    }
+
+    .markdown-preview hr {
+        border-top: 1px solid var(--color-slate-blue);
+    }
+
+    .markdown-preview :is(.hljs-keyword, .hljs-built_in, .hljs-title, .hljs-section, .hljs-selector-tag) {
+        font-weight: 700;
+    }
+
+    .markdown-preview :is(.hljs-comment, .hljs-quote) {
+        font-style: italic;
+    }
+}

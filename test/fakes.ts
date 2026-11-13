@@ -1,4 +1,4 @@
-// Doublures pour les tests Vitest (étapes 7 à 9).
+// Doublures pour les tests Vitest (étapes 7 à 14).
 //
 // - `fakeDb` : base en mémoire qui imite le sous-ensemble du client Prisma
 //   utilisé par `lib/auth/` (administrateurs, sessions, tentatives, jetons des
@@ -139,6 +139,33 @@ const EMPTY_FAKE_PROFILE: Omit<FakeProfile, "id"> = {
   resumePath: null,
 };
 
+/** Article (étape 14) : `slug` est celui de la version publiée (unique), `null` tant qu'il n'est pas publié. */
+export type FakeArticle = {
+  id: string;
+  slug: string | null;
+  status: "DRAFT" | "PUBLISHED";
+  publishedVersionId: string | null;
+  draftVersionId: string | null;
+  publishedAt: Date | null;
+  lastPublishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FakeArticleVersion = {
+  id: string;
+  articleId: string;
+  title: string;
+  slug: string;
+  description: string;
+  category: string;
+  author: string;
+  content: string;
+  coverImagePath: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type FakeLoginAttempt = {
   id: string;
   email: string;
@@ -253,6 +280,8 @@ function createFakeDb() {
   const sessions: FakeSession[] = [];
   const loginAttempts: FakeLoginAttempt[] = [];
   const authTokens: FakeAuthToken[] = [];
+  const articles: FakeArticle[] = [];
+  const articleVersions: FakeArticleVersion[] = [];
 
   const withAdmin = (session: FakeSession) => {
     const admin = admins.find((candidate) => candidate.id === session.adminId);
@@ -265,6 +294,8 @@ function createFakeDb() {
     sessionFindUnique: 0,
     authTokenFindUnique: 0,
     profileUpsert: [] as { where: Row; create: Row }[],
+    /** Écritures sur les versions d'articles (contrôle : la version publiée n'est jamais modifiée). */
+    articleVersionWrites: [] as { op: "create" | "update" | "delete"; id: string }[],
     /** Écritures sur les collaborateurs : création, `upsert` sur une ligne existante, `update`. */
     collaboratorWrites: [] as { op: "create" | "upsert-existing" | "update"; githubUsername: string }[],
   };
@@ -412,7 +443,145 @@ function createFakeDb() {
     skills?: { connect?: { id: string }[]; set?: { id: string }[] };
   };
 
+  const versionById = (id: string | null) =>
+    id === null ? null : (articleVersions.find((version) => version.id === id) ?? null);
+
+  const articleWithRelations = (article: FakeArticle) => {
+    const published = versionById(article.publishedVersionId);
+    const draft = versionById(article.draftVersionId);
+    return { ...article, publishedVersion: published ? { ...published } : null, draftVersion: draft ? { ...draft } : null };
+  };
+
+  /** Contraintes de la table `articles` : slug publié, versions publiée et de travail uniques ; versions existantes. */
+  const assertArticleConstraints = (article: FakeArticle) => {
+    for (const other of articles) {
+      if (other.id === article.id) continue;
+      if (article.slug !== null && other.slug === article.slug) throw prismaError("P2002", "slug d'article en double");
+      if (article.publishedVersionId !== null && other.publishedVersionId === article.publishedVersionId) {
+        throw prismaError("P2002", "version publiée en double");
+      }
+      if (article.draftVersionId !== null && other.draftVersionId === article.draftVersionId) {
+        throw prismaError("P2002", "version de travail en double");
+      }
+    }
+    for (const id of [article.publishedVersionId, article.draftVersionId]) {
+      if (id !== null && !versionById(id)) throw new Error("Doublure : clé étrangère vers une version absente (P2003).");
+    }
+  };
+
+  const findArticle = (where: Row | undefined) => articles.find((candidate) => matches(candidate, where));
+
   const client = {
+    article: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          articles.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map(articleWithRelations);
+      },
+      async findUnique({ where }: { where: Row }) {
+        const article = findArticle(where);
+        return article ? articleWithRelations(article) : null;
+      },
+      async findFirst({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        const [first] = sortRows(
+          articles.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        );
+        return first ? articleWithRelations(first) : null;
+      },
+      async create({ data }: { data: Partial<Omit<FakeArticle, "id">> }) {
+        const now = new Date();
+        const row: FakeArticle = {
+          slug: null,
+          status: "DRAFT",
+          publishedVersionId: null,
+          draftVersionId: null,
+          publishedAt: null,
+          lastPublishedAt: null,
+          createdAt: now,
+          updatedAt: now,
+          ...data,
+          id: fakeId(),
+        };
+        assertArticleConstraints(row);
+        articles.push(row);
+        return articleWithRelations(row);
+      },
+      /** Comme `@updatedAt` : `updatedAt` prend l'heure actuelle s'il n'est pas fourni. */
+      async update({ where, data }: { where: Row; data: Partial<Omit<FakeArticle, "id">> }) {
+        const article = findArticle(where);
+        if (!article) throw prismaError("P2025", "article introuvable");
+        const next: FakeArticle = { ...article, ...data, updatedAt: data.updatedAt ?? new Date() };
+        assertArticleConstraints(next);
+        Object.assign(article, next);
+        return articleWithRelations(article);
+      },
+      /** Clé étrangère en cascade : les versions partent avec l'article. */
+      async delete({ where }: { where: Row }) {
+        const article = findArticle(where);
+        if (!article) throw prismaError("P2025", "article introuvable");
+        const result = articleWithRelations(article);
+        articles.splice(articles.indexOf(article), 1);
+        removeWhere(articleVersions, { articleId: article.id });
+        return result;
+      },
+    },
+    articleVersion: {
+      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        return sortRows(
+          articleVersions.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        ).map((row) => ({ ...row }));
+      },
+      async findFirst({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
+        const [first] = sortRows(
+          articleVersions.filter((candidate) => matches(candidate, where)),
+          orderBy,
+        );
+        return first ? { ...first } : null;
+      },
+      async create({
+        data,
+      }: {
+        data: Omit<FakeArticleVersion, "id" | "createdAt" | "updatedAt" | "coverImagePath"> & {
+          coverImagePath?: string | null;
+        };
+      }) {
+        if (!articles.some((article) => article.id === data.articleId)) {
+          throw new Error("Doublure : version d'un article absent (P2003).");
+        }
+        const now = new Date();
+        const row: FakeArticleVersion = { coverImagePath: null, ...data, id: fakeId(), createdAt: now, updatedAt: now };
+        articleVersions.push(row);
+        calls.articleVersionWrites.push({ op: "create", id: row.id });
+        return { ...row };
+      },
+      async update({ where, data }: { where: Row; data: Partial<Omit<FakeArticleVersion, "id" | "articleId">> }) {
+        const version = articleVersions.find((candidate) => matches(candidate, where));
+        if (!version) throw prismaError("P2025", "version introuvable");
+        Object.assign(version, data, { updatedAt: new Date() });
+        calls.articleVersionWrites.push({ op: "update", id: version.id });
+        return { ...version };
+      },
+      /** `onDelete: SetNull` : un article qui pointait vers la version supprimée perd ce lien. */
+      async delete({ where }: { where: Row }) {
+        const version = articleVersions.find((candidate) => matches(candidate, where));
+        if (!version) throw prismaError("P2025", "version introuvable");
+        articleVersions.splice(articleVersions.indexOf(version), 1);
+        for (const article of articles) {
+          if (article.publishedVersionId === version.id) article.publishedVersionId = null;
+          if (article.draftVersionId === version.id) article.draftVersionId = null;
+        }
+        calls.articleVersionWrites.push({ op: "delete", id: version.id });
+        return { ...version };
+      },
+      async deleteMany({ where }: { where: Row }) {
+        const targets = articleVersions.filter((candidate) => matches(candidate, where));
+        for (const version of targets) await client.articleVersion.delete({ where: { id: version.id } });
+        return { count: targets.length };
+      },
+    },
     skill: {
       async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
         return sortRows(
@@ -768,6 +937,8 @@ function createFakeDb() {
 
   return {
     client,
+    articles,
+    articleVersions,
     admins,
     sessions,
     loginAttempts,
@@ -1002,6 +1173,9 @@ export const fakeGitHub = {
 };
 
 export function resetFakes() {
+  fakeDb.articles.length = 0;
+  fakeDb.articleVersions.length = 0;
+  fakeDb.calls.articleVersionWrites.length = 0;
   fakeStorage.files.clear();
   fakeStorage.failUpload = null;
   fakeStorage.failRemove = null;
