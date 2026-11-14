@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { isRecordNotFound, isUniqueViolation } from "@/lib/prisma-errors";
+import { DEFAULT_IMAGE_SRC } from "@/lib/public/content";
 import { getStorageContext, publicUrlFor } from "@/lib/storage/client";
 import { normalizeTechnologyName, type TechnologyMoveDirection } from "@/lib/validation/technology";
 
@@ -59,8 +60,12 @@ export async function getTechnology(id: string): Promise<Technology | null> {
   return db.technology.findUnique({ where: { id }, select: TECHNOLOGY_SELECT });
 }
 
-/** URL publique de l'icône, calculée à l'affichage à partir du chemin enregistré (E11). */
+/**
+ * URL publique de l'icône, calculée à l'affichage à partir du chemin enregistré
+ * (E11). Icône vide (technologie importée de `data/`, E68) : image par défaut.
+ */
 export function technologyIconUrl(iconPath: string): string {
+  if (iconPath.trim() === "") return DEFAULT_IMAGE_SRC;
   return publicUrlFor(getStorageContext().config, "stack", iconPath);
 }
 

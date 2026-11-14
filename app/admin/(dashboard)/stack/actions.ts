@@ -107,6 +107,8 @@ async function caughtState(caught: unknown, context: string, name: string, value
 
 /** Supprime le fichier d'icône d'une technologie supprimée ; `false` si le bucket l'a refusé (journalisé). */
 async function removeIcon(iconPath: string): Promise<boolean> {
+  // Technologie importée sans icône (E68) : aucun fichier à supprimer.
+  if (iconPath.trim() === "") return true;
   try {
     return await removeFile("stack", iconPath);
   } catch (caught) {

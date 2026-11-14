@@ -17,13 +17,16 @@
 // - le profil (id = 1) est créé vide s'il n'existe pas, jamais modifié sinon.
 //
 // Sécurité : la console n'affiche jamais le mot de passe, son hash, ni les
-// valeurs des variables (seulement leurs noms).
+// valeurs des variables (seulement leurs noms). Refusé si APP_ENV=production ou
+// si DATABASE_URL n'est pas locale, sauf avec `--confirm-production` (E68,
+// `lib/target-guard.ts`) : `pnpm db:seed:production`.
 
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { Prisma, PrismaClient } from "../generated/prisma/client";
 import { hashPassword } from "../lib/auth/password";
 import { EnvError, parseSeedEnv, SEED_FAILURE, type SeedEnv } from "../lib/env-schema";
+import { CONFIRM_PRODUCTION_FLAG, productionTargetRefusal } from "../lib/target-guard";
 
 const PROFILE_ID = 1;
 
@@ -138,6 +141,19 @@ function describeError(error: unknown): string {
 async function main(): Promise<void> {
   // Validation complète avant toute connexion à la base.
   const env = parseSeedEnv(process.env);
+
+  // Jamais sur la production sans confirmation explicite (E68) :
+  // `pnpm db:seed:production` (`prisma db seed -- --confirm-production`).
+  const refusal = productionTargetRefusal({
+    appEnv: env.APP_ENV,
+    databaseUrl: env.DATABASE_URL,
+    confirmProduction: process.argv.slice(2).includes(CONFIRM_PRODUCTION_FLAG),
+  });
+  if (refusal) {
+    console.error(`Seed refusé, rien n'a été écrit : ${refusal}`);
+    process.exitCode = 1;
+    return;
+  }
 
   const db = new PrismaClient({
     adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),

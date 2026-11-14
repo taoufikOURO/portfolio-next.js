@@ -1,4 +1,4 @@
-// Règles pures du script d'import des contenus de `data/` (phase 2, E65).
+// Règles pures du script d'import des contenus de `data/` (phase 2, E65 et E68).
 // Aucune lecture de fichier ni de base ici : testées par `rules.test.ts`.
 
 const FRENCH_MONTHS: Readonly<Record<string, number>> = {
@@ -66,13 +66,130 @@ export function legacyProjectLinks(project: LegacyProject): { labels: string[]; 
   return { labels, urls };
 }
 
-/** Chemin d'une image locale de `public/` (« /images/… ») ; `null` pour une URL distante ou vide. */
-export function localPublicPath(value: string | undefined): string | null {
-  const trimmed = value?.trim() ?? "";
-  if (trimmed === "" || /^[a-z]+:/i.test(trimmed) || !trimmed.startsWith("/")) return null;
-  if (trimmed.split("/").includes("..")) return null;
-  return trimmed.slice(1);
+// ---------------------------------------------------------------------------
+// Données personnelles non publiques (E68)
+// ---------------------------------------------------------------------------
+
+/**
+ * Clés écartées, après normalisation (minuscules, sans accents ni séparateurs) :
+ * e-mail personnel, téléphone, adresse postale, date de naissance. Leurs
+ * valeurs ne sont jamais lues par l'import ni affichées.
+ */
+const PERSONAL_KEYS = new Set([
+  "email",
+  "mail",
+  "courriel",
+  "adressemail",
+  "telephone",
+  "tel",
+  "phone",
+  "phonenumber",
+  "mobile",
+  "portable",
+  "adresse",
+  "address",
+  "adressepostale",
+  "rue",
+  "street",
+  "codepostal",
+  "postalcode",
+  "zipcode",
+  "datenaissance",
+  "datedenaissance",
+  "naissance",
+  "birthdate",
+  "birthday",
+  "dateofbirth",
+  "dob",
+]);
+
+function normalizedKey(key: string): string {
+  return plain(key).replace(/[^a-z0-9]/g, "");
 }
+
+export function isPersonalKey(key: string): boolean {
+  return PERSONAL_KEYS.has(normalizedKey(key));
+}
+
+/**
+ * Chemins des champs personnels présents dans un fichier (« profile.json : email »,
+ * « projets.json : [].telephone »), sans leurs valeurs, triés et sans doublon.
+ */
+export function personalFieldPaths(file: string, value: unknown): string[] {
+  const found = new Set<string>();
+  const walk = (node: unknown, path: string) => {
+    if (Array.isArray(node)) {
+      for (const item of node) walk(item, `${path}[]`);
+      return;
+    }
+    if (node === null || typeof node !== "object") return;
+    for (const [key, child] of Object.entries(node)) {
+      const childPath = path ? `${path}.${key}` : key;
+      if (isPersonalKey(key)) found.add(`${file} : ${childPath}`);
+      else walk(child, childPath);
+    }
+  };
+  walk(value, "");
+  return [...found].sort();
+}
+
+/** Texte importé qui contient quelque chose qui ressemble à un e-mail ou à un numéro de téléphone. */
+export function looksPersonal(text: string): boolean {
+  return /[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/i.test(text) || /(?:\+\d{2,3}[\s.-]?)?(?:\d{2}[\s.-]){4}\d{2}\b/.test(text);
+}
+
+// ---------------------------------------------------------------------------
+// Articles : publié ou brouillon (E68)
+// ---------------------------------------------------------------------------
+
+/**
+ * Un ancien article est public s'il était affiché par l'ancien site : listé dans
+ * `articles.json`, sans marque de brouillon, daté au plus tard aujourd'hui.
+ * Les marques reconnues : `estPublie`/`publie`/`published` à `false`,
+ * `brouillon`/`draft` à `true`. Sinon : brouillon.
+ */
+export function isLegacyArticlePublic(article: Record<string, unknown>, date: Date, today: Date): boolean {
+  for (const key of ["estPublie", "publie", "published"]) {
+    if (typeof article[key] === "boolean") return article[key] as boolean && date.getTime() <= today.getTime();
+  }
+  for (const key of ["brouillon", "draft"]) {
+    if (article[key] === true) return false;
+  }
+  return date.getTime() <= today.getTime();
+}
+
+/** « 2025-03-14 » → minuit et demi-journée UTC (évite un changement de jour à l'affichage) ; `null` si illisible. */
+export function legacyDay(value: unknown): Date | null {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.trim())) return null;
+  const date = new Date(`${value.trim()}T12:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+// ---------------------------------------------------------------------------
+// Options de la commande
+// ---------------------------------------------------------------------------
+
+export type ImportOptions = { apply: boolean; confirmProduction: boolean };
+
+/**
+ * `--dry-run` (simulation, par défaut), `--apply` (écriture), `--confirm-production`.
+ * Une option inconnue ou les deux modes ensemble sont refusés (une faute de
+ * frappe ne doit jamais changer la cible).
+ */
+export function parseImportArgs(args: readonly string[]): { ok: true; options: ImportOptions } | { ok: false; message: string } {
+  const known = new Set(["--dry-run", "--apply", "--confirm-production"]);
+  const unknown = args.filter((arg) => arg !== "--" && !known.has(arg));
+  if (unknown.length > 0) {
+    return { ok: false, message: "option inconnue (options permises : --dry-run, --apply, --confirm-production)" };
+  }
+  const apply = args.includes("--apply");
+  if (apply && args.includes("--dry-run")) return { ok: false, message: "--dry-run et --apply sont incompatibles" };
+  return { ok: true, options: { apply, confirmProduction: args.includes("--confirm-production") } };
+}
+
+// ---------------------------------------------------------------------------
+// Compteurs
+// ---------------------------------------------------------------------------
 
 /** Compteurs affichés par le script (jamais de contenu). */
 export type Tally = { create: number; existing: number; skipped: Record<string, number> };

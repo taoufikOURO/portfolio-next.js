@@ -9,8 +9,10 @@ import {
   findDuplicateTechnologyName,
   listTechnologies,
   moveTechnology,
+  technologyIconUrl,
   updateTechnology,
 } from "./technologies";
+import { DEFAULT_IMAGE_SRC } from "./public/content";
 import { normalizeTechnologyName } from "./validation/technology";
 
 vi.mock("@/lib/db", async () => ({ db: (await import("@/test/fakes")).fakeDb.client }));
@@ -29,6 +31,13 @@ function addProject(title: string, position = 0, technologyIds: string[] = []) {
   for (const technologyId of technologyIds) fakeDb.projectTechnologies.push({ projectId: project.id, technologyId });
   return project;
 }
+
+describe("technologyIconUrl", () => {
+  it("icône vide (technologie importée, E68) : image par défaut, sans appel au stockage", () => {
+    expect(technologyIconUrl("")).toBe(DEFAULT_IMAGE_SRC);
+    expect(technologyIconUrl("  ")).toBe(DEFAULT_IMAGE_SRC);
+  });
+});
 
 describe("decideTechnologyDeletion", () => {
   const A = "a";

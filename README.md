@@ -69,7 +69,7 @@ $env:ADMIN_PASSWORD = '<mot de passe de 12 caractères minimum>'
 pnpm db:seed
 ```
 
-Le seed n'écrase jamais un compte existant.
+Le seed n'écrase jamais un compte existant. Pour remplir la base avec les anciens contenus, voir « Peupler la base ».
 
 5. Lancer le projet :
 
@@ -121,6 +121,42 @@ Les noms des variables (les valeurs ne figurent jamais dans le dépôt : `.env.e
 - En développement, les noms de buckets doivent commencer par `dev-` : l'application refuse tout autre nom. Le projet Supabase est le même qu'en production ; les buckets de production ne sont jamais utilisés en développement.
 - `pnpm storage:setup` crée les buckets manquants et ne modifie jamais un bucket existant.
 - Les fichiers sont référencés par leur chemin dans le bucket ; l'URL publique est calculée à l'affichage. Taille maximale : 1 Mo.
+
+## Peupler la base
+
+Le site public ne lit que la base. Deux scripts la remplissent : le **seed** (compte administrateur et profil vide) et l'**import** des anciens contenus de `data/` (profil, technologies, compétences, formations, projets, articles). Les deux sont relançables sans créer de doublon et ne modifient jamais un élément existant.
+
+### En local (base `portfolio`)
+
+Dans cet ordre, base locale démarrée :
+
+```bash
+pnpm db:migrate                 # 1. schéma à jour
+pnpm db:seed                    # 2. compte administrateur (ADMIN_PASSWORD dans la session du terminal, voir « Démarrage »)
+pnpm content:import --dry-run   # 3. simulation : comptes seulement, rien n'est écrit
+pnpm content:import --apply     # 4. import réel, après lecture des comptes
+```
+
+Ce que fait l'import :
+
+- **Articles** : publiés seulement s'ils l'étaient déjà sur l'ancien site (listés dans `articles.json`, datés au plus tard aujourd'hui, sans marque de brouillon), à leur date d'origine ; sinon en brouillon.
+- **Projets** : liens dans l'ordre (site, puis dépôts), technologies, collaborateurs (nom GitHub seul, aucun appel à GitHub) et statut de publication.
+- **Images** : aucune n'est importée ni envoyée dans un bucket. Les champs image restent vides et le site affiche l'image par défaut ; les images s'ajoutent ensuite depuis l'administration.
+- **Données personnelles** (e-mail personnel, téléphone, adresse, date de naissance) : jamais importées. Le script liste les noms des champs écartés, sans leurs valeurs. L'e-mail de contact se saisit dans l'administration (page « Profil »).
+- La console n'affiche que des comptes (à créer, déjà présents, ignorés) et des noms de champs : aucun contenu, aucune valeur, aucune URL de connexion.
+
+### En production (étape 17 seulement)
+
+**Le seed et l'import ne tournent jamais sur la production sans confirmation explicite.** Ils refusent de démarrer si `APP_ENV=production` ou si `DATABASE_URL` ne désigne pas une base locale, sauf avec l'option `--confirm-production` (aussi en simulation). Les variables de production sont définies dans la session du terminal : elles l'emportent sur celles de `.env`.
+
+```bash
+pnpm db:deploy                                         # 1. migrations
+pnpm db:seed:production                                # 2. compte administrateur (prisma db seed -- --confirm-production)
+pnpm content:import --dry-run --confirm-production     # 3. simulation sur la base de production
+pnpm content:import --apply --confirm-production       # 4. import réel
+```
+
+Les pages publiques sont gardées en cache une heure au plus : après un import en production, elles se mettent à jour d'elles-mêmes (ou au déploiement suivant).
 
 ## Structure du projet
 
@@ -244,7 +280,10 @@ pnpm test         # Tests Vitest
 pnpm db:migrate   # Nouvelle migration / migrations en développement (prisma migrate dev)
 pnpm db:deploy    # Applique les migrations existantes (prisma migrate deploy)
 pnpm db:reset     # Détruit et recrée la base locale (prisma migrate reset)
-pnpm db:seed      # Crée le compte administrateur et le profil vide
+pnpm db:seed      # Crée le compte administrateur et le profil vide (base locale)
+pnpm db:seed:production # Même seed, production confirmée (--confirm-production)
+pnpm content:import --dry-run # Simulation de l'import de data/ (comptes seulement)
+pnpm content:import --apply   # Import réel de data/ (voir « Peupler la base »)
 pnpm db:generate  # Régénère le client Prisma
 pnpm db:studio    # Prisma Studio
 pnpm storage:setup # Crée les buckets de stockage manquants

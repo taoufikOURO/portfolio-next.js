@@ -467,6 +467,17 @@ describe("deleteTechnologyAction", () => {
     expect(storedPaths()).toEqual([`dev-stack/${vue.iconPath}`]);
   });
 
+  it("technologie importée sans icône (E68) : supprimée sans avertissement, bucket intact", async () => {
+    const vue = addTechnology("Vue", 1);
+    const imported = { id: fakeId(), name: "Importée", normalizedName: normalizeTechnologyName("Importée"), iconPath: "", position: 0 };
+    fakeDb.technologies.push(imported);
+
+    const url = await expectRedirect(deleteTechnologyAction(null, form({ id: imported.id })));
+
+    expect(url).toBe("/admin/stack?resultat=supprimee");
+    expect(storedPaths()).toEqual([`dev-stack/${vue.iconPath}`]);
+  });
+
   it("supprime le fichier d'icône après une suppression confirmée avec projets", async () => {
     const react = addTechnology("React", 0);
     const portfolio = addProject("Portfolio", 0, [react.id]);
