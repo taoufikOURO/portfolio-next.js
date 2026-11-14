@@ -363,8 +363,8 @@ export function ArticleEditor({ article, initialValues, categories, publishError
 
   return (
     <div className="flex flex-col gap-8">
-      <section aria-labelledby="article-statut" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="article-statut" className="text-xl font-bold">
+      <section aria-labelledby="article-statut" className="admin-card">
+        <h2 id="article-statut" className="admin-section-title">
           Statut
         </h2>
         <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -466,9 +466,9 @@ export function ArticleEditor({ article, initialValues, categories, publishError
         onSubmit={onSubmit}
         noValidate
         aria-labelledby="article-redaction"
-        className="flex flex-col gap-6 rounded-md border border-slate-blue/25 p-4 sm:p-6"
+        className="admin-card flex flex-col gap-6"
       >
-        <h2 id="article-redaction" className="text-xl font-bold">
+        <h2 id="article-redaction" className="admin-section-title">
           Rédaction
         </h2>
         <input type="hidden" name="id" value={article.id} />

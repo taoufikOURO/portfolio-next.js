@@ -21,11 +21,11 @@ export default async function EditEducationPage({ params }: { params: Promise<{ 
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={EDUCATIONS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={EDUCATIONS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux formations
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Modifier « {education.title} »</h1>
+        <h1 className="admin-page-title mt-4">Modifier « {education.title} »</h1>
       </div>
 
       <EducationForm
@@ -34,8 +34,8 @@ export default async function EditEducationPage({ params }: { params: Promise<{ 
         skillOptions={skillOptions}
       />
 
-      <section aria-labelledby="formation-suppression" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="formation-suppression" className="text-xl font-bold">
+      <section aria-labelledby="formation-suppression" className="admin-card">
+        <h2 id="formation-suppression" className="admin-section-title">
           Supprimer la formation
         </h2>
         <p className="mt-4">Suppression définitive, après confirmation. Les compétences sont conservées.</p>

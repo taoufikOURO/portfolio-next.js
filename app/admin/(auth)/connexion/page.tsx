@@ -27,8 +27,8 @@ export default async function LoginPage({
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Connexion</h1>
-      <p className="mt-2 mb-6">Espace d’administration du portfolio.</p>
+      <h1 className="text-3xl leading-tight font-semibold tracking-tight">Connexion</h1>
+      <p className="mt-2 mb-8 text-muted">Espace d’administration du portfolio.</p>
       {success ? (
         <Alert tone="success" className="mb-5">
           {success}
@@ -36,7 +36,7 @@ export default async function LoginPage({
       ) : null}
       <LoginForm />
       <p className="mt-6">
-        <Link href={FORGOT_PASSWORD_PATH} className="font-semibold underline">
+        <Link href={FORGOT_PASSWORD_PATH} className="admin-link">
           Mot de passe oublié ?
         </Link>
       </p>

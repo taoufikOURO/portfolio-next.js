@@ -265,3 +265,98 @@ D1 à D3 faits le 13 novembre 2026. **D4 fermé le 13 novembre 2026 : validation
 - **Cahier des charges** : version 1.5 inchangée, pas de version 1.6.
 - **Reste ouvert** : le **balayage complet de l'historique Git** (13 commits non classés, S6 fermé pour les lignes lues seulement) : **aucun push ni déploiement tant qu'il n'a pas été fait**. **Étape 17** : en attente d'une demande explicite de Taoufik, sans action.
 - **Périmètre de cette passe** : documentation seulement. Aucun code, test, build, serveur, reset ; `.env` non lu ; aucune base ni aucun bucket touchés ; rien commité.
+
+## 10. Recette visuelle (étape 18, refonte de l'admin, E60 et E61)
+
+> **Statut : recette visuelle validée par Taoufik le 14 novembre 2026** (validation écrite de l'étape 18 : « je valide l'étape 18 »). Les lignes de checklist ci-dessous que Taoufik n'a pas cochées lui-même restent non cochées : la validation est acquise sans elles.
+
+Rien n'est coché par Claude. Référence : charte de `docs/cahier_des_charges.md` §5.1 et capture fournie par Taoufik. L'étape 16 reste validée sur le comportement ; cette recette ne porte que sur l'apparence.
+
+**Mesures automatiques déjà faites par Claude** (13 novembre 2026 ; build servi par `next start -p 3200`, `APP_ENV=development`, base locale `portfolio`, aucun bucket, administrateur et données de test temporaires, supprimés ensuite) : 30 routes × 1440 et 390 px ; aucun défilement horizontal, police ≥ 14 px, aucune cible < 44 px hors cases à cocher (placées dans des libellés de 44 px). Contrôles clavier : 16 conformes sur 17, le 17e étant un faux écart du script (lien d'évitement, ordre de tabulation, menu du compte, dialogue de suppression, panneau « Menu » à 390 px, `prefers-reduced-motion`). Captures avant et après rangées hors du dépôt, dans le dossier temporaire de la session de Claude Code (`…\scratchpad\captures\avant`, `…\apres`, `…\apres-interactions`).
+
+### 10.1 Pages × largeurs
+
+Pour chaque case : rendu fidèle à la charte (barre en pilule, panneau blanc, cartes grises, boutons pilule, pilules de statut), aucun défilement horizontal, textes lisibles, focus visible au clavier.
+
+| Route | Page | 1440 px | 390 px |
+| ----- | ---- | ------- | ------ |
+| `/admin/connexion` | Connexion | [ ] | [ ] |
+| `/admin/mot-de-passe-oublie` | Mot de passe oublié | [ ] | [ ] |
+| `/admin/reinitialiser` | Réinitialisation (lien absent ou invalide, puis lien valide) | [ ] | [ ] |
+| `/admin/verifier-email` | Validation de l'adresse (lien absent ou invalide, puis lien valide) | [ ] | [ ] |
+| `/admin` | Tableau de bord (profil, articles publiés, publications par mois, répartition, chiffres, articles à reprendre, projets récents ; état vide) | [ ] | [ ] |
+| `/admin/articles` | Liste des articles | [ ] | [ ] |
+| `/admin/articles/nouveau` | Nouvel article | [ ] | [ ] |
+| `/admin/articles/[id]` | Édition (éditeur Markdown, onglets à 390 px, aperçu, couverture, enregistrement automatique) | [ ] | [ ] |
+| `/admin/articles/[id]/publication` | Publication | [ ] | [ ] |
+| `/admin/articles/[id]/abandonner` | Abandon des modifications | [ ] | [ ] |
+| `/admin/articles/[id]/supprimer` | Suppression | [ ] | [ ] |
+| `/admin/formations` | Liste des formations | [ ] | [ ] |
+| `/admin/formations/nouvelle` | Nouvelle formation | [ ] | [ ] |
+| `/admin/formations/[id]` | Édition d'une formation | [ ] | [ ] |
+| `/admin/formations/[id]/supprimer` | Suppression d'une formation | [ ] | [ ] |
+| `/admin/competences` | Compétences | [ ] | [ ] |
+| `/admin/competences/[id]` | Édition d'une compétence | [ ] | [ ] |
+| `/admin/competences/[id]/supprimer` | Suppression d'une compétence | [ ] | [ ] |
+| `/admin/profil` | Profil (identité, photo, photo détourée, CV) | [ ] | [ ] |
+| `/admin/projets` | Liste des projets | [ ] | [ ] |
+| `/admin/projets/nouveau` | Nouveau projet | [ ] | [ ] |
+| `/admin/projets/[id]` | Édition d'un projet (liens, technologies, collaborateurs, « Relancer la récupération ») | [ ] | [ ] |
+| `/admin/projets/[id]/publication` | Publication d'un projet | [ ] | [ ] |
+| `/admin/projets/[id]/supprimer` | Suppression d'un projet | [ ] | [ ] |
+| `/admin/stack` | Stack | [ ] | [ ] |
+| `/admin/stack/nouvelle` | Nouvelle technologie | [ ] | [ ] |
+| `/admin/stack/[id]` | Édition d'une technologie | [ ] | [ ] |
+| `/admin/stack/[id]/supprimer` | Suppression d'une technologie | [ ] | [ ] |
+| `/admin/compte` | Compte (adresse, mot de passe, sessions) | [ ] | [ ] |
+| `/admin/page-inexistante` | Page 404 de l'admin | [ ] | [ ] |
+
+### 10.2 États et éléments communs
+
+| Élément | 1440 px | 390 px |
+| ------- | ------- | ------ |
+| **Retrait du logo (E61)** : aucun logo, aucune lettre « T », aucun texte de marque ni substitut sur la connexion, le mot de passe oublié, la réinitialisation, la validation de l'adresse, la barre de navigation, le panneau mobile, la 404, la page d'erreur et les états vides ; la barre commence par les liens (ou par « Menu ») ; panneau de connexion centré et équilibré | [ ] | [ ] |
+| Barre de navigation : lien actif souligné ; menu du compte (avatar, adresse, « Voir le site », « Se déconnecter ») | [ ] | sans objet |
+| Panneau « Menu » (sous 1280 px) : ouverture, lien actif, Échap, focus rendu au bouton | sans objet | [ ] |
+| Lien d'évitement visible au premier Tab | [ ] | [ ] |
+| Boutons : principal, secondaire, destructif, désactivé, « en cours » | [ ] | [ ] |
+| Champs : bordure grise `#8a8d93` au repos (champs et listes), focus (anneau noir), erreur (bordure et message rouge foncé avec icône) | [ ] | [ ] |
+| Alertes : succès, erreur, information, avertissement ; bannière « adresse non validée » | [ ] | [ ] |
+| Notifications (toasts) | [ ] | [ ] |
+| Dialogues : suppression (destructif), publication, abandon, avertissement de sortie | [ ] | [ ] |
+| États vides (listes sans contenu, tableau de bord vide) | [ ] | [ ] |
+| Page d'erreur (par exemple un fichier de plus de 1 Mo envoyé sans JavaScript) | [ ] | [ ] |
+| Squelettes de chargement (navigation entre les sections) | [ ] | [ ] |
+| Parcours M1 à M12 (§6) refaits sur téléphone avec la nouvelle apparence | sans objet | [ ] |
+
+### 10.3 Points tranchés (E60)
+
+- [ ] **Bordure des champs** : **tranché par Taoufik le 14 novembre 2026, `#8a8d93`** pour les champs de saisie et les listes déroulantes (3,33 sur blanc, 3,08 sur carte), appliqué ; les autres bordures restent `#e2e2e5`. Constaté à la relecture, validé par Taoufik le 14 novembre 2026.
+- [x] **`public/capture.webp`** (non suivi par Git) : **déplacé hors du dépôt le 13 novembre 2026, à la demande de Taoufik** (dossier temporaire de la session de Claude Code, avec les captures).
+- [ ] **« Articles à reprendre »** conservé à la place d'un tableau « Articles récents » (E58 inchangé) : **tranché par Taoufik le 14 novembre 2026, conservé sans changement**. Constaté à la relecture, validé par Taoufik le 14 novembre 2026.
+
+### 10.4 Motion design (E61)
+
+Couvert par la validation du 14 novembre 2026 (voir le statut du §10). **Rien n'est coché par Claude.** Mesures déjà faites par Claude (14 novembre 2026, `next start -p 3200`, base locale `portfolio`, aucun bucket, administrateur temporaire supprimé ensuite) : durées réelles de 600 ms au plus (anneau : 800 ms ; une mesure isolée de 622 ms pour l'entrée de page au premier chargement à 390 px, navigateur occupé, 244 et 245 ms aux essais suivants), aucune animation sous réduction émulée. Pour vérifier la réduction sous Windows : Paramètres › Accessibilité › Effets visuels › « Effets d'animation » désactivés, puis recharger la page.
+
+| Élément | Attendu | Sans réduction | Avec réduction |
+| ------- | ------- | -------------- | -------------- |
+| Entrée de page | Fondu et glissement de 8 px, 250 ms ; contenu lisible à la fin | [ ] | [ ] affichage direct |
+| Cartes du tableau de bord | Apparition décalée de 60 ms, 300 ms chacune | [ ] | [ ] affichage direct |
+| Barres du graphique | Montée depuis la base, 600 ms, 50 ms d'écart (visible dès qu'un article est publié) | [ ] | [ ] barres à leur hauteur |
+| Anneau de répartition | Tracé progressif, 800 ms | [ ] | [ ] anneau complet |
+| Indicateur de navigation (1440 px) | Le trait glisse vers le lien survolé ou focalisé, puis revient au lien actif, 250 ms | [ ] | [ ] sans glissement |
+| Boutons | Soulèvement de 1 px au survol, échelle 0,98 au clic, 150 ms | [ ] | [ ] aucun déplacement |
+| Champs | Contour et anneau de focus en 150 ms | [ ] | [ ] |
+| Alertes et notifications | Fondu et glissement vertical de 8 px, 250 ms | [ ] | [ ] affichage direct |
+| Dialogues | Voile en fondu, panneau de 0,96 à 1, 200 ms | [ ] | [ ] affichage direct |
+| Panneau « Menu » (390 px) et menu du compte (1440 px) | Glissement et fondu, 200 ms | [ ] | [ ] affichage direct |
+| Squelettes de chargement | Balayage lumineux lent, 1,6 s | [ ] | [ ] statiques |
+| Lignes de tableau | Fondu décalé de 30 ms, 10 lignes au plus | [ ] | [ ] affichage direct |
+| Pastilles de statut | Aucune animation | [ ] | [ ] |
+| Boutons « en cours » | Icône de chargement fixe (rotation retirée : pas de boucle infinie) ; libellé « … en cours » | [ ] | [ ] |
+| Lecture | Aucune animation ne gêne la lecture ni la saisie | [ ] | [ ] |
+
+### 10.5 Validation
+
+**Validée par Taoufik le 14 novembre 2026**, par écrit dans la conversation : « je valide l'étape 18 ». Cases de checklist non cochées par Taoufik laissées telles quelles.

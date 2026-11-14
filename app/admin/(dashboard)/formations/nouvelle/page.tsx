@@ -19,12 +19,12 @@ export default async function NewEducationPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={EDUCATIONS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={EDUCATIONS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux formations
         </Link>
-        <h1 className="mt-4 text-3xl font-bold">Nouvelle formation</h1>
-        <p className="mt-2">Elle sera ajoutée en dernière position ; l’ordre se modifie depuis la liste.</p>
+        <h1 className="admin-page-title mt-4">Nouvelle formation</h1>
+        <p className="mt-3 text-muted">Elle sera ajoutée en dernière position ; l’ordre se modifie depuis la liste.</p>
       </div>
       <EducationForm skillOptions={skillOptions} />
     </div>

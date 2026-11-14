@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 
 /**
  * Vérifie, à partir des valeurs réelles de `app/admin/admin.css`, les ratios de
- * contraste annoncés au tableau de `docs/plan_implementation.md` §3.3.
+ * contraste de la charte visuelle de l'admin (étape 18, E60 ;
+ * `docs/plan_implementation.md` et `docs/cahier_des_charges.md`).
+ * Texte : au moins 4,5 (AA). Éléments non textuels (anneau de focus, bordure
+ * d'erreur, bordure des champs) : au moins 3.
  */
 
 const css = readFileSync(new URL("../../app/admin/admin.css", import.meta.url), "utf8");
@@ -28,52 +31,102 @@ function ratio(a: string, b: string) {
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
-describe("palette de l'admin : contrastes du plan §3.3", () => {
-    it("déclare exactement les cinq couleurs de la charte", () => {
-        const declared = [...css.matchAll(/--color-([a-z-]+):\s*#[0-9a-f]{6}/gi)].map((m) => m[1]);
-        expect(declared.sort()).toEqual(["cream", "sage", "sand", "slate-blue", "terracotta"]);
+const TEXT = 4.5;
+const NON_TEXT = 3;
+const SURFACES = ["panel", "card", "frame", "canvas"];
+
+describe("palette de l'admin : charte visuelle de l'étape 18 (E60)", () => {
+    it("déclare exactement les couleurs de la charte, sans couleur Tailwind par défaut", () => {
+        const declared = [...css.matchAll(/--color-([a-z0-9-]+):\s*#[0-9a-f]{6}/gi)].map((m) => m[1]);
+        expect(declared.sort()).toEqual(
+            [
+                "canvas",
+                "card",
+                "chart-1",
+                "chart-2",
+                "coral",
+                "coral-hover",
+                "danger",
+                "done-bg",
+                "done-ink",
+                "field-line",
+                "frame",
+                "hatch",
+                "ink",
+                "ink-hover",
+                "lime",
+                "lime-soft",
+                "line",
+                "muted",
+                "panel",
+                "progress-bg",
+                "progress-ink",
+                "waiting-bg",
+                "waiting-ink",
+            ].sort(),
+        );
+        expect(css).toMatch(/--color-\*:\s*initial;/);
     });
 
-    it("bleu-gris sur crème, et inversement : 8,87 (texte courant, boutons, barre latérale)", () => {
-        expect(ratio("slate-blue", "cream")).toBeCloseTo(8.87, 1);
+    it("texte principal noir sur toutes les surfaces : au moins 15 (capture : 19,14 sur le panneau)", () => {
+        for (const surface of SURFACES) expect(ratio("ink", surface)).toBeGreaterThanOrEqual(15);
+        expect(ratio("ink", "panel")).toBeCloseTo(19.14, 1);
     });
 
-    it("sable sur bleu-gris : 6,63 (élément actif) et bleu-gris sur sable (badges, avertissements)", () => {
-        expect(ratio("sand", "slate-blue")).toBeCloseTo(6.63, 1);
+    it("texte secondaire sur toutes les surfaces : au moins 4,5 (#6b6f76 de la capture foncé en #5f636a : 5,03 sur le fond)", () => {
+        for (const surface of SURFACES) expect(ratio("muted", surface)).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("muted", "canvas")).toBeCloseTo(5.03, 1);
     });
 
-    it("bleu-gris sur terracotta : 3,42, seulement en grand texte (≥ 3 mais < 4,5)", () => {
-        const value = ratio("slate-blue", "terracotta");
-        expect(value).toBeCloseTo(3.42, 1);
-        expect(value).toBeGreaterThanOrEqual(3);
-        expect(value).toBeLessThan(4.5);
+    it("boutons : principal blanc sur noir (et au survol), destructif noir sur corail (et au survol)", () => {
+        expect(ratio("panel", "ink")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("panel", "ink-hover")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("ink", "coral")).toBeCloseTo(6.7, 1);
+        expect(ratio("ink", "coral-hover")).toBeGreaterThanOrEqual(TEXT);
+        // Désactivé : texte secondaire sur gris (exempté par WCAG, conforme quand même).
+        expect(ratio("muted", "line")).toBeGreaterThanOrEqual(TEXT);
     });
 
-    it("pastille sauge sur bleu-gris : 4,21 (élément non textuel, seuil 3)", () => {
-        const value = ratio("sage", "slate-blue");
-        expect(value).toBeCloseTo(4.21, 1);
-        expect(value).toBeGreaterThanOrEqual(3);
+    it("pilules de statut : chaque texte sur son fond, au moins 4,5", () => {
+        expect(ratio("done-ink", "done-bg")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("progress-ink", "progress-bg")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("waiting-ink", "waiting-bg")).toBeGreaterThanOrEqual(TEXT);
     });
 
-    it("filet terracotta sur bleu-gris : 3,42 (élément non textuel, seuil 3)", () => {
-        expect(ratio("terracotta", "slate-blue")).toBeGreaterThanOrEqual(3);
+    it("alertes, badges et bannière : texte noir sur chaque fond teinté, au moins 4,5", () => {
+        for (const surface of ["done-bg", "waiting-bg", "lime-soft", "progress-bg", "lime", "coral"]) {
+            expect(ratio("ink", surface)).toBeGreaterThanOrEqual(TEXT);
+        }
     });
 
-    it("fond des dialogues : crème opaque, panneau détaché par une bordure bleu-gris (8,87, seuil 3)", () => {
+    it("erreurs : texte rouge foncé sur le panneau et les cartes ; le corail de la capture échoue en texte", () => {
+        expect(ratio("danger", "panel")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("danger", "card")).toBeGreaterThanOrEqual(TEXT);
+        expect(ratio("coral", "panel")).toBeLessThan(TEXT);
+    });
+
+    it("éléments non textuels : anneau de focus noir et bordure d'erreur, au moins 3", () => {
+        for (const surface of SURFACES) expect(ratio("ink", surface)).toBeGreaterThanOrEqual(NON_TEXT);
+        expect(ratio("danger", "panel")).toBeGreaterThanOrEqual(NON_TEXT);
+        expect(css).toMatch(/outline:\s*2px solid var\(--color-ink\)/);
+    });
+
+    it("bordure des champs et des listes #8a8d93 (E61) : au moins 3 sur le blanc du champ et sur la carte", () => {
+        expect(css).toMatch(/--color-field-line:\s*#8a8d93/i);
+        expect(ratio("field-line", "panel")).toBeCloseTo(3.33, 1);
+        expect(ratio("field-line", "card")).toBeCloseTo(3.08, 1);
+        for (const surface of ["panel", "card"]) expect(ratio("field-line", surface)).toBeGreaterThanOrEqual(NON_TEXT);
+        // Les autres bordures (cartes, séparateurs, tableaux) restent #e2e2e5.
+        expect(css).toMatch(/--color-line:\s*#e2e2e5/i);
+    });
+
+    it("dialogues et panneau mobile : voile gris foncé à 40 % (noir de la palette), aucun autre fond", () => {
         const dir = new URL("./", import.meta.url);
         const backdrops = readdirSync(dir)
             .filter((file) => file.endsWith(".tsx"))
             .flatMap((file) => [...readFileSync(new URL(file, dir), "utf8").matchAll(/backdrop:bg-([\w/-]+)/g)])
             .map((m) => m[1]);
-        expect(backdrops.length).toBeGreaterThan(0);
-        // Aucune variante transparente : seules les valeurs opaques « cream » sont admises.
-        expect(new Set(backdrops)).toEqual(new Set(["cream"]));
-        expect(ratio("slate-blue", "cream")).toBeGreaterThanOrEqual(3);
-    });
-
-    it("les couples interdits restent sous 4,5 (texte terracotta, sauge ou sable sur crème)", () => {
-        expect(ratio("terracotta", "cream")).toBeLessThan(4.5);
-        expect(ratio("sage", "cream")).toBeLessThan(4.5);
-        expect(ratio("sand", "cream")).toBeLessThan(4.5);
+        expect(backdrops.length).toBeGreaterThanOrEqual(2);
+        expect(new Set(backdrops)).toEqual(new Set(["ink/40"]));
     });
 });

@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Button } from "./Button";
 import { FILE_KIND_RULES, validateFile, type FileKind } from "./file-rules";
-import { FieldError, FieldHint, FieldLabel, describedBy } from "./field-parts";
+import { FieldError, FieldHint, FieldLabel, FOCUS_FADE, describedBy } from "./field-parts";
 
 export type FileFieldProps = {
     label: string;
@@ -120,7 +120,7 @@ export function FileField({
             </FieldLabel>
             {hint ? <FieldHint id={ids.hintId!}>{hint}</FieldHint> : null}
             {currentFileName && !file ? (
-                <p className="text-sm">Fichier actuel : {currentFileName}</p>
+                <p className="text-sm text-muted">Fichier actuel : {currentFileName}</p>
             ) : null}
             <input
                 ref={inputRef}
@@ -133,11 +133,12 @@ export function FileField({
                 aria-invalid={shownError ? true : undefined}
                 aria-describedby={ids.value}
                 className={cn(
-                    "block w-full cursor-pointer rounded-md bg-cream text-slate-blue",
-                    "file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-md file:border-2 file:border-slate-blue file:bg-cream file:px-4 file:py-2 file:font-semibold file:text-slate-blue hover:file:underline",
+                    "block w-full cursor-pointer rounded-[var(--radius-field)] bg-panel text-ink",
+                    FOCUS_FADE,
+                    "file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-full file:border file:border-ink file:bg-panel file:px-5 file:py-2 file:font-medium file:text-ink file:transition-colors file:duration-150 hover:file:bg-card",
                     shownError
-                        ? "border-2 border-slate-blue p-[calc(0.375rem-1px)]"
-                        : "border border-slate-blue p-1.5",
+                        ? "border-2 border-danger p-[calc(0.375rem-1px)]"
+                        : "border border-field-line p-1.5",
                 )}
             />
             {file ? (
@@ -149,10 +150,10 @@ export function FileField({
                             width={96}
                             height={96}
                             unoptimized
-                            className="size-24 rounded-md border border-slate-blue/25 object-contain"
+                            className="admin-thumb size-24 border border-line"
                         />
                     ) : null}
-                    <p className="min-w-0 break-all text-sm">Fichier choisi : {file.name}</p>
+                    <p className="min-w-0 text-sm break-all">Fichier choisi : {file.name}</p>
                     <Button variant="secondary" icon={X} onClick={clear}>
                         Retirer le fichier
                     </Button>

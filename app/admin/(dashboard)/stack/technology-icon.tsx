@@ -15,7 +15,7 @@ export function TechnologyIcon({ iconPath, size = 40 }: { iconPath: string; size
       width={size}
       height={size}
       unoptimized
-      className="shrink-0 rounded-md border border-slate-blue/25 object-contain"
+      className="admin-thumb shrink-0 border border-line"
       style={{ width: size, height: size }}
     />
   );

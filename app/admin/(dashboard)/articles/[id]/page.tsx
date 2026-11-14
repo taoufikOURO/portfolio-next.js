@@ -42,11 +42,11 @@ export default async function EditArticlePage({
   return (
     <div className="flex max-w-7xl flex-col gap-8">
       <div>
-        <Link href={ARTICLES_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={ARTICLES_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux articles
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Modifier « {title} »</h1>
+        <h1 className="admin-page-title mt-4">Modifier « {title} »</h1>
       </div>
 
       {result ? <ResultAlert tone={result.tone}>{result.message}</ResultAlert> : null}
@@ -66,8 +66,8 @@ export default async function EditArticlePage({
         publishErrors={publishErrors}
       />
 
-      <section aria-labelledby="article-suppression" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="article-suppression" className="text-xl font-bold">
+      <section aria-labelledby="article-suppression" className="admin-card">
+        <h2 id="article-suppression" className="admin-section-title">
           Supprimer l’article
         </h2>
         <p className="mt-4">La suppression est définitive : version en ligne, brouillon et images de couverture.</p>

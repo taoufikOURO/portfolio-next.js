@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { FieldError, FieldHint, describedBy } from "./field-parts";
+import { FieldError, FieldHint, FOCUS_FADE, describedBy } from "./field-parts";
 
 export type MultiSelectOption = {
     value: string;
@@ -86,7 +86,7 @@ export function MultiSelect({
             aria-describedby={ids.value}
             className={cn("flex min-w-0 flex-col gap-1.5", className)}
         >
-            <legend className="mb-1.5 p-0 font-semibold">
+            <legend className="mb-1.5 p-0 font-medium">
                 {label}
                 {required ? <span aria-hidden="true"> *</span> : null}
             </legend>
@@ -99,7 +99,7 @@ export function MultiSelect({
                     </label>
                     <Search
                         aria-hidden="true"
-                        className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+                        className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted"
                     />
                     <input
                         id={`${baseId}-search`}
@@ -112,20 +112,23 @@ export function MultiSelect({
                         }}
                         placeholder="Filtrer…"
                         autoComplete="off"
-                        className="block min-h-11 w-full rounded-md border border-slate-blue bg-cream py-2 pl-10 pr-3 text-slate-blue placeholder:italic placeholder:text-slate-blue"
+                        className={cn(
+                            "block min-h-11 w-full rounded-full border border-field-line bg-card py-2 pr-4 pl-11 text-ink placeholder:text-muted focus:border-ink",
+                            FOCUS_FADE,
+                        )}
                     />
                 </div>
             ) : null}
 
             {options.length === 0 ? (
-                <p className="rounded-md border border-dashed border-slate-blue px-3 py-4">
+                <p className="rounded-[var(--radius-field)] bg-card px-4 py-4 text-muted">
                     {emptyMessage}
                 </p>
             ) : (
                 <ul
                     className={cn(
-                        "max-h-64 overflow-y-auto rounded-md bg-cream",
-                        error ? "border-2 border-slate-blue" : "border border-slate-blue",
+                        "max-h-64 overflow-y-auto rounded-[var(--radius-field)] bg-panel",
+                        error ? "border-2 border-danger" : "border border-field-line",
                     )}
                 >
                     {options.map((option) => {
@@ -134,11 +137,11 @@ export function MultiSelect({
                             <li
                                 key={option.value}
                                 hidden={!matches.has(option.value)}
-                                className="border-b border-slate-blue/25 last:border-b-0"
+                                className="border-b border-line last:border-b-0"
                             >
                                 <label
                                     htmlFor={checkboxId}
-                                    className="flex min-h-11 cursor-pointer items-center gap-3 px-3 py-2 hover:underline"
+                                    className="flex min-h-11 cursor-pointer items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-card"
                                 >
                                     <span className="relative inline-flex size-5 shrink-0">
                                         <input
@@ -150,11 +153,11 @@ export function MultiSelect({
                                             onChange={(event) =>
                                                 toggle(option.value, event.target.checked)
                                             }
-                                            className="peer size-5 cursor-pointer appearance-none rounded-sm border-2 border-slate-blue bg-cream checked:bg-slate-blue"
+                                            className="peer size-5 cursor-pointer appearance-none rounded-md border-2 border-ink bg-panel checked:bg-ink"
                                         />
                                         <Check
                                             aria-hidden="true"
-                                            className="pointer-events-none absolute inset-0 size-5 p-0.5 text-cream opacity-0 peer-checked:opacity-100"
+                                            className="pointer-events-none absolute inset-0 size-5 p-0.5 text-panel opacity-0 peer-checked:opacity-100"
                                         />
                                     </span>
                                     <span>{option.label}</span>
@@ -166,10 +169,10 @@ export function MultiSelect({
             )}
 
             {options.length > 0 && matches.size === 0 ? (
-                <p className="text-sm">Aucun résultat pour « {query.trim()} ».</p>
+                <p className="text-sm text-muted">Aucun résultat pour « {query.trim()} ».</p>
             ) : null}
 
-            <p aria-live="polite" className="text-sm">
+            <p aria-live="polite" className="text-sm text-muted">
                 {summary(selected.length)}
                 {normalizedQuery ? ` · ${matches.size} affiché(s)` : ""}
             </p>

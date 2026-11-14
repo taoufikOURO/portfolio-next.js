@@ -148,7 +148,7 @@ export function ResumeForm({ resumeUrl, pdfUrl }: ResumeFormProps) {
               value="1"
               aria-invalid={fieldErrors.removePdf ? true : undefined}
               aria-describedby={fieldErrors.removePdf ? `${REMOVE_ID}-error` : undefined}
-              className="size-5 shrink-0 cursor-pointer accent-slate-blue"
+              className="size-5 shrink-0 cursor-pointer accent-ink"
             />
             <span>Supprimer le PDF actuel (sans lien ni nouveau fichier)</span>
           </label>

@@ -35,17 +35,17 @@ export default async function EditProjectPage({
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={PROJECTS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={PROJECTS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux projets
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Modifier « {project.title} »</h1>
+        <h1 className="admin-page-title mt-4">Modifier « {project.title} »</h1>
       </div>
 
       {result ? <ResultAlert tone={result.tone}>{result.message}</ResultAlert> : null}
 
-      <section aria-labelledby="projet-statut" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="projet-statut" className="text-xl font-bold">
+      <section aria-labelledby="projet-statut" className="admin-card">
+        <h2 id="projet-statut" className="admin-section-title">
           Statut
         </h2>
         <div className="mt-4 flex flex-wrap items-center gap-4">
@@ -72,8 +72,8 @@ export default async function EditProjectPage({
 
       <CollaboratorsSection projectId={project.id} collaborators={project.collaborators} />
 
-      <section aria-labelledby="projet-suppression" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="projet-suppression" className="text-xl font-bold">
+      <section aria-labelledby="projet-suppression" className="admin-card">
+        <h2 id="projet-suppression" className="admin-section-title">
           Supprimer le projet
         </h2>
         <p className="mt-4">La suppression retire aussi ses liens, son image et les collaborateurs qui ne sont rattachés à aucun autre projet.</p>

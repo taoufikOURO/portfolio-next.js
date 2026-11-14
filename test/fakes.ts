@@ -85,6 +85,7 @@ export type FakeProject = {
   imagePath?: string | null;
   isPublished?: boolean;
   date?: Date | null;
+  updatedAt?: Date;
 };
 
 export type FakeProjectLink = { id: string; projectId: string; label: string; url: string; position: number };
@@ -627,11 +628,12 @@ function createFakeDb() {
       async count({ where }: { where?: Row } = {}) {
         return projects.filter((candidate) => matches(projectWithRelations(candidate), where)).length;
       },
-      async findMany({ where, orderBy }: { where?: Row; orderBy?: OrderBy } = {}) {
-        return sortRows(
+      async findMany({ where, orderBy, take }: { where?: Row; orderBy?: OrderBy; take?: number } = {}) {
+        const sorted = sortRows(
           projects.filter((candidate) => matches(projectWithRelations(candidate), where)).map(projectWithRelations),
           orderBy,
         );
+        return take === undefined ? sorted : sorted.slice(0, take);
       },
       async findUnique({ where }: { where: Row }) {
         const project = findProject(where);

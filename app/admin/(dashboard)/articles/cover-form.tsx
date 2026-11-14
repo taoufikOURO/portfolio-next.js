@@ -122,9 +122,9 @@ export function CoverForm({
       onSubmit={onSubmit}
       noValidate
       aria-labelledby="article-couverture-titre"
-      className="flex flex-col gap-4 rounded-md border border-slate-blue/25 p-4 sm:p-6"
+      className="admin-card flex flex-col gap-4"
     >
-      <h2 id="article-couverture-titre" className="text-xl font-bold">
+      <h2 id="article-couverture-titre" className="admin-section-title">
         Image de couverture
       </h2>
       <input type="hidden" name="id" value={articleId} />
@@ -141,7 +141,7 @@ export function CoverForm({
             width={320}
             height={180}
             unoptimized
-            className="h-auto w-full max-w-xs rounded-md border border-slate-blue/25 object-contain"
+            className="admin-thumb h-auto w-full max-w-xs border border-line"
           />
         ) : (
           <p>Aucune image de couverture.</p>

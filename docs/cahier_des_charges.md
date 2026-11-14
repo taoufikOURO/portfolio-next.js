@@ -11,6 +11,8 @@ Périmètre de cette version : **phase 1, interface d'administration**. La parti
 | 1.3     | 7 novembre 2026 | Étape 8 : changer l'adresse e-mail exige le mot de passe actuel (proposition appliquée, à valider par Taoufik) |
 | 1.4     | 7 novembre 2026 | Mot de passe actuel exigé pour changer d'adresse : validé par Taoufik avec l'étape 8 |
 | 1.5     | 13 novembre 2026 | §3.3 Articles : champs exigés pour publier et image de couverture envoyée à part (E55), décisions E57 : avertissement de sortie avec modifications non enregistrées, création en deux temps, slug refusé avec enregistrement des autres champs, description à 500 caractères, abandon sans JavaScript par une page de confirmation. Acceptés par Taoufik avec l'étape 14 |
+| 1.6     | 13 novembre 2026 | §5 : navigation en barre horizontale (pilule) et nouvelle **charte visuelle de l'admin** (§5.1, décision E60 du plan, étape 18) ; palette précédente conservée pour référence, à réviser en phase 2. Tableau de bord : publications par mois, répartition du contenu, projets récents. Comportement, routes, validations et base inchangés. **Validée par Taoufik le 14 novembre 2026 (étape 18)** |
+| 1.7     | 14 novembre 2026 | §5.1 (E61 du plan, étape 18) : logo retiré de l'admin, sans substitut ; bordure des champs et des listes `#8a8d93` (décision de Taoufik) ; règles de mouvement (motion design). Comportement, routes, validations et base inchangés. **Validée par Taoufik le 14 novembre 2026 (étape 18)** |
 
 Plan de réalisation : `docs/plan_implementation.md`.
 
@@ -163,7 +165,7 @@ Les fichiers sont référencés par leur **chemin** dans le bucket ; l'URL publi
 ## 5. Interface d'administration
 
 - URL : `/admin`, connexion sur `/admin/connexion`. Pages exclues de l'indexation par les moteurs de recherche.
-- **Barre latérale** de navigation : fixe sur grand écran (à partir de 1024 px), panneau latéral ouvert par un bouton « Menu » sur tablette et mobile.
+- **Barre de navigation** horizontale en pilule blanche (étape 18, E60), sans logo (E61) : elle commence par les liens, visibles à partir de 1280 px, avec le menu du compte (avatar, adresse, « Voir le site », « Se déconnecter ») ; en dessous, panneau modal ouvert par un bouton « Menu » (même comportement que l'ancienne barre latérale : focus piégé, Échap, focus rendu au bouton).
 - **Responsive** : mobile, tablette, desktop.
 - **Accessible** : navigation au clavier, labels sur tous les champs, contrastes WCAG AA, messages d'erreur liés aux champs, information jamais portée par la couleur seule.
 - **Contrôles stricts** :
@@ -171,8 +173,38 @@ Les fichiers sont référencés par leur **chemin** dans le bucket ; l'URL publi
   - confirmation avant toute suppression et toute publication ;
   - messages d'erreur et de succès clairs ;
   - état « enregistrement en cours » sur chaque action.
-- Sections : tableau de bord (accès rapide, brouillons et modifications en attente), articles, formations, compétences, profil, projets, stack, paramètres du compte (changer e-mail et mot de passe).
-- Design sobre et cohérent, selon la charte graphique de `CLAUDE.md` : crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`. Rôles des couleurs validés dans `CLAUDE.md` et détaillés dans `docs/plan_implementation.md` §3.3.
+- Sections : tableau de bord (accès rapide, complétude du profil, chiffres du contenu, articles publiés par mois sur six mois, répartition du contenu, brouillons et modifications en attente, projets récents), articles, formations, compétences, profil, projets, stack, paramètres du compte (changer e-mail et mot de passe).
+- Design : charte visuelle de l'admin ci-dessous (§5.1), reprise dans `CLAUDE.md`.
+
+### 5.1 Charte visuelle de l'admin (version 1.7, étape 18, E60 et E61)
+
+Référence : capture d'un tableau de bord fournie par Taoufik (non versionnée). Seule l'apparence en est reprise : chaque bloc affiche une donnée réelle du projet, aucun chiffre inventé. Couleurs relevées sur la capture, puis ajustées pour le contraste WCAG AA (texte ≥ 4,5, éléments non textuels ≥ 3).
+
+| Rôle | Couleur | Remarque |
+| ---- | ------- | -------- |
+| Fond hors panneau | `#e7ebee` | relevé sur la capture |
+| Cadre autour de la barre et du panneau | `#f2f3f7` | relevé |
+| Panneau, barre de navigation, champs | `#ffffff` | |
+| Cartes | `#f6f6f6` | relevé |
+| Texte principal, boutons principaux, barres, lien actif, anneau de focus | `#0f0f12` | 19,14 sur le panneau |
+| Texte secondaire | `#5f636a` | `#6b6f76` de départ foncé (4,21 sur le fond, échec) : 5,03 sur le fond, 6,04 sur le panneau |
+| Bordures des champs de saisie et des listes déroulantes | `#8a8d93` | décision de Taoufik (14 novembre 2026) : 3,33 sur le blanc du champ, 3,08 sur la carte |
+| Bordures des cartes et des tableaux, séparateurs | `#e2e2e5` | |
+| Badge « Complet », fond des avertissements | `#b8f25c`, `#ecfad3` | texte noir (14,48 et 17,48) |
+| Bouton destructif, badge « Incomplet » | `#f2725f` (survol `#ee5f4a`) | texte noir (6,70) ; jamais de texte blanc (2,86) |
+| Texte et bordure d'erreur | `#b42318` | le corail échoue en texte (2,86) : 6,57 sur le panneau |
+| Statut « Publié » | texte `#137a3e` sur `#d9f5e3` | 4,67 |
+| Statut « Brouillon », « Non publié » | texte `#2a4bd7` sur `#dde6ff` | 5,46 |
+| Statut « Modifications en attente », « Non validée » | texte `#b42318` sur `#fde3df` | 5,39 |
+| Graphiques | hachures `#d6d6da`, gris `#b6b6ba` et `#d3d3d6` | décoratifs ; les valeurs sont toujours écrites |
+
+- **Police** : Outfit (Google Fonts, servie par `next/font`, aucune dépendance ajoutée). **Icônes** : `lucide-react`, trait fin (1,5).
+- **Formes** : boutons et pilules en `rounded-full` (44 px de haut au minimum), champs 14 px, alertes 16 px, dialogues 24 px, cartes 26 px, panneau 32 px.
+- **Logo** : aucun dans l'admin (E61) ; ni lettre « T », ni texte de marque, ni substitut. Les pages sans session montrent le seul panneau, centré. Le favicon n'est pas concerné.
+- **Composants** : bouton principal noir, secondaire à bordure noire fine, destructif corail ; champ blanc à bordure grise `#8a8d93`, focus en anneau noir de 2 px décalé ; une seule forme de pilule de statut ; tableau à en-tête gris clair et lignes de 64 px ; alertes à fond teinté avec icône dans une pastille blanche et libellé en gras ; dialogues blancs sur voile noir à 40 % ; états vides et pages 404 et erreur avec icône dans une pastille ; squelettes de chargement aux formes du contenu.
+- **Mouvement** (E61) : seules la position, l'échelle, l'opacité (et le tracé de l'anneau) sont animées ; entrées seulement, contenu lisible à l'état final même sans JavaScript ; 600 ms au plus, sauf le tracé de l'anneau (800 ms) ; aucune boucle sauf le balayage des squelettes. Entrée de page en fondu avec glissement de 8 px (250 ms) ; cartes du tableau de bord décalées de 60 ms (300 ms) ; barres du graphique montant depuis la base (600 ms, 50 ms d'écart) ; anneau tracé en 800 ms ; indicateur du lien actif qui glisse vers le lien survolé (250 ms) ; boutons soulevés de 1 px au survol et à l'échelle 0,98 au clic (150 ms) ; contour et anneau de focus des champs en 150 ms ; alertes en fondu avec glissement de 8 px (250 ms) ; dialogues : voile en fondu et panneau de 0,96 à 1 (200 ms) ; panneau mobile et menu du compte en glissement et fondu (200 ms) ; squelettes à balayage lumineux lent (1,6 s) ; lignes de tableau en fondu décalé de 30 ms (10 lignes au plus) ; pastilles de statut sans animation. **Sous `prefers-reduced-motion: reduce`** : aucun déplacement ni échelle, aucune animation, graphiques dans leur état final, squelettes statiques.
+- **Inchangé** : information jamais portée par la couleur seule (libellés en toutes lettres, préfixes « Erreur : », « Succès : »), liens d'évitement, focus visible, cibles de 44 px.
+- **Palette précédente** (crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`) : **précédente, à réviser en phase 2** (site public).
 
 ## 6. Environnements
 
@@ -252,9 +284,9 @@ Les fichiers sont référencés par leur **chemin** dans le bucket ; l'URL publi
 | Gestionnaire de paquets  | pnpm.                                                                                             |
 | Nommage                  | Schéma, code et identifiants en anglais ; interface, messages, e-mails et URL en français.        |
 | Articles                 | Toute modification va dans un brouillon ; mise en ligne uniquement par « Publier » + confirmation. |
-| Navigation admin         | Barre latérale.                                                                                   |
+| Navigation admin         | Barre latérale ; remplacée le 13 novembre 2026 par une barre horizontale en pilule (version 1.6, E60, en attente de validation). |
 | Séparation admin / site  | Pages publiques déplacées dans un groupe de routes, sans changement visible pour les visiteurs.   |
-| Couleurs                 | Palette inchangée ; rôles fixés selon les contrastes WCAG AA (voir `CLAUDE.md`). Couleurs Tailwind par défaut désactivées dans l'admin (`--color-*: initial`). |
+| Couleurs                 | Palette inchangée ; rôles fixés selon les contrastes WCAG AA (voir `CLAUDE.md`). Couleurs Tailwind par défaut désactivées dans l'admin (`--color-*: initial`). **13 novembre 2026 (version 1.6, E60)** : l'admin passe à la charte visuelle du §5.1 ; l'ancienne palette est la palette précédente, à réviser en phase 2. **14 novembre 2026 (version 1.7, E61)** : bordure des champs et des listes `#8a8d93` ; logo retiré de l'admin ; règles de mouvement. |
 | Stockage                 | Supabase Storage en ligne, dans le même projet que la production ; buckets `dev-*` en développement. |
 | Base de développement    | PostgreSQL local uniquement.                                                                      |
 | Éditeur Markdown         | Zone de texte native + barre d'outils, aperçu `react-markdown` assaini.                           |

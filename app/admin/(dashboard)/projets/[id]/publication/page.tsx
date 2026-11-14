@@ -24,11 +24,11 @@ export default async function ProjectPublicationPage({ params }: { params: Promi
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={projectPath(project.id)} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={projectPath(project.id)} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir au projet
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">
+        <h1 className="admin-page-title mt-4">
           {project.isPublished ? `Retirer « ${project.title} » de la publication ?` : `Publier « ${project.title} » ?`}
         </h1>
       </div>

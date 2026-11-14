@@ -18,12 +18,9 @@ export default async function DashboardLayout({
 
     return (
         <AdminShell
-            footer={
-                <form action={logout} className="flex flex-col gap-2 px-4 pt-2">
-                    <p className="text-sm break-all">
-                        <span className="sr-only">Connecté en tant que </span>
-                        {session.email}
-                    </p>
+            email={session.email}
+            accountActions={
+                <form action={logout} className="flex flex-col px-1 pt-2">
                     <LogoutButton />
                 </form>
             }

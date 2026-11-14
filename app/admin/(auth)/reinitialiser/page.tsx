@@ -27,10 +27,10 @@ export default async function ResetPasswordPage({
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Nouveau mot de passe</h1>
+      <h1 className="text-3xl leading-tight font-semibold tracking-tight">Nouveau mot de passe</h1>
       {check.status === "valid" && token ? (
         <>
-          <p className="mt-2 mb-6">
+          <p className="mt-2 mb-8 text-muted">
             Choisissez un nouveau mot de passe. Toutes les sessions ouvertes seront ensuite fermées.
           </p>
           <ResetPasswordForm token={token} />

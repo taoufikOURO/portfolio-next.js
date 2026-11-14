@@ -155,7 +155,7 @@ export function MarkdownEditor({
       {hint ? <FieldHint id={ids.hintId!}>{hint}</FieldHint> : null}
 
       {tabs ? (
-        <div role="tablist" aria-label={`${label} : affichage`} className="mt-1 flex gap-2">
+        <div role="tablist" aria-label={`${label} : affichage`} className="mt-1 inline-flex gap-1 self-start rounded-full bg-card p-1">
           {(
             [
               ["write", writeTabId, writePanelId, "Écrire"],
@@ -173,8 +173,8 @@ export function MarkdownEditor({
               onClick={() => setTab(key)}
               onKeyDown={onTabKeyDown}
               className={cn(
-                "min-h-11 cursor-pointer rounded-md border border-slate-blue px-4 font-semibold",
-                tab === key ? "bg-slate-blue text-cream" : "bg-cream text-slate-blue",
+                "min-h-11 cursor-pointer rounded-full px-5 font-medium transition-colors duration-150",
+                tab === key ? "bg-ink text-panel" : "text-ink hover:bg-panel",
               )}
             >
               {text}
@@ -213,7 +213,7 @@ export function MarkdownEditor({
                     setActiveTool(index);
                     format(action);
                   }}
-                  className="inline-flex size-11 cursor-pointer items-center justify-center rounded-md border border-slate-blue bg-cream text-slate-blue"
+                  className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border border-line bg-panel text-ink transition-colors duration-150 hover:border-ink"
                 >
                   <Icon aria-hidden="true" className="size-5" />
                 </button>
@@ -245,13 +245,13 @@ export function MarkdownEditor({
           aria-label={tabs ? undefined : hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}
           hidden={!showPreview}
           tabIndex={tabs ? 0 : undefined}
-          className="min-w-0 rounded-md border border-slate-blue p-4"
+          className="min-w-0 rounded-[var(--radius-field)] border border-line bg-panel p-4"
         >
           {tabs ? null : (
-            <p className="mb-3 text-sm font-semibold">{hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}</p>
+            <p className="mb-3 text-sm font-medium text-muted">{hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}</p>
           )}
           {previewValue.trim() === "" ? (
-            <p className="text-sm italic">Rien à afficher pour l’instant.</p>
+            <p className="text-sm text-muted">Rien à afficher pour l’instant.</p>
           ) : (
             <MarkdownPreview content={previewValue} />
           )}

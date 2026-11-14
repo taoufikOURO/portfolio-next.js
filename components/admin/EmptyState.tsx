@@ -4,8 +4,9 @@ import { Inbox } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 /**
- * État vide d'une liste. Bordure en pointillés bleu-gris, texte bleu-gris sur
- * crème (8,87). L'action éventuelle (bouton, lien) est passée en `children`.
+ * État vide d'une liste (étape 18, E60) : carte grise, icône dans une pastille
+ * blanche, titre, phrase en texte secondaire. L'action éventuelle (bouton,
+ * lien) est passée en `children`.
  */
 export function EmptyState({
     title,
@@ -27,13 +28,18 @@ export function EmptyState({
     return (
         <div
             className={cn(
-                "flex flex-col items-center gap-3 rounded-md border-2 border-dashed border-slate-blue px-6 py-10 text-center",
+                "flex flex-col items-center gap-3 rounded-[var(--radius-card)] bg-card px-6 py-12 text-center",
                 className,
             )}
         >
-            <Icon aria-hidden="true" className="size-10" />
-            <Heading className="text-xl font-bold">{title}</Heading>
-            {description ? <p className="max-w-prose">{description}</p> : null}
+            <span
+                aria-hidden="true"
+                className="mb-1 inline-flex size-14 items-center justify-center rounded-full bg-panel"
+            >
+                <Icon className="size-6" />
+            </span>
+            <Heading className="admin-section-title">{title}</Heading>
+            {description ? <p className="max-w-prose text-muted">{description}</p> : null}
             {children ? <div className="mt-2 flex flex-wrap justify-center gap-3">{children}</div> : null}
         </div>
     );

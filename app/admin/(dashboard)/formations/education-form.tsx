@@ -81,7 +81,7 @@ export function EducationForm({ educationId, initialValues, skillOptions }: Educ
   }, [skillOptions, createdSkills]);
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+    <form action={formAction} onSubmit={onSubmit} noValidate className="admin-card flex flex-col gap-6">
       {message ? <Alert tone={state?.ok && !clientErrors ? "success" : "error"}>{message}</Alert> : null}
       {educationId ? <input type="hidden" name="id" value={educationId} /> : null}
 

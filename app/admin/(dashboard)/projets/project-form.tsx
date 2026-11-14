@@ -177,7 +177,7 @@ export function ProjectForm({ project, initialValues, technologyOptions }: Proje
   const values = state?.values ?? initialValues ?? EMPTY_VALUES;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+    <form action={formAction} onSubmit={onSubmit} noValidate className="admin-card flex flex-col gap-6">
       {message ? <Alert tone={state?.ok && !refused ? "success" : "error"}>{message}</Alert> : null}
       {project ? <input type="hidden" name="id" value={project.id} /> : null}
 
@@ -229,7 +229,7 @@ export function ProjectForm({ project, initialValues, technologyOptions }: Proje
               width={320}
               height={180}
               unoptimized
-              className="h-auto w-full max-w-xs rounded-md border border-slate-blue/25 object-contain"
+              className="admin-thumb h-auto w-full max-w-xs border border-line"
             />
           ) : (
             <p>Aucune image enregistrée.</p>
@@ -352,7 +352,7 @@ function TitleAndSlug({
       />
     </div>
       {showConfirmation ? (
-        <div className="flex flex-col gap-2 rounded-md border border-slate-blue p-4">
+        <div className="flex flex-col gap-2 rounded-[var(--radius-field)] border border-line bg-panel p-4">
           <p className="text-sm">
             Ce projet est publié à l’adresse /projets/{publishedSlug}. Modifier le slug changera son adresse publique :
             les liens existants vers l’ancienne adresse ne fonctionneront plus.
@@ -366,7 +366,7 @@ function TitleAndSlug({
               defaultChecked={values.confirmSlugChange === "1"}
               aria-invalid={errors.confirmSlugChange ? true : undefined}
               aria-describedby={errors.confirmSlugChange ? `${IDS.confirmSlugChange}-error` : undefined}
-              className="size-5 shrink-0 cursor-pointer accent-slate-blue"
+              className="size-5 shrink-0 cursor-pointer accent-ink"
             />
             <span>Je confirme le changement d’adresse publique</span>
           </label>

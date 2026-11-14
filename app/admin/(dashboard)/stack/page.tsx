@@ -27,7 +27,7 @@ function Usage({ technology }: { technology: Technology }) {
     <ul className="flex flex-col gap-1">
       {technology.projects.map((project) => (
         <li key={project.id} className="break-words">
-          <Link href={projectPath(project.id)} className="underline">
+          <Link href={projectPath(project.id)} className="admin-link">
             {project.title}
             <span className="sr-only"> (modifier le projet)</span>
           </Link>
@@ -52,8 +52,8 @@ export default async function StackPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold">Stack</h1>
-          <p className="mt-2">
+          <h1 className="admin-page-title">Stack</h1>
+          <p className="mt-3 text-muted">
             Technologies dans leur ordre d’affichage. « Monter » et « Descendre » modifient cet ordre.
           </p>
         </div>

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 function Summary({ education }: { education: Education }) {
   return (
     <div className="flex flex-col gap-1">
-      <Link href={educationPath(education.id)} className="inline-flex min-h-11 items-center self-start font-semibold underline break-words">
+      <Link href={educationPath(education.id)} className="admin-link self-start break-words">
         {education.title}
       </Link>
       <span className="font-normal break-words">
@@ -55,8 +55,8 @@ export default async function EducationsPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold">Formations</h1>
-          <p className="mt-2">
+          <h1 className="admin-page-title">Formations</h1>
+          <p className="mt-3 text-muted">
             Formations dans leur ordre d’affichage. « Monter » et « Descendre » modifient cet ordre.
           </p>
         </div>

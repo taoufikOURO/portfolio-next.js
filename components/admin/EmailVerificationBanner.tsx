@@ -1,18 +1,20 @@
 "use client";
 
 import { useActionState } from "react";
-import { CircleAlert, CircleCheck, Send, TriangleAlert } from "lucide-react";
+import { CircleAlert, CircleCheck, Send } from "lucide-react";
 
 import type { ActionState } from "@/lib/validation/auth";
 
+import { ToneIcon } from "./Alert";
 import { SubmitButton } from "./SubmitButton";
 
 type ResendState = ActionState<never>;
 
 /**
  * Bannière persistante tant que l'adresse du compte n'est pas validée
- * (cahier §3.1), en haut de chaque page de l'administration. Fond sable,
- * texte bleu-gris (6,63) : rôle « avertissement » du plan §3.3. Le bouton
+ * (cahier §3.1), en haut de chaque page de l'administration. Style des
+ * avertissements (étape 18, E60) : fond vert anis pâle, texte noir, icône dans
+ * une pastille. Le bouton
  * « Renvoyer le lien » appelle l'action passée par le layout serveur.
  * Le résultat est annoncé (`role="status"`), avec icône et libellé explicite.
  */
@@ -30,12 +32,12 @@ export function EmailVerificationBanner({
     return (
         <section
             aria-labelledby="banniere-validation-titre"
-            className="mb-8 flex flex-col gap-3 rounded-md border border-l-8 border-slate-blue/25 border-l-slate-blue bg-sand p-4 text-slate-blue"
+            className="mb-8 flex flex-col gap-3 rounded-[var(--radius-alert)] bg-lime-soft p-4 text-ink"
         >
             <div className="flex items-start gap-3">
-                <TriangleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+                <ToneIcon tone="warning" />
                 <div className="min-w-0">
-                    <h2 id="banniere-validation-titre" className="font-bold">
+                    <h2 id="banniere-validation-titre" className="font-semibold">
                         Attention : adresse e-mail non validée
                     </h2>
                     <p className="mt-1">

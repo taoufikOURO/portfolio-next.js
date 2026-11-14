@@ -35,7 +35,7 @@ export default async function VerifyEmailPage({
   if (success) {
     return (
       <>
-        <h1 className="text-2xl font-bold">Validation de l’adresse e-mail</h1>
+        <h1 className="text-3xl leading-tight font-semibold tracking-tight">Validation de l’adresse e-mail</h1>
         <div className="mt-6 flex flex-col gap-5">
           <Alert tone="success">{success}</Alert>
           <ButtonLink href={ADMIN_HOME_PATH} icon={ArrowRight} className="self-start">
@@ -50,7 +50,7 @@ export default async function VerifyEmailPage({
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Validation de l’adresse e-mail</h1>
+      <h1 className="text-3xl leading-tight font-semibold tracking-tight">Validation de l’adresse e-mail</h1>
       {check.status === "valid" && token && check.token.targetEmail ? (
         <VerifyEmailForm token={token} email={check.token.targetEmail} />
       ) : (

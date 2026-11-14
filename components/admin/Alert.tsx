@@ -3,10 +3,25 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { TONES, type Tone } from "./tones";
 
+/** Pastille blanche et ronde qui porte l'icône d'un message (Alert, Toast, bannière). */
+export function ToneIcon({ tone }: { tone: Tone }) {
+    const Icon = TONES[tone].icon;
+    return (
+        <span
+            aria-hidden="true"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-panel"
+        >
+            <Icon className="size-5" />
+        </span>
+    );
+}
+
 /**
- * Message en ligne (succès, erreur, avertissement, information).
- * Icône + libellé explicite (« Erreur : »…) : la couleur du filet est décorative.
+ * Message en ligne (succès, erreur, avertissement, information) : bloc de
+ * 16 px de rayon, icône dans une pastille, libellé explicite en gras
+ * (« Erreur : »…) puis le texte. La teinte du fond est décorative.
  * `role="alert"` pour les erreurs, `role="status"` pour le reste.
+ * Apparition : fondu et glissement de 8 px, 250 ms (`admin-alert`, E61).
  */
 export function Alert({
     tone = "info",
@@ -20,27 +35,23 @@ export function Alert({
     onDismiss?: () => void;
     className?: string;
 }) {
-    const { label, icon: Icon, surface } = TONES[tone];
+    const { label, surface } = TONES[tone];
 
     return (
         <div
             role={tone === "error" ? "alert" : "status"}
-            className={cn(
-                "flex items-start gap-3 rounded-md border border-l-8 border-slate-blue/25 p-4 text-slate-blue",
-                surface,
-                className,
-            )}
+            className={cn("admin-alert flex items-start gap-3 rounded-[var(--radius-alert)] p-4 text-ink", surface, className)}
         >
-            <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-            <p className="min-w-0 flex-1">
-                <strong>{label} :</strong> {children}
+            <ToneIcon tone={tone} />
+            <p className="min-w-0 flex-1 self-center">
+                <strong className="font-semibold">{label} :</strong> {children}
             </p>
             {onDismiss ? (
                 <button
                     type="button"
                     onClick={onDismiss}
                     aria-label="Fermer le message"
-                    className="-m-2 inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-md"
+                    className="-m-1 inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150 hover:bg-panel"
                 >
                     <X aria-hidden="true" className="size-5" />
                 </button>

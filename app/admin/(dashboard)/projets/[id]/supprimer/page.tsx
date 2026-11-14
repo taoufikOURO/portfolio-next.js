@@ -21,11 +21,11 @@ export default async function DeleteProjectPage({ params }: { params: Promise<{ 
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={PROJECTS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={PROJECTS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir aux projets
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Supprimer le projet « {project.title} » ?</h1>
+        <h1 className="admin-page-title mt-4">Supprimer le projet « {project.title} » ?</h1>
       </div>
       <DeleteProjectForm
         project={{ id: project.id, title: project.title, orphans: collaboratorsOrphanedByDeletion(project) }}

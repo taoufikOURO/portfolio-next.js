@@ -207,7 +207,7 @@ function LinkRow({
 }) {
   const controlled = onChange !== undefined;
   return (
-    <fieldset className="flex min-w-0 flex-col gap-3 rounded-md border border-slate-blue/25 p-4">
+    <fieldset className="flex min-w-0 flex-col gap-3 rounded-[var(--radius-field)] border border-line bg-panel p-4">
       <legend className="px-1 font-semibold">Lien {index + 1}</legend>
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <Field

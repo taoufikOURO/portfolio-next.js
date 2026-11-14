@@ -23,19 +23,19 @@ export default async function EditTechnologyPage({ params }: { params: Promise<{
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={STACK_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={STACK_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour à la stack
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Modifier « {technology.name} »</h1>
+        <h1 className="admin-page-title mt-4">Modifier « {technology.name} »</h1>
       </div>
 
       <TechnologyForm
         technology={{ id: technology.id, name: technology.name, iconUrl: technologyIconUrl(technology.iconPath) }}
       />
 
-      <section aria-labelledby="technologie-usage" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="technologie-usage" className="text-xl font-bold">
+      <section aria-labelledby="technologie-usage" className="admin-card">
+        <h2 id="technologie-usage" className="admin-section-title">
           Projets qui l’utilisent
         </h2>
         {technology.projects.length === 0 ? (
@@ -44,7 +44,7 @@ export default async function EditTechnologyPage({ params }: { params: Promise<{
           <ul className="mt-4 list-disc pl-6">
             {technology.projects.map((project) => (
               <li key={project.id} className="break-words">
-                <Link href={projectPath(project.id)} className="underline">
+                <Link href={projectPath(project.id)} className="admin-link">
                   {project.title}
                   <span className="sr-only"> (modifier le projet)</span>
                 </Link>
@@ -54,8 +54,8 @@ export default async function EditTechnologyPage({ params }: { params: Promise<{
         )}
       </section>
 
-      <section aria-labelledby="technologie-suppression" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="technologie-suppression" className="text-xl font-bold">
+      <section aria-labelledby="technologie-suppression" className="admin-card">
+        <h2 id="technologie-suppression" className="admin-section-title">
           Supprimer la technologie
         </h2>
         <p className="mt-4">

@@ -45,8 +45,8 @@ export default async function ArticlesPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold">Articles</h1>
-          <p className="mt-2">
+          <h1 className="admin-page-title">Articles</h1>
+          <p className="mt-3 text-muted">
             Les plus récemment modifiés d’abord. Chaque modification est enregistrée automatiquement dans un brouillon ;
             un article n’est mis en ligne que par « Publier », après une confirmation.
           </p>

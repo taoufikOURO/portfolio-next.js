@@ -24,7 +24,7 @@ function Usage({ skill }: { skill: SkillWithUsage }) {
     <ul className="flex flex-col gap-1">
       {skill.educations.map((education) => (
         <li key={education.id}>
-          <Link href={educationPath(education.id)} className="underline">
+          <Link href={educationPath(education.id)} className="admin-link">
             {education.title}
           </Link>
         </li>
@@ -46,16 +46,16 @@ export default async function SkillsPage({
   return (
     <div className="flex flex-col gap-8">
       <div className="max-w-3xl">
-        <h1 className="text-3xl font-bold">Compétences</h1>
-        <p className="mt-2">
+        <h1 className="admin-page-title">Compétences</h1>
+        <p className="mt-3 text-muted">
           Compétences rattachables aux formations. Une même compétence peut être rattachée à plusieurs formations.
         </p>
       </div>
 
       {result ? <ResultAlert>{result}</ResultAlert> : null}
 
-      <section aria-labelledby="competences-ajout" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="competences-ajout" className="text-xl font-bold">
+      <section aria-labelledby="competences-ajout" className="admin-card">
+        <h2 id="competences-ajout" className="admin-section-title">
           Ajouter une compétence
         </h2>
         <div className="mt-4">
@@ -64,7 +64,7 @@ export default async function SkillsPage({
       </section>
 
       <section aria-labelledby="competences-liste" className="flex flex-col gap-4">
-        <h2 id="competences-liste" className="text-xl font-bold">
+        <h2 id="competences-liste" className="admin-section-title">
           Liste des compétences{" "}
           <span className="font-normal">({skills.length})</span>
         </h2>

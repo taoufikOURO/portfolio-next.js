@@ -33,8 +33,8 @@ export default async function ProjectsPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold">Projets</h1>
-          <p className="mt-2">
+          <h1 className="admin-page-title">Projets</h1>
+          <p className="mt-3 text-muted">
             Projets dans leur ordre d’affichage. « Monter » et « Descendre » modifient cet ordre. Un projet est créé non
             publié ; son statut se change depuis sa page, avec une confirmation.
           </p>

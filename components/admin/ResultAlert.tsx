@@ -20,7 +20,7 @@ export function ResultAlert({ tone = "success", children }: { tone?: Tone; child
   }, [children]);
 
   return (
-    <div ref={ref} tabIndex={-1} className="rounded-md">
+    <div ref={ref} tabIndex={-1} className="rounded-[var(--radius-alert)]">
       <Alert tone={tone}>{children}</Alert>
     </div>
   );

@@ -23,11 +23,11 @@ export default async function DeleteSkillPage({ params }: { params: Promise<{ id
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={SKILLS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={SKILLS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir aux compétences
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Supprimer la compétence « {skill.name} » ?</h1>
+        <h1 className="admin-page-title mt-4">Supprimer la compétence « {skill.name} » ?</h1>
       </div>
       <DeleteSkillForm skill={skill} />
     </div>

@@ -13,14 +13,14 @@ export const metadata: Metadata = {
 export default function ForgotPasswordPage() {
   return (
     <>
-      <h1 className="text-2xl font-bold">Mot de passe oublié</h1>
-      <p className="mt-2 mb-6">
+      <h1 className="text-3xl leading-tight font-semibold tracking-tight">Mot de passe oublié</h1>
+      <p className="mt-2 mb-8 text-muted">
         Saisissez l’adresse e-mail du compte. Si elle est reconnue, vous recevrez un lien pour
         choisir un nouveau mot de passe.
       </p>
       <ForgotPasswordForm />
       <p className="mt-6">
-        <Link href={ADMIN_LOGIN_PATH} className="font-semibold underline">
+        <Link href={ADMIN_LOGIN_PATH} className="admin-link">
           Retour à la connexion
         </Link>
       </p>

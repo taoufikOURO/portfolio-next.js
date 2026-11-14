@@ -96,7 +96,7 @@ export function TechnologyForm({ technology }: TechnologyFormProps) {
   const message = refused ? TECHNOLOGY_MESSAGES.formInvalid : state?.message;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+    <form action={formAction} onSubmit={onSubmit} noValidate className="admin-card flex flex-col gap-6">
       {message ? <Alert tone={state?.ok && !refused ? "success" : "error"}>{message}</Alert> : null}
       {technology ? <input type="hidden" name="id" value={technology.id} /> : null}
 
@@ -123,7 +123,7 @@ export function TechnologyForm({ technology }: TechnologyFormProps) {
             width={64}
             height={64}
             unoptimized
-            className="size-16 rounded-md border border-slate-blue/25 object-contain"
+            className="admin-thumb size-16 border border-line"
           />
         </div>
       ) : null}

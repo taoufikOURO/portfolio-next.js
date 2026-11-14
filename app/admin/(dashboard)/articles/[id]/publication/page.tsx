@@ -38,11 +38,11 @@ export default async function ArticlePublicationPage({ params }: { params: Promi
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={articlePath(article.id)} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={articlePath(article.id)} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir à l’éditeur
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">
+        <h1 className="admin-page-title mt-4">
           {first ? `Publier « ${title} » ?` : `Publier les modifications de « ${title} » ?`}
         </h1>
       </div>
@@ -77,8 +77,8 @@ export default async function ArticlePublicationPage({ params }: { params: Promi
                 }. « Mis à jour le » prendra la date du jour ; « Publié le » (${formatDay(article.publishedAt!)}) ne change pas.`}
           </p>
 
-          <section aria-labelledby="version-a-publier" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-            <h2 id="version-a-publier" className="text-xl font-bold">
+          <section aria-labelledby="version-a-publier" className="admin-card">
+            <h2 id="version-a-publier" className="admin-section-title">
               Version qui sera publiée
             </h2>
             <dl className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
@@ -101,7 +101,7 @@ export default async function ArticlePublicationPage({ params }: { params: Promi
                     width={320}
                     height={180}
                     unoptimized
-                    className="h-auto w-full max-w-xs rounded-md border border-slate-blue/25 object-contain"
+                    className="admin-thumb h-auto w-full max-w-xs border border-line"
                   />
                 ) : (
                   "Aucune"
@@ -109,7 +109,7 @@ export default async function ArticlePublicationPage({ params }: { params: Promi
               </dd>
             </dl>
             <h3 className="mt-6 font-semibold">Contenu</h3>
-            <div className="mt-2 rounded-md border border-slate-blue p-4">
+            <div className="mt-2 rounded-[var(--radius-field)] border border-line bg-panel p-4">
               <MarkdownPreview content={draft.content} />
             </div>
           </section>

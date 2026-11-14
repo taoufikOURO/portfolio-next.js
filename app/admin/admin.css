@@ -4,17 +4,61 @@
 @source "./";
 @source "../../components/admin";
 
-/* Palette de la charte graphique (CLAUDE.md). Aucune autre couleur sans validation. */
+/* Charte visuelle de l'admin (étape 18, E60) : palette relevée sur la capture de
+   référence. Aucune autre couleur sans validation. Ratios WCAG vérifiés par
+   `components/admin/palette.test.ts`. */
 @theme {
     /* Retire toutes les couleurs Tailwind par défaut (red-500, slate-700, etc.) :
-       seules les cinq couleurs ci-dessous existent dans l'admin. */
+       seules les couleurs ci-dessous existent dans l'admin. */
     --color-*: initial;
 
-    --color-cream: #f4f1de;
-    --color-terracotta: #e07a5f;
-    --color-slate-blue: #3d405b;
-    --color-sage: #81b29a;
-    --color-sand: #f2cc8f;
+    /* Surfaces */
+    --color-canvas: #e7ebee; /* hors panneau */
+    --color-frame: #f2f3f7; /* cadre autour de la barre et du panneau */
+    --color-panel: #ffffff; /* panneau, barre de navigation, champs */
+    --color-card: #f6f6f6; /* cartes posées sur le panneau */
+    --color-line: #e2e2e5; /* bordures des cartes et des tableaux, séparateurs */
+    --color-field-line: #8a8d93; /* bordures des champs et des listes (E61 : 3,33 sur blanc, 3,08 sur carte) */
+
+    /* Texte et accent */
+    --color-ink: #0f0f12; /* texte principal, boutons principaux, barres, lien actif */
+    --color-ink-hover: #2c2c33; /* survol des éléments noirs */
+    --color-muted: #5f636a; /* texte secondaire (capture : #6b6f76, foncé pour 4,5 sur le cadre) */
+
+    /* Signal */
+    --color-lime: #b8f25c; /* badge « complet » */
+    --color-lime-soft: #ecfad3; /* fond des avertissements */
+    --color-coral: #f2725f; /* bouton destructif, badge « incomplet » */
+    --color-coral-hover: #ee5f4a;
+    --color-danger: #b42318; /* texte et bordure d'erreur (le corail échoue en texte : 2,86) */
+
+    /* Statuts (pilules) */
+    --color-progress-bg: #dde6ff;
+    --color-progress-ink: #2a4bd7;
+    --color-done-bg: #d9f5e3;
+    --color-done-ink: #137a3e;
+    --color-waiting-bg: #fde3df;
+    --color-waiting-ink: #b42318;
+
+    /* Graphiques */
+    --color-hatch: #d6d6da;
+    --color-chart-1: #b6b6ba;
+    --color-chart-2: #d3d3d6;
+
+    /* Police : Outfit (next/font, `app/admin/layout.tsx`), appliquée par sa classe. */
+
+    --radius-field: 0.875rem; /* 14 px */
+    --radius-alert: 1rem; /* 16 px */
+    --radius-card: 1.625rem; /* 26 px */
+    --radius-dialog: 1.5rem; /* 24 px */
+    --radius-panel: 2rem; /* 32 px */
+
+    --shadow-dialog: 0 24px 64px -16px rgb(15 15 18 / 0.25);
+    --shadow-menu: 0 16px 40px -12px rgb(15 15 18 / 0.18);
+
+    /* Motion design (E61) : seules transform, opacity et stroke-dashoffset sont
+       animées ; durées de 600 ms au plus, sauf le tracé de l'anneau (800 ms). */
+    --ease-admin-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
@@ -22,15 +66,19 @@
         color-scheme: light;
     }
 
-    /* Anneau de focus : bleu-gris sur crème (8,87). Jamais supprimé. */
+    body {
+        background-color: var(--color-canvas);
+    }
+
+    /* Anneau de focus : noir, 2 px, décalé (19,14 sur le panneau). Jamais supprimé. */
     :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-        outline: 3px solid var(--color-slate-blue);
+        outline: 2px solid var(--color-ink);
         outline-offset: 2px;
     }
 
-    /* Surfaces bleu-gris foncé (barre latérale) : anneau sable (6,63). */
-    :where([data-surface="dark"]) :focus-visible {
-        outline-color: var(--color-sand);
+    /* Icônes Lucide en trait fin, partout dans l'admin (une seule famille). */
+    svg.lucide {
+        stroke-width: 1.5;
     }
 
     /* Pas de défilement de la page derrière un dialogue modal. */
@@ -38,16 +86,243 @@
         overflow: hidden;
     }
 
-    /* Respecte la préférence « réduire les animations ». */
+    /* « Réduire les animations » : filet de sécurité global. Les animations de la
+       charte (plus bas) ne sont de toute façon déclarées que sous
+       `prefers-reduced-motion: no-preference` : sous réduction, tout s'affiche
+       directement dans son état final, sans déplacement ni échelle. */
     @media (prefers-reduced-motion: reduce) {
         *,
         ::before,
         ::after {
             animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
+            animation-delay: 0ms !important;
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
         }
+    }
+}
+
+/* Classes partagées des pages (étape 18) : une seule définition, réutilisée partout. */
+@layer components {
+    /* Carte grise sur le panneau blanc. */
+    .admin-card {
+        border-radius: var(--radius-card);
+        background-color: var(--color-card);
+        padding: 1.25rem;
+    }
+
+    @media (width >= 40rem) {
+        .admin-card {
+            padding: 1.75rem;
+        }
+    }
+
+    /* Titre de page (h1) : très gros, à gauche. */
+    .admin-page-title {
+        font-size: 1.875rem;
+        line-height: 1.15;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        overflow-wrap: break-word;
+    }
+
+    @media (width >= 40rem) {
+        .admin-page-title {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Titre de carte ou de section (h2). */
+    .admin-section-title {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
+
+    /* Lien texte (« Retour… », « Voir… ») : souligné, 44 px de haut. */
+    .admin-link {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        text-decoration-line: underline;
+        text-underline-offset: 4px;
+        text-decoration-thickness: 1px;
+    }
+
+    .admin-link:hover {
+        text-decoration-thickness: 2px;
+    }
+
+    /* Miniature (photo, image de projet, icône) : coins arrondis, fond blanc. */
+    .admin-thumb {
+        border-radius: 1rem;
+        background-color: var(--color-panel);
+        object-fit: contain;
+    }
+
+    /* Squelette de chargement : forme grise ; le balayage lumineux est ajouté plus
+       bas, seulement si les animations ne sont pas réduites (sinon statique). */
+    .admin-skeleton {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        background-color: var(--color-line);
+    }
+
+    /* Barres hachurées du graphique (partie non remplie). */
+    .admin-hatch {
+        background-image: repeating-linear-gradient(
+            135deg,
+            var(--color-hatch) 0 2px,
+            transparent 2px 7px
+        );
+    }
+}
+
+/* Motion design de l'admin (E61). Règles communes :
+   - seules `transform`, `opacity` (et `stroke-dashoffset` pour l'anneau) sont animées ;
+   - entrées seulement, en `animation-fill-mode: backwards` : l'état final est
+     l'état normal de la page (lisible sans JavaScript, et aucune transformation
+     ne reste appliquée après l'animation) ;
+   - aucune boucle infinie, sauf le balayage des squelettes ;
+   - tout est déclaré sous `no-preference` : sous « réduire les animations »,
+     rien ne bouge et les graphiques s'affichent directement dans leur état final.
+   Décalages : `--admin-order` (0, 1, 2…) fixé par l'élément, multiplié par le pas
+   de chaque animation. */
+@media (prefers-reduced-motion: no-preference) {
+    /* Entrée de page : chaque page (ou son squelette) en fondu, glissement de 8 px. */
+    .admin-page > * {
+        animation: admin-rise 250ms var(--ease-admin-out) backwards;
+    }
+
+    /* Cartes du tableau de bord : 300 ms, 60 ms entre deux cartes. */
+    .admin-stagger {
+        animation: admin-rise 300ms var(--ease-admin-out) backwards;
+        animation-delay: calc(var(--admin-order, 0) * 60ms);
+    }
+
+    /* Barres du graphique : montée depuis la base, 600 ms, 50 ms entre deux barres. */
+    .admin-bar {
+        transform-origin: bottom;
+        animation: admin-grow 600ms var(--ease-admin-out) backwards;
+        animation-delay: calc(var(--admin-order, 0) * 50ms);
+    }
+
+    /* Anneau : tracé progressif du masque, 800 ms (`pathLength="100"`). */
+    .admin-ring-draw {
+        animation: admin-draw 800ms var(--ease-admin-out) backwards;
+    }
+
+    /* Alertes et notifications : fondu et glissement vertical de 8 px, 250 ms. */
+    .admin-alert {
+        animation: admin-rise 250ms var(--ease-admin-out) backwards;
+    }
+
+    /* Dialogues : voile en fondu, panneau en fondu avec échelle de 0,96 à 1, 200 ms. */
+    .admin-dialog[open] {
+        animation: admin-zoom 200ms var(--ease-admin-out);
+    }
+
+    .admin-dialog[open]::backdrop,
+    .admin-drawer[open]::backdrop {
+        animation: admin-fade 200ms ease-out;
+    }
+
+    /* Panneau mobile : glissement depuis la gauche et fondu, 200 ms. */
+    .admin-drawer[open] {
+        animation: admin-slide-in 200ms var(--ease-admin-out);
+    }
+
+    /* Menu du compte : glissement vers le bas et fondu, 200 ms. */
+    details[open] > .admin-menu {
+        animation: admin-drop 200ms var(--ease-admin-out);
+    }
+
+    /* Lignes de tableau : fondu, 30 ms entre deux lignes, 10 lignes au plus. */
+    .admin-rows > :nth-child(-n + 10) {
+        animation: admin-fade 200ms ease-out backwards;
+        animation-delay: calc(var(--admin-order, 0) * 30ms);
+    }
+
+    .admin-rows > :nth-child(2) { --admin-order: 1; }
+    .admin-rows > :nth-child(3) { --admin-order: 2; }
+    .admin-rows > :nth-child(4) { --admin-order: 3; }
+    .admin-rows > :nth-child(5) { --admin-order: 4; }
+    .admin-rows > :nth-child(6) { --admin-order: 5; }
+    .admin-rows > :nth-child(7) { --admin-order: 6; }
+    .admin-rows > :nth-child(8) { --admin-order: 7; }
+    .admin-rows > :nth-child(9) { --admin-order: 8; }
+    .admin-rows > :nth-child(10) { --admin-order: 9; }
+
+    /* Squelettes : balayage lumineux lent (1,6 s), seule boucle autorisée. */
+    .admin-skeleton::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, var(--color-panel) 55%, transparent),
+            transparent
+        );
+        transform: translateX(-100%);
+        animation: admin-shimmer 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes admin-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes admin-rise {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+@keyframes admin-drop {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes admin-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+}
+
+@keyframes admin-zoom {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+}
+
+@keyframes admin-grow {
+    from {
+        transform: scaleY(0);
+    }
+}
+
+@keyframes admin-draw {
+    from {
+        stroke-dashoffset: 100;
+    }
+}
+
+@keyframes admin-shimmer {
+    to {
+        transform: translateX(100%);
     }
 }
 
@@ -65,7 +340,7 @@
     }
 
     .markdown-preview :is(h1, h2, h3, h4, h5, h6) {
-        font-weight: 700;
+        font-weight: 600;
         line-height: 1.25;
     }
 
@@ -102,7 +377,7 @@
     }
 
     .markdown-preview blockquote {
-        border-left: 4px solid var(--color-slate-blue);
+        border-left: 4px solid var(--color-ink);
         padding-left: 1rem;
         font-style: italic;
     }
@@ -113,16 +388,16 @@
     }
 
     .markdown-preview :not(pre) > code {
-        border: 1px solid var(--color-slate-blue);
-        border-radius: 0.25rem;
-        padding: 0 0.25em;
+        border-radius: 0.375rem;
+        background-color: var(--color-card);
+        padding: 0.1em 0.35em;
     }
 
     .markdown-preview pre {
         overflow-x: auto;
-        border: 1px solid var(--color-slate-blue);
-        border-radius: 0.375rem;
-        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        background-color: var(--color-card);
+        padding: 0.875rem 1rem;
     }
 
     .markdown-preview table {
@@ -130,13 +405,17 @@
     }
 
     .markdown-preview :is(th, td) {
-        border: 1px solid var(--color-slate-blue);
-        padding: 0.25rem 0.5rem;
+        border-bottom: 1px solid var(--color-line);
+        padding: 0.375rem 0.75rem;
         text-align: left;
     }
 
+    .markdown-preview th {
+        background-color: var(--color-card);
+    }
+
     .markdown-preview hr {
-        border-top: 1px solid var(--color-slate-blue);
+        border-top: 1px solid var(--color-line);
     }
 
     .markdown-preview :is(.hljs-keyword, .hljs-built_in, .hljs-title, .hljs-section, .hljs-selector-tag) {

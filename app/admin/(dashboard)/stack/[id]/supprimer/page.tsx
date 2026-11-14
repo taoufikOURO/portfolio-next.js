@@ -23,11 +23,11 @@ export default async function DeleteTechnologyPage({ params }: { params: Promise
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={STACK_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={STACK_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir à la stack
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Supprimer la technologie « {technology.name} » ?</h1>
+        <h1 className="admin-page-title mt-4">Supprimer la technologie « {technology.name} » ?</h1>
       </div>
       <DeleteTechnologyForm technology={technology} />
     </div>

@@ -47,7 +47,7 @@ export function SubmitButton({
                     <>
                         <LoaderCircle
                             aria-hidden="true"
-                            className="size-5 shrink-0 motion-safe:animate-spin"
+                            className="size-5 shrink-0"
                         />
                         {pendingLabel}
                     </>

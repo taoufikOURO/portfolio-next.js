@@ -7,22 +7,24 @@ Références : `docs/cahier_des_charges.md` (fonctionnel) et `docs/plan_implemen
 ## Contexte
 
 - Refonte complète du portfolio personnel en Next.js.
-- **Phase 1 : étapes 0 à 16 validées par Taoufik le 13 novembre 2026 ; étape 17 (production) en attente d'une demande explicite** : interface d'administration complète, protégée et responsive.
+- **Phase 1 : étapes 0 à 16 validées par Taoufik le 13 novembre 2026 ; étape 18 (refonte visuelle de l'admin) validée par Taoufik le 14 novembre 2026 ; étape 17 (production) en attente d'une demande explicite** : interface d'administration complète, protégée et responsive.
 - **Phase 2 (plus tard)** : refonte de la partie visible du site. Pendant la phase 1, on n'y touche pas. Seule exception : le déplacement des pages publiques dans `app/(site)/` pour isoler l'admin, sans aucun changement visible pour les visiteurs.
 - Le site public lit encore `data/` et `public/images/` : ne pas les supprimer avant la phase 2.
 
 ## État du projet (13 novembre 2026)
 
 - **Phase 1** : étapes 0 à 16 terminées et validées par Taoufik. **Étape 16 (recette et documentation)** : **validée par Taoufik le 13 novembre 2026**, par écrit dans la conversation (« je valide l'etape 16 »). Parcours automatisés, confirmations de Taoufik (mobile, connexion, vérifications manuelles) et documentation D1 à D3 faits ; **D4 fermé** (cases et statuts de l'étape 16 cochés dans `docs/plan_implementation.md`). Détail : `docs/recette_phase1.md`.
+- **Étape 18 (refonte visuelle de l'admin, E60 et E61)** : **étape 18 validée par Taoufik le 14 novembre 2026**, par écrit dans la conversation (« je valide l'étape 18 ») ; commencée le 13 novembre 2026 à la demande de Taoufik ; logo retiré, bordure des champs `#8a8d93` et motion design ajoutés le 14 novembre 2026 (E61) ; recette visuelle (`docs/recette_phase1.md` §10) validée par Taoufik le 14 novembre 2026. L'étape 16 reste validée sur le comportement.
 - **Étape 17 (mise en production)** : **en attente d'une demande explicite de Taoufik**, aucune action sans cette demande. **Phase 2** : pas commencée.
 - **Dépôt** : jamais poussé, les commits sont locaux. La recherche de secrets dans l'historique est fermée pour les lignes lues seulement (13 commits non classés). **Aucun push ni déploiement tant qu'un balayage complet de l'historique n'a pas été fait.**
-- **Cahier des charges** : version 1.5.
+- **Cahier des charges** : version 1.7 (charte visuelle de l'admin, §5.1 : logo retiré, bordure des champs, mouvement).
 
 ## Stack
 
 - Next.js 16 (App Router), React 19, **TypeScript** strict
 - **pnpm** (jamais npm ni yarn : un seul lockfile, `pnpm-lock.yaml`)
 - Tailwind CSS 4 : pas de `tailwind.config`, thème déclaré en CSS avec `@theme` (`app/admin/admin.css` pour l'admin)
+- Police de l'admin : Outfit, chargée par `next/font` dans `app/admin/layout.tsx`
 - Prisma 7 (version stable épinglée) avec **migrations versionnées**, adaptateur `@prisma/adapter-pg`
 - PostgreSQL : base **locale** `portfolio` en développement (PostgreSQL 18, service Windows), Supabase Database en production
 - Supabase Storage **en ligne** pour toutes les images et icônes, dans le même projet Supabase que la production ; buckets préfixés `dev-` en développement
@@ -50,32 +52,53 @@ Références : `docs/cahier_des_charges.md` (fonctionnel) et `docs/plan_implemen
 - **Français** : interface, messages d'erreur, e-mails, URL de l'admin (`/admin/connexion`, `/admin/formations`…).
 - Routes admin dans `app/admin/`, modules serveur dans `lib/` (marqués `import "server-only"`), composants dans `components/admin/`.
 - Fichiers référencés par leur chemin dans le bucket, URL publique calculée à l'affichage.
-- Icônes : `lucide-react`, pas d'emoji.
-- Navigation de l'admin : barre latérale (fixe à partir de 1024 px, panneau ouvert par un bouton en dessous).
+- Icônes : `lucide-react` en trait fin (réglé dans `admin.css`), pas d'emoji.
+- Navigation de l'admin : barre horizontale en pilule, **sans logo** (elle commence par les liens et le menu du compte à partir de 1280 px, par le bouton « Menu » en dessous, qui ouvre un panneau modal), `components/admin/TopNav.tsx`.
+- Styles de l'admin : composants de `components/admin/` et classes partagées de `admin.css` (`admin-card`, `admin-page-title`, `admin-section-title`, `admin-link`, `admin-thumb`) ; pas de styles en ligne par page.
 
-## Charte graphique
+## Charte visuelle de l'admin (étape 18, E60 et E61)
 
-Palette imposée par Taoufik, déclarée dans `@theme` (Tailwind 4). Aucune autre couleur sans validation. Dans l'admin, les couleurs Tailwind par défaut sont désactivées (`--color-*: initial` dans `app/admin/admin.css`) : `bg-red-500` et consorts ne compilent pas.
+**La palette relevée sur la capture de référence fournie par Taoufik est la référence de l'admin** (détail : `docs/cahier_des_charges.md` §5.1, décision E60 du plan). Elle est déclarée dans `@theme` de `app/admin/admin.css`, où les couleurs Tailwind par défaut sont désactivées (`--color-*: initial`) : `bg-red-500` et consorts ne compilent pas. Aucune autre couleur sans validation. Les ratios sont vérifiés par `components/admin/palette.test.ts`.
 
-| Nom              | Hex       |
-| ---------------- | --------- |
-| Crème            | `#f4f1de` |
-| Terracotta       | `#e07a5f` |
-| Bleu-gris foncé  | `#3d405b` |
-| Vert sauge       | `#81b29a` |
-| Sable            | `#f2cc8f` |
+| Rôle                                  | Jeton Tailwind                       | Hex                   |
+| ------------------------------------- | ------------------------------------ | --------------------- |
+| Fond hors panneau                     | `canvas`                             | `#e7ebee`             |
+| Cadre de la barre et du panneau       | `frame`                              | `#f2f3f7`             |
+| Panneau, barre, champs                | `panel`                              | `#ffffff`             |
+| Cartes                                | `card`                               | `#f6f6f6`             |
+| Texte, boutons principaux, focus      | `ink` (survol `ink-hover`)           | `#0f0f12` (`#2c2c33`) |
+| Texte secondaire                      | `muted`                              | `#5f636a`             |
+| Bordures des champs et des listes     | `field-line`                         | `#8a8d93`             |
+| Bordures des cartes, tableaux, séparateurs | `line`                          | `#e2e2e5`             |
+| Badge positif, fond d'avertissement   | `lime`, `lime-soft`                  | `#b8f25c`, `#ecfad3`  |
+| Bouton destructif, badge négatif      | `coral` (survol `coral-hover`)       | `#f2725f` (`#ee5f4a`) |
+| Texte et bordure d'erreur             | `danger`                             | `#b42318`             |
+| Statut « Publié »                     | `done-ink` sur `done-bg`             | `#137a3e` / `#d9f5e3` |
+| Statut « Brouillon », « Non publié »  | `progress-ink` sur `progress-bg`     | `#2a4bd7` / `#dde6ff` |
+| Statut « Modifications en attente »   | `waiting-ink` sur `waiting-bg`       | `#b42318` / `#fde3df` |
+| Graphiques (décoratif)                | `hatch`, `chart-1`, `chart-2`        | `#d6d6da`, `#b6b6ba`, `#d3d3d6` |
 
-Rôles validés (ratios WCAG calculés, détail dans `docs/plan_implementation.md` §3.3) :
+Rôles :
 
-- Fond crème, texte et titres bleu-gris (8,87).
-- Barre latérale : fond bleu-gris, texte crème ; élément actif en texte sable (6,63) avec un filet terracotta.
-- Bouton principal : fond bleu-gris, texte crème. Bouton secondaire : bordure et texte bleu-gris sur crème.
-- Bouton destructif : fond terracotta, texte bleu-gris **gras d'au moins 18,66 px** (3,42, conforme seulement en grand texte).
-- Brouillon, modifications en attente, avertissements : fond sable, texte bleu-gris (6,63).
-- Publié : fond bleu-gris, texte crème, pastille vert sauge.
-- Succès et erreur : texte bleu-gris sur crème, filet gauche sauge ou terracotta, icône et libellé explicite.
-- Bordures de champ et anneau de focus : bleu-gris (sable dans la barre latérale).
-- **Interdits** : texte terracotta, sauge ou sable sur crème ; texte clair sur terracotta, sauge ou sable ; information portée par la couleur seule. Les variantes transparentes de la palette sont réservées aux séparateurs décoratifs.
+- Texte noir sur panneau, cartes et fonds teintés (au moins 15). Texte secondaire `muted` (au moins 5,03).
+- Bouton principal : pilule noire, texte blanc. Secondaire : pilule blanche à bordure noire fine. Destructif : pilule corail, **texte noir** (6,70). Hauteur minimale 44 px.
+- Champs (saisie, listes déroulantes, fichiers, listes à cocher) : fond blanc, bordure `field-line` (3,33 sur blanc, 3,08 sur carte ; décision de Taoufik), rayon 14 px ; focus : anneau noir de 2 px décalé ; erreur : bordure `danger` de 2 px, message `danger` avec icône, lié par `aria-describedby`.
+- Pilules de statut : une seule forme (`StatusBadge`), libellé toujours écrit.
+- Alertes : fond teinté (succès `done-bg`, erreur `waiting-bg`, avertissement `lime-soft`, information `progress-bg`), icône dans une pastille blanche, libellé en gras (« Erreur : »…).
+- Dialogues : panneau blanc, rayon 24 px, voile `ink/40`.
+- **Interdits** : texte corail, vert anis ou gris de graphique (texte d'erreur : `danger`) ; texte blanc sur corail ou vert anis ; information portée par la couleur seule.
+- **Logo** : aucun dans l'admin (E61) : ni « T », ni texte de marque, ni substitut, nulle part (barre, panneau mobile, pages sans session, 404, erreur, états vides). Le favicon n'est pas concerné.
+
+**Motion (E61)**, dans `admin.css` (CSS et keyframes, aucune bibliothèque) :
+
+- N'animer que `transform`, `opacity` (et `stroke-dashoffset` pour l'anneau) ; la couleur du contour et de l'anneau des champs passe en 150 ms.
+- Entrées seulement, en `animation-fill-mode: backwards` : l'état final est l'état normal de la page, lisible sans JavaScript.
+- 600 ms au plus, sauf le tracé de l'anneau (800 ms). Aucune boucle infinie, sauf le balayage des squelettes (1,6 s).
+- Toute animation se déclare dans le bloc `@media (prefers-reduced-motion: no-preference)` d'`admin.css` ; tout déplacement ou toute échelle au survol ou au clic porte `motion-safe:`. Pas de classe `animate-*`. Vérifié par `components/admin/motion.test.ts`.
+- Classes : `admin-page` (entrée de page, 250 ms), `admin-stagger` + `--admin-order` (cartes, 300 ms, 60 ms d'écart), `admin-bar` (barres, 600 ms, 50 ms), `admin-ring-draw` (anneau, 800 ms), `admin-alert` (alertes et notifications, 250 ms), `admin-dialog` et `admin-drawer` (dialogues et panneau mobile, 200 ms), `admin-menu` (menu du compte, 200 ms), `admin-rows` (lignes de tableau, 30 ms d'écart, 10 lignes), `admin-skeleton` (balayage). Boutons : soulèvement de 1 px et échelle 0,98 (150 ms). Indicateur de navigation : glissement de 250 ms. Pastilles de statut : aucune animation.
+- Sous `prefers-reduced-motion: reduce` : aucun déplacement ni échelle, graphiques dans leur état final, squelettes statiques (filet global : durées ramenées à 0,01 ms).
+
+**Palette précédente, à réviser en phase 2** (charte d'origine, encore décrite au plan §3.3) : crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`. Elle ne s'applique plus à l'admin.
 
 ## Commandes
 

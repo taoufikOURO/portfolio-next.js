@@ -19,7 +19,7 @@ export type ConfirmDialogProps = {
     description?: ReactNode;
     confirmLabel: string;
     cancelLabel?: string;
-    /** `destructive` : suppression ou perte de données (bouton terracotta, focus initial sur « Annuler »). */
+    /** `destructive` : suppression ou perte de données (bouton corail, focus initial sur « Annuler »). */
     tone?: "default" | "destructive";
     /** Libellé du bouton de confirmation pendant l'action. */
     pendingLabel?: string;
@@ -29,8 +29,10 @@ export type ConfirmDialogProps = {
  * Dialogue de confirmation modal (suppression, publication, abandon des
  * modifications…). Focus piégé, Échap pour fermer, focus rendu au déclencheur,
  * focus initial sur « Annuler » pour éviter une confirmation par réflexe.
- * Fond du dialogue (backdrop) crème opaque ; le panneau, crème lui aussi, se
- * détache par sa bordure bleu-gris de 2 px (8,87, E37).
+ * Étape 18 (E60) : panneau blanc, rayon 24 px, ombre douce, voile gris foncé à
+ * 40 % ; boutons pilule (secondaire « Annuler », principal ou destructif).
+ * Ouverture (E61) : voile en fondu, panneau en fondu avec échelle de 0,96 à 1,
+ * 200 ms (`admin-dialog`, admin.css).
  */
 export function ConfirmDialog({
     open,
@@ -66,14 +68,14 @@ export function ConfirmDialog({
             aria-describedby={description ? descriptionId : undefined}
             onKeyDown={onKeyDown}
             onMouseDown={onMouseDown}
-            className="m-auto w-[calc(100%-2rem)] max-w-md rounded-md border-2 border-slate-blue bg-cream p-0 text-slate-blue backdrop:bg-cream"
+            className="admin-dialog m-auto w-[calc(100%-2rem)] max-w-md rounded-[var(--radius-dialog)] border-0 bg-panel p-0 text-ink shadow-dialog backdrop:bg-ink/40"
         >
-            <div className="flex flex-col gap-4 p-6">
-                <h2 id={titleId} className="text-xl font-bold">
+            <div className="flex flex-col gap-4 p-6 sm:p-7">
+                <h2 id={titleId} className="admin-section-title">
                     {title}
                 </h2>
                 {description ? (
-                    <div id={descriptionId}>{description}</div>
+                    <div id={descriptionId} className="text-muted">{description}</div>
                 ) : null}
                 <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
                     <Button variant="secondary" onClick={onClose} data-autofocus>
@@ -88,7 +90,7 @@ export function ConfirmDialog({
                             <>
                                 <LoaderCircle
                                     aria-hidden="true"
-                                    className="size-5 shrink-0 motion-safe:animate-spin"
+                                    className="size-5 shrink-0"
                                 />
                                 {pendingLabel}
                             </>

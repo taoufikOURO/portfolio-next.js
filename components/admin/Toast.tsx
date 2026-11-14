@@ -12,6 +12,7 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { ToneIcon } from "./Alert";
 import { TONES, type Tone } from "./tones";
 
 type ToastData = { id: number; tone: Tone; message: string };
@@ -45,7 +46,7 @@ function ToastItem({
     onDismiss: (id: number) => void;
 }) {
     const [paused, setPaused] = useState(false);
-    const { label, icon: Icon, surface } = TONES[toast.tone];
+    const { label, surface } = TONES[toast.tone];
     const autoDismiss = toast.tone !== "error";
 
     // Le minuteur s'arrête quand la souris ou le focus est sur la notification.
@@ -62,19 +63,19 @@ function ToastItem({
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
             className={cn(
-                "pointer-events-auto flex items-start gap-3 rounded-md border-2 border-l-8 border-slate-blue p-4 text-slate-blue",
+                "admin-alert pointer-events-auto flex items-start gap-3 rounded-[var(--radius-alert)] p-4 text-ink shadow-menu",
                 surface,
             )}
         >
-            <Icon aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-            <p className="min-w-0 flex-1">
-                <strong>{label} :</strong> {toast.message}
+            <ToneIcon tone={toast.tone} />
+            <p className="min-w-0 flex-1 self-center">
+                <strong className="font-semibold">{label} :</strong> {toast.message}
             </p>
             <button
                 type="button"
                 onClick={() => onDismiss(toast.id)}
                 aria-label="Fermer la notification"
-                className="-m-2 inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-md"
+                className="-m-1 inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150 hover:bg-panel"
             >
                 <X aria-hidden="true" className="size-5" />
             </button>

@@ -37,7 +37,7 @@ export function CreateArticleForm() {
   const message = clientErrors ? ARTICLE_MESSAGES.formInvalid : state?.message;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+    <form action={formAction} onSubmit={onSubmit} noValidate className="admin-card flex flex-col gap-6">
       {message ? <Alert tone="error">{message}</Alert> : null}
       <Field
         id={TITLE_ID}

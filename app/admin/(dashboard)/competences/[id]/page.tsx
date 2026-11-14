@@ -22,15 +22,15 @@ export default async function SkillPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={SKILLS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={SKILLS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux compétences
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Compétence « {skill.name} »</h1>
+        <h1 className="admin-page-title mt-4">Compétence « {skill.name} »</h1>
       </div>
 
-      <section aria-labelledby="competence-renommer" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="competence-renommer" className="text-xl font-bold">
+      <section aria-labelledby="competence-renommer" className="admin-card">
+        <h2 id="competence-renommer" className="admin-section-title">
           Renommer
         </h2>
         <div className="mt-4">
@@ -38,8 +38,8 @@ export default async function SkillPage({ params }: { params: Promise<{ id: stri
         </div>
       </section>
 
-      <section aria-labelledby="competence-usage" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="competence-usage" className="text-xl font-bold">
+      <section aria-labelledby="competence-usage" className="admin-card">
+        <h2 id="competence-usage" className="admin-section-title">
           Formations qui l’utilisent
         </h2>
         {skill.educations.length === 0 ? (
@@ -48,7 +48,7 @@ export default async function SkillPage({ params }: { params: Promise<{ id: stri
           <ul className="mt-4 list-disc pl-6">
             {skill.educations.map((education) => (
               <li key={education.id}>
-                <Link href={educationPath(education.id)} className="underline">
+                <Link href={educationPath(education.id)} className="admin-link">
                   {education.title}
                 </Link>
               </li>
@@ -57,8 +57,8 @@ export default async function SkillPage({ params }: { params: Promise<{ id: stri
         )}
       </section>
 
-      <section aria-labelledby="competence-suppression" className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-        <h2 id="competence-suppression" className="text-xl font-bold">
+      <section aria-labelledby="competence-suppression" className="admin-card">
+        <h2 id="competence-suppression" className="admin-section-title">
           Supprimer
         </h2>
         <p className="mt-4">

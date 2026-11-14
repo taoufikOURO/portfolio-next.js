@@ -26,8 +26,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="rounded-md border border-slate-blue/25 p-4 sm:p-6">
-      <h2 id={id} className="text-xl font-bold">
+    <section aria-labelledby={id} className="admin-card">
+      <h2 id={id} className="admin-section-title">
         {title}
       </h2>
       <div className="mt-4 flex flex-col gap-5">{children}</div>
@@ -47,8 +47,8 @@ export default async function AccountPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold">Compte</h1>
-        <p className="mt-2">Adresse e-mail, mot de passe et sessions ouvertes du compte d’administration.</p>
+        <h1 className="admin-page-title">Compte</h1>
+        <p className="mt-3 text-muted">Adresse e-mail, mot de passe et sessions ouvertes du compte d’administration.</p>
       </div>
 
       <Section id="compte-adresse" title="Adresse e-mail">
@@ -63,7 +63,7 @@ export default async function AccountPage() {
           )}
         </div>
         {pendingChange ? (
-          <p className="rounded-md border border-l-8 border-slate-blue/25 border-l-slate-blue bg-sand p-4">
+          <p className="rounded-[var(--radius-alert)] bg-lime-soft p-4">
             <strong>Changement en attente :</strong> un lien a été envoyé à{" "}
             <strong className="break-all">{pendingChange.targetEmail}</strong>. L’adresse du compte ne
             changera qu’après un clic sur ce lien, valable jusqu’au {formatDateTime(pendingChange.expiresAt)}.
@@ -81,7 +81,7 @@ export default async function AccountPage() {
       <Section id="compte-sessions" title="Sessions ouvertes">
         <ul className="flex flex-col gap-3">
           {sessions.map((item) => (
-            <li key={item.id} className="rounded-md border border-slate-blue/25 p-3">
+            <li key={item.id} className="rounded-2xl bg-panel p-4">
               <p className="font-semibold">
                 {item.id === session.id ? "Cette session" : "Autre session"}
               </p>

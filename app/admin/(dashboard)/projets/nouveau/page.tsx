@@ -19,12 +19,12 @@ export default async function NewProjectPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
-        <Link href={PROJECTS_PATH} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={PROJECTS_PATH} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Retour aux projets
         </Link>
-        <h1 className="mt-4 text-3xl font-bold">Nouveau projet</h1>
-        <p className="mt-2">
+        <h1 className="admin-page-title mt-4">Nouveau projet</h1>
+        <p className="mt-3 text-muted">
           Il sera créé non publié, en dernière position. Le statut se change ensuite depuis la page du projet, avec une
           confirmation.
         </p>

@@ -93,7 +93,7 @@ export function PhotoForm({ slot, label, currentUrl }: PhotoFormProps) {
             width={160}
             height={160}
             unoptimized
-            className="size-40 rounded-md border border-slate-blue/25 object-contain"
+            className="admin-thumb size-40 border border-line"
           />
         ) : (
           <p>Aucune image enregistrée.</p>

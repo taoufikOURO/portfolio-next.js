@@ -26,11 +26,11 @@ export default async function DiscardChangesPage({ params }: { params: Promise<{
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
-        <Link href={articlePath(article.id)} className="inline-flex min-h-11 items-center gap-2 underline">
+        <Link href={articlePath(article.id)} className="admin-link">
           <ArrowLeft aria-hidden="true" className="size-4" />
           Annuler et revenir à l’éditeur
         </Link>
-        <h1 className="mt-4 text-3xl font-bold break-words">Abandonner les modifications de « {title} » ?</h1>
+        <h1 className="admin-page-title mt-4">Abandonner les modifications de « {title} » ?</h1>
       </div>
       {canDiscard ? (
         <>

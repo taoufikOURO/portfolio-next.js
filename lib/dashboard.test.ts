@@ -3,10 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeDb, fakeId, resetFakes } from "@/test/fakes";
 
 import {
+  countPerMonth,
   getDashboard,
   isDashboardEmpty,
+  lastMonths,
+  monthKey,
   PENDING_ARTICLES_LIMIT,
   profileCompleteness,
+  PUBLICATION_MONTHS,
+  RECENT_PROJECTS_LIMIT,
   type DashboardCounts,
 } from "./dashboard";
 
@@ -230,12 +235,20 @@ describe("getDashboard : compteurs", () => {
 
     await getDashboard();
 
-    expect(spies.project).not.toHaveBeenCalled();
     expect(spies.education).not.toHaveBeenCalled();
     expect(spies.skill).not.toHaveBeenCalled();
     expect(spies.technology).not.toHaveBeenCalled();
-    // Seule la liste des articles à reprendre charge des lignes, et une seule fois.
-    expect(spies.article).toHaveBeenCalledTimes(1);
+    // Lignes chargées (étape 18) : seulement pour les listes et le graphique, jamais pour les compteurs.
+    // Projets : le bloc « Projets récents », une seule fois, limité.
+    expect(spies.project).toHaveBeenCalledTimes(1);
+    expect(spies.project.mock.calls[0][0]).toMatchObject({ take: RECENT_PROJECTS_LIMIT });
+    // Articles : la liste des articles à reprendre (limitée) et les dates de publication du graphique (seul champ lu, période bornée).
+    expect(spies.article).toHaveBeenCalledTimes(2);
+    const articleCalls = spies.article.mock.calls.map(([args]) => args as Record<string, unknown>);
+    expect(articleCalls.filter((args) => args.take === PENDING_ARTICLES_LIMIT)).toHaveLength(1);
+    const publications = articleCalls.find((args) => args.take === undefined);
+    expect(publications?.select).toEqual({ publishedAt: true });
+    expect(publications?.where).toMatchObject({ publishedAt: { gte: expect.any(Date) } });
   });
 });
 
@@ -387,5 +400,109 @@ describe("getDashboard : état vide et réseau", () => {
     } finally {
       globalThis.fetch = blocked; // rétablit le `fetch` interdit de test/no-network.ts
     }
+  });
+});
+
+describe("publications par mois (étape 18)", () => {
+  const NOW = new Date("2026-11-13T12:00:00.000Z");
+
+  it("monthKey : mois dans le fuseau de l'admin (Europe/Paris), pas en UTC", () => {
+    expect(monthKey(new Date("2026-10-31T22:30:00.000Z"))).toBe("2026-10"); // 23 h 30 à Paris
+    expect(monthKey(new Date("2026-10-31T23:30:00.000Z"))).toBe("2026-11"); // 0 h 30 le 1er novembre à Paris
+  });
+
+  it("lastMonths : six mois, du plus ancien au mois en cours, à cheval sur deux années", () => {
+    expect(lastMonths(NOW)).toEqual(["2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11"]);
+    expect(lastMonths(new Date("2027-02-10T12:00:00.000Z"))).toEqual([
+      "2026-09",
+      "2026-10",
+      "2026-11",
+      "2026-12",
+      "2027-01",
+      "2027-02",
+    ]);
+    expect(lastMonths(NOW, 1)).toEqual(["2026-11"]);
+  });
+
+  it("countPerMonth : compte par mois, zéro pour un mois sans publication, ignore les dates hors période", () => {
+    const dates = [
+      new Date("2026-06-02T10:00:00.000Z"),
+      new Date("2026-06-20T10:00:00.000Z"),
+      new Date("2026-09-09T10:00:00.000Z"),
+      new Date("2026-11-12T10:00:00.000Z"),
+      new Date("2026-05-31T10:00:00.000Z"), // avant la période
+      new Date("2026-12-01T10:00:00.000Z"), // après la période
+    ];
+    expect(countPerMonth(dates, NOW)).toEqual([
+      { month: "2026-06", count: 2 },
+      { month: "2026-07", count: 0 },
+      { month: "2026-08", count: 0 },
+      { month: "2026-09", count: 1 },
+      { month: "2026-10", count: 0 },
+      { month: "2026-11", count: 1 },
+    ]);
+  });
+
+  it("getDashboard : publications d'après publishedAt seulement (brouillons exclus), six mois", async () => {
+    addArticle({ published: "Juin", updatedAt: "2026-06-15T10:00:00.000Z" });
+    addArticle({ published: "Novembre", draft: "Révision", updatedAt: "2026-11-02T10:00:00.000Z" });
+    addArticle({ published: "Trop ancien", updatedAt: "2026-04-15T10:00:00.000Z" });
+    addArticle({ draft: "Jamais publié", updatedAt: "2026-11-10T10:00:00.000Z" });
+
+    const { publishedByMonth } = await getDashboard(NOW);
+
+    expect(publishedByMonth).toHaveLength(PUBLICATION_MONTHS);
+    expect(publishedByMonth.map((entry) => entry.count)).toEqual([1, 0, 0, 0, 0, 1]);
+  });
+
+  it("getDashboard : base vide, six mois à zéro", async () => {
+    const { publishedByMonth } = await getDashboard(NOW);
+
+    expect(publishedByMonth.map((entry) => entry.count)).toEqual([0, 0, 0, 0, 0, 0]);
+  });
+});
+
+describe("projets récents (étape 18)", () => {
+  function addRecentProject(title: string, updatedAt: string, technologyIds: string[] = [], imagePath: string | null = null) {
+    const id = fakeId();
+    fakeDb.projects.push({
+      id,
+      title,
+      position: fakeDb.projects.length,
+      isPublished: true,
+      imagePath,
+      updatedAt: new Date(updatedAt),
+    });
+    for (const technologyId of technologyIds) fakeDb.projectTechnologies.push({ projectId: id, technologyId });
+    return id;
+  }
+
+  it("les plus récemment modifiés d'abord, limités à RECENT_PROJECTS_LIMIT", async () => {
+    addRecentProject("Ancien", "2026-01-01T00:00:00.000Z");
+    addRecentProject("Récent", "2026-11-10T00:00:00.000Z");
+    addRecentProject("Milieu", "2026-06-01T00:00:00.000Z");
+    addRecentProject("Plus récent", "2026-11-12T00:00:00.000Z");
+
+    const { recentProjects } = await getDashboard();
+
+    expect(recentProjects).toHaveLength(RECENT_PROJECTS_LIMIT);
+    expect(recentProjects.map((project) => project.title)).toEqual(["Plus récent", "Récent", "Milieu"]);
+  });
+
+  it("noms des technologies dans l'ordre de la stack, chemin de l'image transmis tel quel", async () => {
+    addTechnology("TypeScript");
+    addTechnology("PostgreSQL");
+    const [typescript, postgres] = fakeDb.technologies.map((technology) => technology.id);
+    addRecentProject("Projet", "2026-11-10T00:00:00.000Z", [postgres, typescript], "projets/image.webp");
+
+    const [project] = (await getDashboard()).recentProjects;
+
+    expect(project.technologies).toEqual(["TypeScript", "PostgreSQL"]);
+    expect(project.imagePath).toBe("projets/image.webp");
+    expect(project.isPublished).toBe(true);
+  });
+
+  it("aucun projet : liste vide", async () => {
+    expect((await getDashboard()).recentProjects).toEqual([]);
   });
 });

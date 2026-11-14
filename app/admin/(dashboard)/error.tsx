@@ -1,6 +1,9 @@
 "use client";
 
+import { ArrowLeft, RotateCcw, TriangleAlert } from "lucide-react";
+
 import { Button, ButtonLink } from "@/components/admin/Button";
+import { EmptyState } from "@/components/admin/EmptyState";
 import { ADMIN_HOME_PATH } from "@/lib/auth/routes";
 
 /**
@@ -11,18 +14,20 @@ import { ADMIN_HOME_PATH } from "@/lib/auth/routes";
  */
 export default function AdminError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
     return (
-        <div role="alert" className="flex max-w-3xl flex-col items-start gap-4">
-            <h1 className="text-3xl font-bold">Une erreur est survenue</h1>
-            <p>
-                L’opération n’a pas pu aboutir. Si vous envoyiez un fichier, vérifiez qu’il ne dépasse pas 1 Mo (formulaire compris), puis
-                recommencez.
-            </p>
-            <div className="flex flex-wrap gap-3">
-                <Button onClick={reset}>Réessayer</Button>
-                <ButtonLink href={ADMIN_HOME_PATH} variant="secondary">
+        <div role="alert" className="flex flex-col gap-6">
+            <h1 className="admin-page-title">Une erreur est survenue</h1>
+            <EmptyState
+                icon={TriangleAlert}
+                title="L’opération n’a pas pu aboutir"
+                description="Si vous envoyiez un fichier, vérifiez qu’il ne dépasse pas 1 Mo (formulaire compris), puis recommencez."
+            >
+                <Button onClick={reset} icon={RotateCcw}>
+                    Réessayer
+                </Button>
+                <ButtonLink href={ADMIN_HOME_PATH} variant="secondary" icon={ArrowLeft}>
                     Retour au tableau de bord
                 </ButtonLink>
-            </div>
+            </EmptyState>
         </div>
     );
 }

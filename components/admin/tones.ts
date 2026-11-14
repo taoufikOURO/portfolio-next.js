@@ -9,33 +9,34 @@ import {
 export type Tone = "success" | "error" | "warning" | "info";
 
 /**
- * Tonalités des messages (Alert, Toast). Plan §3.3 :
- * - succès : texte bleu-gris sur crème, filet gauche sauge ;
- * - erreur : texte bleu-gris sur crème, filet gauche terracotta ;
- * - avertissement : texte bleu-gris sur sable ;
- * - information : texte bleu-gris sur crème, filet gauche bleu-gris.
- * Les filets sont décoratifs : le sens est porté par l'icône et le libellé.
+ * Tonalités des messages (Alert, Toast, bannière), étape 18 (E60) :
+ * fond teinté, texte noir (au moins 15,3), icône dans une pastille blanche,
+ * libellé explicite en gras. Le sens n'est jamais porté par la couleur seule.
+ * - succès : fond vert pâle ;
+ * - erreur : fond corail pâle ;
+ * - avertissement : fond vert anis pâle ;
+ * - information : fond bleu pâle.
  */
 export const TONES = {
     success: {
         label: "Succès",
         icon: CircleCheck,
-        surface: "bg-cream border-l-sage",
+        surface: "bg-done-bg",
     },
     error: {
         label: "Erreur",
         icon: CircleAlert,
-        surface: "bg-cream border-l-terracotta",
+        surface: "bg-waiting-bg",
     },
     warning: {
         label: "Attention",
         icon: TriangleAlert,
-        surface: "bg-sand border-l-slate-blue",
+        surface: "bg-lime-soft",
     },
     info: {
         label: "Information",
         icon: Info,
-        surface: "bg-cream border-l-slate-blue",
+        surface: "bg-progress-bg",
     },
 } as const satisfies Record<
     Tone,
