@@ -2,23 +2,16 @@
 
 Instructions permanentes pour Claude Code sur le projet **portfolio** de Taoufik OURO-BANG'NA.
 
-Références : `docs/cahier_des_charges.md` (fonctionnel) et `docs/plan_implementation.md` (étapes). Lis-les avant toute tâche. Si une demande les contredit, signale-le au lieu de dévier.
-
-## Contexte
-
-- Refonte complète du portfolio personnel en Next.js.
-- **Phase 1 : étapes 0 à 16 validées par Taoufik le 13 novembre 2026 ; étape 18 (refonte visuelle de l'admin) validée par Taoufik le 14 novembre 2026 ; étape 17 (production) en attente d'une demande explicite** : interface d'administration complète, protégée et responsive.
-- **Phase 2 (demandée le 14 novembre 2026)** : le site public lit la base et toutes les pages visibles sont refaites d'après la référence de Taoufik. Détail : section « Site public (phase 2) » ci-dessous, `docs/plan_implementation.md` §0.5, cahier des charges §9.
-- **Le site public ne lit plus `data/` ni `public/images/`** (seul le script d'import les lit) ; ne pas les supprimer sans la confirmation de Taoufik.
+Documentation du projet : `README.md` (fonctionnalités, architecture, installation, commandes, mise en production). Ce fichier fixe les règles de travail. Si une demande les contredit, signale-le au lieu de dévier.
 
 ## État du projet (14 novembre 2026)
 
-- **Phase 1** : étapes 0 à 16 terminées et validées par Taoufik. **Étape 16 (recette et documentation)** : **validée par Taoufik le 13 novembre 2026**, par écrit dans la conversation (« je valide l'etape 16 »). Parcours automatisés, confirmations de Taoufik (mobile, connexion, vérifications manuelles) et documentation D1 à D3 faits ; **D4 fermé** (cases et statuts de l'étape 16 cochés dans `docs/plan_implementation.md`). Détail : `docs/recette_phase1.md`.
-- **Étape 18 (refonte visuelle de l'admin, E60 et E61)** : **étape 18 validée par Taoufik le 14 novembre 2026**, par écrit dans la conversation (« je valide l'étape 18 ») ; commencée le 13 novembre 2026 à la demande de Taoufik ; logo retiré, bordure des champs `#8a8d93` et motion design ajoutés le 14 novembre 2026 (E61) ; recette visuelle (`docs/recette_phase1.md` §10) validée par Taoufik le 14 novembre 2026. L'étape 16 reste validée sur le comportement.
-- **Étape 17 (mise en production)** : **en attente d'une demande explicite de Taoufik**, aucune action sans cette demande.
-- **Phase 2 (14 novembre 2026)** : **réalisée côté code, en attente de Taoufik** : lancer l'import (`pnpm content:import --dry-run`, puis `--apply` ; simulation locale faite par Claude Code le 14 novembre 2026), relire `docs/recette_phase2.md` (rien coché), trancher les points ouverts (plan §0.5.6), valider par écrit. Décisions E62 à E68.
-- **Dépôt** : jamais poussé, les commits sont locaux. La recherche de secrets dans l'historique est fermée pour les lignes lues seulement (13 commits non classés). **Aucun push ni déploiement tant qu'un balayage complet de l'historique n'a pas été fait.**
-- **Cahier des charges** : version 2.0 (§9 : site public lu depuis la base, en attente de validation) ; version 1.7 pour la charte de l'admin (§5.1).
+- **Projet terminé côté code** : administration complète (phase 1), site public lu depuis la base et refait d'après la référence de Taoufik (phase 2), refonte visuelle de l'admin (étape 18). Clôture demandée par Taoufik le 14 novembre 2026.
+- **Contenus** : anciens contenus de `data/` importés dans la base locale `portfolio` (14 novembre 2026, sans images). Les images sont ajoutées par Taoufik depuis l'admin.
+- **Mise en production (étape 17)** : **en attente d'une demande explicite de Taoufik**, aucune action sans cette demande (procédure : README, « Mise en production »).
+- **Dépôt** : jamais poussé, commits locaux. Historique Git entièrement vérifié le 14 novembre 2026 (109 commits, toutes branches) : aucune valeur réelle des secrets de `.env`, aucun mot de passe réel, aucun `.env` commité. Pousser ou déployer reste soumis à la demande explicite de Taoufik.
+- **Documentation de suivi supprimée** (cahier des charges, plan, recettes) à la clôture. Les identifiants de décision cités dans les commentaires du code (`E11`, `E55`, `E68`…) renvoient à l'ancien plan, consultable dans l'historique : `git show 1661122:docs/plan_implementation.md` (décisions, §2), `git show 1661122:docs/cahier_des_charges.md`.
+- **`data/` est conservé** : seule source du script d'import, nécessaire à l'import de production. Ne pas le supprimer sans la confirmation de Taoufik. `public/images/` et l'ancien code du site (`app/components/`, `app/lib/`, `app/types/`, `app/globals.css`, `framer-motion`, `highlight.js` en dépendance directe) ont été supprimés.
 
 ## Stack
 
@@ -62,7 +55,7 @@ Références : `docs/cahier_des_charges.md` (fonctionnel) et `docs/plan_implemen
 
 ## Charte visuelle de l'admin (étape 18, E60 et E61)
 
-**La palette relevée sur la capture de référence fournie par Taoufik est la référence de l'admin** (détail : `docs/cahier_des_charges.md` §5.1, décision E60 du plan). Elle est déclarée dans `@theme` de `app/admin/admin.css`, où les couleurs Tailwind par défaut sont désactivées (`--color-*: initial`) : `bg-red-500` et consorts ne compilent pas. Aucune autre couleur sans validation. Les ratios sont vérifiés par `components/admin/palette.test.ts`.
+**La palette relevée sur la capture de référence fournie par Taoufik est la référence de l'admin** (décision E60). Elle est déclarée dans `@theme` de `app/admin/admin.css`, où les couleurs Tailwind par défaut sont désactivées (`--color-*: initial`) : `bg-red-500` et consorts ne compilent pas. Aucune autre couleur sans validation. Les ratios sont vérifiés par `components/admin/palette.test.ts`.
 
 | Rôle                                  | Jeton Tailwind                       | Hex                   |
 | ------------------------------------- | ------------------------------------ | --------------------- |
@@ -102,11 +95,9 @@ Rôles :
 - Classes : `admin-page` (entrée de page, 250 ms), `admin-stagger` + `--admin-order` (cartes, 300 ms, 60 ms d'écart), `admin-bar` (barres, 600 ms, 50 ms), `admin-ring-draw` (anneau, 800 ms), `admin-alert` (alertes et notifications, 250 ms), `admin-dialog` et `admin-drawer` (dialogues et panneau mobile, 200 ms), `admin-menu` (menu du compte, 200 ms), `admin-rows` (lignes de tableau, 30 ms d'écart, 10 lignes), `admin-skeleton` (balayage). Boutons : soulèvement de 1 px et échelle 0,98 (150 ms). Indicateur de navigation : glissement de 250 ms. Pastilles de statut : aucune animation.
 - Sous `prefers-reduced-motion: reduce` : aucun déplacement ni échelle, graphiques dans leur état final, squelettes statiques (filet global : durées ramenées à 0,01 ms).
 
-**Palette précédente, abandonnée** (charte d'origine, encore décrite au plan §3.3) : crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`. Elle ne s'applique ni à l'admin ni au site public.
+## Site public (phase 2, E62 à E68)
 
-## Site public (phase 2, E62 à E65)
-
-Référence : vidéo fournie par Taoufik (`public/example.mp4`, non suivie par Git) ; mise en page et mouvement seulement, aucun texte, image, nom ni logo repris. Palette déclarée dans `@theme` de `app/(site)/site.css` (`--color-*: initial`), ratios vérifiés par `components/site/palette.test.ts`. Aucune autre couleur sans validation.
+Référence : vidéo fournie par Taoufik (non conservée dans le dépôt) ; mise en page et mouvement seulement, aucun texte, image, nom ni logo repris. Palette déclarée dans `@theme` de `app/(site)/site.css` (`--color-*: initial`), ratios vérifiés par `components/site/palette.test.ts`. Aucune autre couleur sans validation.
 
 | Rôle                                   | Jeton    | Hex       |
 | -------------------------------------- | -------- | --------- |
@@ -123,14 +114,14 @@ Référence : vidéo fournie par Taoufik (`public/example.mp4`, non suivie par G
 - Image manquante : `public/defaults/image.svg` (`DEFAULT_IMAGE_SRC`), seule image par défaut. Images par `components/site/SiteImage.tsx` (`next/image`, `remotePatterns` Supabase, chargement différé sauf l'image principale).
 - Pages gardées en cache (`revalidate = 3600` en repli) et invalidées par l'admin (`revalidatePublic`, E64).
 - **Motion** (`site.css`, vérifié par `components/site/motion.test.ts`) : `transform` et `opacity` seulement ; entrées en `backwards` ; 600 ms au plus, sauf l'ouverture de l'éventail (850 ms, 900 ms au plus) ; une seule boucle infinie, l'anneau (`site-ring-spin`, 40 s) ; tout sous `@media (prefers-reduced-motion: no-preference)` ; pas de classe `animate-*`, pas de bibliothèque. Classes : `site-letter` (lettres du titre), `site-reveal` + `--order` (textes et cartes), `site-block` (bloc rouge), `site-fan-card` (éventail), `site-lift` + `--tilt` (survol des cartes), `site-ring-spin`.
-- Import des anciens contenus : `scripts/import-public-content.ts` (E65, E68), **import réel lancé seulement par Taoufik** ; Claude Code peut lancer la simulation (`--dry-run`) sur la base locale quand Taoufik le demande. Images jamais importées (champs vides, image par défaut), données personnelles écartées, articles publiés seulement s'ils l'étaient déjà.
-- **Accueil en une page (E66)** : grand titre = titre professionnel du profil (repli « Portfolio »), puis sections À propos, Projets, Parcours, Compétences, Articles, Contact (`components/site/home/`) ; une section vide n'est pas affichée. Toute nouvelle donnée affichée sur l'accueil doit invalider `/` (`PUBLIC_PATHS`).
-- **Navigation par ancres (E67)** : la barre et le pied de page ne contiennent que les ancres des sections de l'accueil (`components/site/links.ts` : `/#a-propos`, `/#projets`, `/#parcours`, `/#competences`, `/#articles`, `/#contact`), depuis toute page ; **aucun lien de navigation direct vers une page complète**. Chaque section montre un aperçu (`PREVIEW` dans `components/site/home/Sections.tsx`) et se termine par « Voir plus », seul accès à `/profil`, `/projets`, `/formations`, `/competences`, `/articles`. Toutes les sections sont toujours rendues (état vide sinon). Vérifié par `components/site/links.test.ts`.
+- Import des anciens contenus : `scripts/import-public-content.ts` (E65, E68) : `plan.ts` (pur), `run.ts` (exécution par `ImportStore`, sans accès à l'administrateur), `store.ts` (Prisma). Images jamais importées (champs vides, image par défaut ; une technologie peut avoir un `iconPath` vide), données personnelles écartées (noms listés, jamais les valeurs), articles publiés seulement s'ils l'étaient déjà, à leur date d'origine. **Import réel seulement à la demande explicite de Taoufik** ; la simulation (`--dry-run`) sur la base locale aussi.
+- **Accueil en une page (E66)** : grand titre = titre professionnel du profil (repli « Portfolio »), puis sections À propos, Projets, Parcours, Compétences, Articles, Contact (`components/site/home/`). Toute nouvelle donnée affichée sur l'accueil doit invalider `/` (`PUBLIC_PATHS`).
+- **Navigation par ancres (E67)** : la barre et le pied de page ne contiennent que les ancres des sections de l'accueil (`components/site/links.ts` : `/#a-propos`, `/#projets`, `/#parcours`, `/#competences`, `/#articles`, `/#contact`), depuis toute page ; **aucun lien de navigation direct vers une page complète**. Chaque section montre un aperçu (`PREVIEW` dans `components/site/home/Sections.tsx` : 3 projets, 2 formations, 6 technologies, 3 articles ; la section Compétences ne montre que la grille de la stack, la liste des compétences n'est que sur `/competences`) et se termine par « Voir plus », seul accès à `/profil`, `/projets`, `/formations`, `/competences`, `/articles`. Toutes les sections sont toujours rendues (état vide sinon). Vérifié par `components/site/links.test.ts`.
 - **Mouvement au défilement (E66)** : blocs `data-reveal` (+ `data-from="left|right"`, `--order`) révélés par `components/site/ScrollReveal.tsx` (rien n'est masqué sans JavaScript ni sous réduction) ; mouvements liés au défilement (`site-progress`, `site-drift`, dérive de `site-fan`, `site-heading-outline`) seulement sous `@supports (animation-timeline: view())`, sans durée. Grands titres par `BigTitle` (taille d'après la longueur, `--frame-pad`, découpe par mots sous 640 px au-delà de 9 caractères).
 
 ## Commandes
 
-Tous les scripts de `package.json` sont opérationnels (étapes 0 à 16 validées). `pnpm db:reset` détruit la base locale : seulement avec l'accord explicite de Taoufik (E32). `pnpm mail:test` envoie de vrais e-mails à `ADMIN_EMAIL` : seulement sur demande de Taoufik.
+Tous les scripts de `package.json` sont opérationnels. `pnpm db:reset` détruit la base locale : seulement avec l'accord explicite de Taoufik (E32). `pnpm mail:test` envoie de vrais e-mails à `ADMIN_EMAIL` : seulement sur demande de Taoufik.
 
 - Base locale : service Windows `postgresql-x64-18`, démarré automatiquement (sinon `Start-Service postgresql-x64-18` dans un terminal administrateur)
 - Installer les dépendances : `pnpm install`
@@ -144,13 +135,13 @@ Tous les scripts de `package.json` sont opérationnels (étapes 0 à 16 validée
 - Seed (compte admin) : `pnpm db:seed`
 - Buckets de stockage : `pnpm storage:setup`
 - E-mails de test (SMTP réel, jeton factice) : `pnpm mail:test`
-- Import des anciens contenus de `data/` (phase 2) : `pnpm content:import --dry-run` (simulation, comptes seulement ; Claude Code seulement à la demande de Taoufik, base locale) puis `pnpm content:import --apply` (base locale, aucun bucket touché) : **import réel seulement par Taoufik**, jamais par Claude Code. Ordre complet et commandes de production : README, « Peupler la base »
+- Import des anciens contenus de `data/` : `pnpm content:import --dry-run` (simulation, comptes seulement) puis `pnpm content:import --apply` (base locale, aucun bucket touché) : **seulement à la demande explicite de Taoufik**. Ordre complet et commandes de production : README, « Peupler la base »
 - Seed en production (étape 17 seulement, par Taoufik) : `pnpm db:seed:production` (`--confirm-production`)
 
 ## Méthode de travail
 
-- **À chaque reprise : lire d'abord la section « 0. Suivi d'avancement » de `docs/plan_implementation.md`** et reprendre à la « Prochaine action ».
-- Avant d'écrire du code : lire le cahier des charges et le plan, proposer ce qui va être fait si ce n'est pas déjà prévu, et attendre validation.
-- Mettre à jour le suivi d'avancement (cases, statuts, journal) au fil de l'eau, et toujours à la fin d'une étape.
-- Une étape du plan à la fois. Vérifier chaque étape (lint, types, tests, build, critères propres) avant de passer à la suivante.
-- Mettre à jour `docs/cahier_des_charges.md` et `docs/plan_implementation.md` quand une décision change.
+- À chaque reprise : lire `README.md` et ce fichier, puis `git log` et `git status` (du travail non commité peut venir d'une autre session : ne jamais l'écraser).
+- Avant une modification qui n'est pas une correction évidente : proposer ce qui va être fait et attendre la validation de Taoufik.
+- Vérifier chaque changement : `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, tous au vert.
+- Tenir `README.md` et ce fichier à jour quand une fonctionnalité, une commande ou une règle change. Pas de nouveau document de suivi sans demande de Taoufik.
+- Une nouvelle décision qui contredit une règle de ce fichier est signalée à Taoufik avant d'être appliquée.

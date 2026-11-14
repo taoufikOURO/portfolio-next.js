@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 
 /**
  * Vérifie, à partir des valeurs réelles de `app/admin/admin.css`, les ratios de
- * contraste de la charte visuelle de l'admin (étape 18, E60 ;
- * `docs/plan_implementation.md` et `docs/cahier_des_charges.md`).
+ * contraste de la charte visuelle de l'admin (étape 18, E60 ; tableau de
+ * `CLAUDE.md`, « Charte visuelle de l'admin »).
  * Texte : au moins 4,5 (AA). Éléments non textuels (anneau de focus, bordure
  * d'erreur, bordure des champs) : au moins 3.
  */

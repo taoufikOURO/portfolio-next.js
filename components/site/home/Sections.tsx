@@ -24,7 +24,7 @@ import { SectionHeading } from "./SectionHeading";
 // `components/site/ScrollReveal.tsx`) et reste visible sans JavaScript.
 
 /** Taille des aperçus de l'accueil (le reste est sur la page complète). */
-export const PREVIEW = { projects: 3, educations: 2, skills: 12, technologies: 6, articles: 3 } as const;
+export const PREVIEW = { projects: 3, educations: 2, technologies: 6, articles: 3 } as const;
 
 const order = (value: number) => ({ "--order": Math.min(value, 6) }) as CSSProperties;
 
@@ -293,18 +293,22 @@ export function JourneySection({ index, educations }: { index: number; education
 // Compétences
 // ---------------------------------------------------------------------------
 
+/**
+ * Aperçu des compétences : seulement la grille des icônes de la stack. La
+ * liste des compétences n'est affichée que sur la page complète
+ * (`/competences`), atteinte par « Voir plus ».
+ */
 export function SkillsSection({
   index,
-  skills,
+  skillCount,
   technologies,
 }: {
   index: number;
-  skills: { name: string }[];
+  skillCount: number;
   technologies: { name: string; icon: SiteImageData }[];
 }) {
-  const shownSkills = skills.slice(0, PREVIEW.skills);
   const shownTechnologies = technologies.slice(0, PREVIEW.technologies);
-  const empty = skills.length === 0 && technologies.length === 0;
+  const empty = skillCount === 0 && technologies.length === 0;
   return (
     <section id="competences" aria-labelledby="competences-title" className="site-shell mt-28 sm:mt-40">
       <SectionHeading id="competences" index={index} title="Compétences" />
@@ -312,21 +316,11 @@ export function SkillsSection({
         <EmptySection>Aucune compétence renseignée pour le moment.</EmptySection>
       ) : (
         <>
-          {shownSkills.length > 0 ? (
-            <ul className="mt-12 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-16 sm:gap-x-7">
-              {shownSkills.map((skill, position) => (
-                <li key={skill.name} data-reveal style={order(position % 7)} className="flex items-center gap-5 sm:gap-7">
-                  <span className="site-wide text-xl leading-tight sm:text-3xl lg:text-4xl">{skill.name}</span>
-                  {position < shownSkills.length - 1 ? <span aria-hidden="true" className="size-2.5 bg-signal sm:size-3" /> : null}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {shownTechnologies.length > 0 ? (
-            <div className="mt-14 sm:mt-20">
-              <h3 data-reveal className="site-eyebrow">
-                Stack technique
-              </h3>
+          <div className="mt-12 sm:mt-16">
+            <h3 data-reveal className="site-eyebrow">
+              Stack technique
+            </h3>
+            {shownTechnologies.length > 0 ? (
               <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                 {shownTechnologies.map((technology, position) => (
                   <li
@@ -342,14 +336,18 @@ export function SkillsSection({
                   </li>
                 ))}
               </ul>
-            </div>
-          ) : null}
+            ) : (
+              <p data-reveal className="mt-5 text-muted">
+                La stack technique n&apos;est pas encore renseignée.
+              </p>
+            )}
+          </div>
           <MoreButton
             href="/competences"
             context="toutes les compétences et la stack technique"
             summary={[
-              skills.length > 0 ? `${shownSkills.length} sur ${plural(skills.length, "compétence")}` : null,
               technologies.length > 0 ? `${shownTechnologies.length} sur ${plural(technologies.length, "technologie")}` : null,
+              skillCount > 0 ? plural(skillCount, "compétence") : null,
             ]
               .filter(Boolean)
               .join(" · ")}

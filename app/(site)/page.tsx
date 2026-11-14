@@ -63,7 +63,7 @@ export default async function HomePage() {
       <AboutSection index={1} profile={profile} counts={counts} />
       <ProjectsSection index={2} projects={projects} />
       <JourneySection index={3} educations={educations} />
-      <SkillsSection index={4} skills={skills} technologies={technologies} />
+      <SkillsSection index={4} skillCount={skills.length} technologies={technologies} />
       <ArticlesSection index={5} articles={articles} />
       <ContactSection index={6} profile={profile} />
     </main>
