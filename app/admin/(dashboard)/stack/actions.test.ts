@@ -32,6 +32,9 @@ vi.mock("@/lib/storage/client", async (importOriginal) => ({
   getStorageContext: () => fakeStorageContext(),
 }));
 vi.mock("next/cache", async () => ({ revalidatePath: (await import("@/test/fakes")).fakeRevalidatePath }));
+
+// Phase 2 (E64) : pages publiques qui affichent la stack (projets, compétences, accueil).
+const PUBLIC_STACK_PATHS = ["/projets", "/(site)/projets/[slug] (page)", "/competences", "/"];
 vi.mock("next/headers", async () => {
   const fakes = await import("@/test/fakes");
   return { cookies: fakes.fakeCookies, headers: fakes.fakeHeaders };
@@ -145,7 +148,7 @@ describe("createTechnologyAction", () => {
     // Le fichier est dans le bucket de développement, sous le chemin enregistré, sans le nom d'origine.
     expect(storedPaths()).toEqual([`dev-stack/${technology.iconPath}`]);
     expect(technology.iconPath).not.toMatch(/icone/);
-    expect(revalidatedPaths).toEqual(["/admin/stack (layout)"]);
+    expect(revalidatedPaths).toEqual(["/admin/stack (layout)", ...PUBLIC_STACK_PATHS]);
   });
 
   it("ajoute en dernière position", async () => {
@@ -421,7 +424,7 @@ describe("moveTechnologyAction", () => {
     const down = await moveTechnologyAction(null, form({ id: a.id, direction: "down" }));
     expect(down).toMatchObject({ ok: true, direction: "down", position: 2, total: 3 });
     expect([a, b, c].map((technology) => technology.position)).toEqual([1, 2, 0]);
-    expect(revalidatedPaths).toEqual(["/admin/stack (layout)", "/admin/stack (layout)"]);
+    expect(revalidatedPaths).toEqual(["/admin/stack (layout)", ...PUBLIC_STACK_PATHS, "/admin/stack (layout)", ...PUBLIC_STACK_PATHS]);
   });
 
   it("refuse en bout de liste", async () => {
@@ -452,7 +455,7 @@ describe("deleteTechnologyAction", () => {
     const url = await expectRedirect(deleteTechnologyAction(null, form({ id: react.id })));
     expect(url).toBe("/admin/stack?resultat=supprimee");
     expect(fakeDb.technologies).toHaveLength(0);
-    expect(revalidatedPaths).toEqual(["/admin/stack (layout)"]);
+    expect(revalidatedPaths).toEqual(["/admin/stack (layout)", ...PUBLIC_STACK_PATHS]);
   });
 
   it("supprime aussi le fichier d'icône du bucket (E52)", async () => {

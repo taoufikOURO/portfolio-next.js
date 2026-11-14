@@ -1,114 +1,78 @@
-import {
-    absoluteUrl,
-    siteDescription,
-    siteName,
-    siteUrl,
-} from "@/app/lib/site";
-import profile from "@/data/profile.json";
 import type { Metadata, Viewport } from "next";
-import { Anton, Caveat, Instrument_Sans } from "next/font/google";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import "../globals.css";
+import { Archivo } from "next/font/google";
 
-const instrumentSans = Instrument_Sans({
-    variable: "--font-instrument-sans",
-    weight: ["400", "500", "600", "700"],
-    subsets: ["latin", "latin-ext"],
-    display: "swap",
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { ScrollReveal } from "@/components/site/ScrollReveal";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { siteNameOf } from "@/lib/public/content";
+import { getPublicProfile } from "@/lib/public/queries";
+import { absoluteUrl, openGraphImages, siteUrl } from "@/lib/public/site";
+
+import "./site.css";
+
+/**
+ * Police du site public (E62) : Archivo, variable, axe de largeur compris
+ * (`wdth` jusqu'à 125 %) pour les titres larges et gras ; servie par next/font.
+ */
+const archivo = Archivo({
+  subsets: ["latin", "latin-ext"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
+  display: "swap",
 });
 
-const anton = Anton({
-    variable: "--font-anton",
-    weight: "400",
-    subsets: ["latin", "latin-ext"],
-    display: "swap",
-});
-
-const caveat = Caveat({
-    variable: "--font-caveat",
-    weight: ["500", "600", "700"],
-    subsets: ["latin", "latin-ext"],
-    display: "swap",
-});
-
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getPublicProfile();
+  const name = siteNameOf(profile);
+  const description = profile.bio || profile.jobTitle || name;
+  return {
     metadataBase: new URL(siteUrl),
-    title: `${siteName} | Data Scientist`,
-    description: siteDescription,
-    alternates: {
-        canonical: "/",
-    },
-    icons: {
-        icon: "/icon.svg",
-        shortcut: "/icon.svg",
-        apple: "/icon.svg",
-    },
+    title: { default: name, template: `%s | ${name}` },
+    description,
     openGraph: {
-        type: "website",
-        locale: "fr_FR",
-        title: "Taoufik OURO-BANG'NA | Data Scientist",
-        description:
-            "Je transforme la donnée brute en décisions concrètes, du modèle de machine learning à l'interface qui le rend utile.",
-        siteName: "Taoufik OURO-BANG'NA",
-        images: [
-            {
-                url: profile.photo,
-                width: 1200,
-                height: 1200,
-                alt: "Taoufik OURO-BANG'NA, Data Scientist",
-            },
-        ],
+      type: "website",
+      locale: "fr_FR",
+      siteName: name,
+      images: openGraphImages(profile.photo, name),
     },
-    twitter: {
-        card: "summary_large_image",
-        title: "Taoufik OURO-BANG'NA | Data Scientist",
-        description: "Portfolio de Taoufik OURO-BANG'NA, Data Scientist.",
-        images: [profile.photo],
-    },
-};
+    twitter: { card: "summary_large_image" },
+  };
+}
 
 export const viewport: Viewport = {
-    themeColor: "#cbd2da",
-    colorScheme: "light",
+  themeColor: "#ececec",
+  colorScheme: "light",
 };
 
-const personSchema = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: `${profile.prenom} ${profile.nom}`,
-    jobTitle: profile.titreProfessionnel,
-    description: profile.bio,
-    email: `mailto:${profile.email}`,
-    image: absoluteUrl(profile.photo),
-    url: siteUrl,
-    sameAs: [
-        profile.liens.github,
-        profile.liens.linkedin.startsWith("http")
-            ? profile.liens.linkedin
-            : `https://${profile.liens.linkedin}`,
-    ],
-};
+export default async function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const profile = await getPublicProfile();
+  const person = profile.fullName
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: profile.fullName,
+        jobTitle: profile.jobTitle || undefined,
+        description: profile.bio || undefined,
+        image: profile.photo.isDefault ? undefined : profile.photo.src,
+        url: siteUrl,
+        sameAs: [profile.githubUrl, profile.linkedinUrl].filter(Boolean),
+        mainEntityOfPage: absoluteUrl("/profil"),
+      }
+    : null;
 
-export default function SiteLayout({
-    children,
-}: Readonly<{ children: React.ReactNode }>) {
-    return (
-        <div
-            className={`site-root ${instrumentSans.variable} ${anton.variable} ${caveat.variable}`}
-        >
-            <a href="#contenu" className="skip-link">
-                Aller au contenu
-            </a>
-            <Header />
-            {children}
-            <Footer />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(personSchema),
-                }}
-            />
-        </div>
-    );
+  return (
+    <div className={`site-root ${archivo.variable} min-h-dvh`}>
+      <div aria-hidden="true" className="site-progress" />
+      <a href="#contenu" className="skip-link">
+        Aller au contenu
+      </a>
+      <SiteHeader name={profile.fullName} />
+      {children}
+      <SiteFooter profile={profile} />
+      <ScrollReveal />
+      {person ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(person).replace(/</g, "\\u003c") }} />
+      ) : null}
+    </div>
+  );
 }

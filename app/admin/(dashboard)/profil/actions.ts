@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { logUnexpectedError } from "@/lib/auth/log";
 import { requireSession } from "@/lib/auth/require-session";
+import { revalidatePublic } from "@/lib/public/revalidate";
 import {
   getProfile,
   photoPathOf,
@@ -37,6 +38,8 @@ import { PROFILE_PATH, type ProfileResult } from "./routes";
 
 function revalidateSection() {
   revalidatePath(PROFILE_PATH, "layout");
+  // Phase 2 : pages publiques concernées (E64).
+  revalidatePublic("profile");
 }
 
 /** Supprime un ancien fichier du bucket `profile` ; `false` si le bucket l'a refusé (journalisé). */

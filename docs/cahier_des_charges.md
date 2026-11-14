@@ -1,7 +1,7 @@
 # Cahier des charges : refonte du portfolio
 
 Auteur : Taoufik OURO-BANG'NA
-Périmètre de cette version : **phase 1, interface d'administration**. La partie visible du site est traitée en phase 2.
+Périmètre de cette version (2.0) : **phase 1, interface d'administration** (validée) et **phase 2, site public lu depuis la base** (§9).
 
 | Version | Date            | Changement                                                                                         |
 | ------- | --------------- | -------------------------------------------------------------------------------------------------- |
@@ -13,6 +13,7 @@ Périmètre de cette version : **phase 1, interface d'administration**. La parti
 | 1.5     | 13 novembre 2026 | §3.3 Articles : champs exigés pour publier et image de couverture envoyée à part (E55), décisions E57 : avertissement de sortie avec modifications non enregistrées, création en deux temps, slug refusé avec enregistrement des autres champs, description à 500 caractères, abandon sans JavaScript par une page de confirmation. Acceptés par Taoufik avec l'étape 14 |
 | 1.6     | 13 novembre 2026 | §5 : navigation en barre horizontale (pilule) et nouvelle **charte visuelle de l'admin** (§5.1, décision E60 du plan, étape 18) ; palette précédente conservée pour référence, à réviser en phase 2. Tableau de bord : publications par mois, répartition du contenu, projets récents. Comportement, routes, validations et base inchangés. **Validée par Taoufik le 14 novembre 2026 (étape 18)** |
 | 1.7     | 14 novembre 2026 | §5.1 (E61 du plan, étape 18) : logo retiré de l'admin, sans substitut ; bordure des champs et des listes `#8a8d93` (décision de Taoufik) ; règles de mouvement (motion design). Comportement, routes, validations et base inchangés. **Validée par Taoufik le 14 novembre 2026 (étape 18)** |
+| 2.0     | 14 novembre 2026 | **Phase 2 : site public lu depuis la base** (§9) : le public ne lit que la base, toutes les pages visibles refaites d'après la référence de Taoufik, pages `/competences` et `/profil` ajoutées, palette et police publiques, image par défaut, mise à jour des pages publiques par l'admin, import facultatif des anciens contenus par un script lancé par Taoufik (§2, décisions E62 à E65 du plan). Complétée le même jour : accueil en une page avec le titre professionnel en géant, mouvement au défilement (E66), navigation par ancres et aperçus « Voir plus » (E67). Base et admin inchangés (aucune migration). **En attente de la validation de Taoufik** |
 
 Plan de réalisation : `docs/plan_implementation.md`.
 
@@ -32,8 +33,8 @@ Remplacer le portfolio actuel, qui s'appuie sur des fichiers JSON et Markdown ve
   - Projets (titre, description, lien, dépôt GitHub, image, stack, statut de publication).
   - Stack (nom, icône).
   - FAQ et services : présents mais **hors périmètre** pour la phase 1.
-- **Décision : repartir de zéro.** Les données existantes ne sont pas importées. La base est remplie à la main depuis l'admin.
-- Pendant la phase 1, le site public continue de lire `data/` : ces fichiers ne sont supprimés qu'en phase 2.
+- **Décision : repartir de zéro.** Les données existantes ne sont pas importées. La base est remplie à la main depuis l'admin. **Version 2.0** : un script facultatif (`pnpm content:import`, simulation par défaut, `--apply` pour importer) reprend ces contenus dans la base locale par les modules de l'admin ; il n'est lancé que par Taoufik (E65).
+- Pendant la phase 1, le site public continuait de lire `data/`. **Depuis la phase 2, il ne lit que la base** ; `data/` et `public/images/` ne servent plus qu'au script d'import et sont supprimés après confirmation de Taoufik.
 
 ## 3. Périmètre phase 1 : administration
 
@@ -204,7 +205,7 @@ Référence : capture d'un tableau de bord fournie par Taoufik (non versionnée)
 - **Composants** : bouton principal noir, secondaire à bordure noire fine, destructif corail ; champ blanc à bordure grise `#8a8d93`, focus en anneau noir de 2 px décalé ; une seule forme de pilule de statut ; tableau à en-tête gris clair et lignes de 64 px ; alertes à fond teinté avec icône dans une pastille blanche et libellé en gras ; dialogues blancs sur voile noir à 40 % ; états vides et pages 404 et erreur avec icône dans une pastille ; squelettes de chargement aux formes du contenu.
 - **Mouvement** (E61) : seules la position, l'échelle, l'opacité (et le tracé de l'anneau) sont animées ; entrées seulement, contenu lisible à l'état final même sans JavaScript ; 600 ms au plus, sauf le tracé de l'anneau (800 ms) ; aucune boucle sauf le balayage des squelettes. Entrée de page en fondu avec glissement de 8 px (250 ms) ; cartes du tableau de bord décalées de 60 ms (300 ms) ; barres du graphique montant depuis la base (600 ms, 50 ms d'écart) ; anneau tracé en 800 ms ; indicateur du lien actif qui glisse vers le lien survolé (250 ms) ; boutons soulevés de 1 px au survol et à l'échelle 0,98 au clic (150 ms) ; contour et anneau de focus des champs en 150 ms ; alertes en fondu avec glissement de 8 px (250 ms) ; dialogues : voile en fondu et panneau de 0,96 à 1 (200 ms) ; panneau mobile et menu du compte en glissement et fondu (200 ms) ; squelettes à balayage lumineux lent (1,6 s) ; lignes de tableau en fondu décalé de 30 ms (10 lignes au plus) ; pastilles de statut sans animation. **Sous `prefers-reduced-motion: reduce`** : aucun déplacement ni échelle, aucune animation, graphiques dans leur état final, squelettes statiques.
 - **Inchangé** : information jamais portée par la couleur seule (libellés en toutes lettres, préfixes « Erreur : », « Succès : »), liens d'évitement, focus visible, cibles de 44 px.
-- **Palette précédente** (crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`) : **précédente, à réviser en phase 2** (site public).
+- **Palette précédente** (crème `#f4f1de`, terracotta `#e07a5f`, bleu-gris foncé `#3d405b`, vert sauge `#81b29a`, sable `#f2cc8f`) : **abandonnée** ; le site public a sa propre palette depuis la version 2.0 (§9).
 
 ## 6. Environnements
 
@@ -254,11 +255,21 @@ Référence : capture d'un tableau de bord fournie par Taoufik (non versionnée)
 - Images dans le corps des articles.
 - Import des anciens JSON et Markdown.
 
-## 9. Phase 2 (à venir)
+## 9. Phase 2 : site public lu depuis la base (version 2.0)
 
-- Refonte de l'interface visible, à cadrer après la validation de la phase 1.
-- Affichage des articles, des projets, du parcours et de la stack à partir de la base.
-- Suppression de `data/` et des images de `public/images/`.
+- **Source unique** : le site public ne lit que la base (aucune donnée écrite dans le code, aucune lecture de `data/` à l'exécution). Images par leur chemin dans les buckets Supabase, URL calculée à l'affichage, servies par `next/image`.
+- **Pages** : accueil, projets et détail, articles et détail, formations, compétences (nouvelle : compétences et stack technique), profil (nouvelle), page introuvable. Même système visuel partout, d'après la référence fournie par Taoufik (mise en page et mouvement seulement ; aucun texte, image, nom ni logo repris) : titres géants pleins et contour, bloc rouge vertical, croix de repère, cartes.
+- **Accueil en une page** : en haut, accroche (texte neutre en attendant un éventuel champ du profil), **titre professionnel du profil en géant** (à la place de « Portfolio », demande de Taoufik), nom du profil, lien « Découvrir », éventail de cartes (photo du profil au centre, quatre projets publiés au plus dans l'ordre de l'admin, image par défaut pour les places vides, chaque carte de projet menant à sa page), anneau de texte composé du nom et du titre du profil. Puis, en défilant : à propos (photo, bio, chiffres tirés de la base, liens), projets, parcours, compétences et stack, derniers articles, contact. Chaque section montre un **aperçu** et se termine par un bouton **« Voir plus »**, seul accès à la page complète (profil, projets, formations, compétences, articles) ; une section sans contenu affiche un état vide.
+- **Navigation** : la barre (collante) et le pied de page ne contiennent que des **ancres vers les sections de l'accueil** (À propos, Projets, Parcours, Compétences, Articles, Contact), y compris depuis une autre page ; la section affichée est surlignée. Pour atteindre une page complète, on passe par la section puis « Voir plus » (demande de Taoufik, E67).
+- **Articles** : seuls les articles publiés, dans leur version publiée ; un brouillon n'est jamais affiché, même par son adresse (404). Dates « publié le » (première publication) et « mis à jour le » (dernière republication). Markdown rendu par le moteur de l'admin (désinfection, coloration du code ; images du corps toujours hors périmètre).
+- **Projets** : seuls les projets publiés, dans l'ordre de l'admin ; détail avec description, technologies, liens ordonnés et collaborateurs (nom et lien de profil seulement).
+- **Image par défaut** : une seule image neutre (`public/defaults/image.svg` : gris clair, carré rouge, aucune photo) pour toute couverture, image de projet ou photo manquante.
+- **Mise à jour** : les pages publiques sont gardées en cache et recalculées dès qu'une publication, une modification ou une suppression faite dans l'admin les concerne (repli d'une heure pour un changement fait hors de l'admin).
+- **Palette publique** : fond `#ececec`, texte `#0f0f10`, secondaire `#5f636a`, rouge `#e0463a` (bloc et cartes d'accent, jamais en texte), cartes `#dcdcdc`, filets `#c4c4c8`, blanc. **Police** : Archivo (Google Fonts, `next/font`), titres larges et gras, version contour décorative.
+- **Mouvement** : position, échelle et opacité seulement ; 600 ms au plus, sauf l'ouverture de l'éventail (900 ms) ; une seule animation en boucle, l'anneau ; blocs qui apparaissent à leur arrivée à l'écran ; là où le navigateur le permet, mouvements qui suivent le défilement (barre de progression, dérive lente du haut de page, glissement des contours des titres) ; sous « réduire les animations » : affichage direct, aucun déplacement ; tout le contenu reste lisible sans JavaScript.
+- **Accessibilité et référencement** : WCAG AA (contrastes mesurés, focus visible, cibles de 44 px, aucun défilement horizontal à 390 px), métadonnées et titre propres à chaque page, Open Graph (couverture, image du projet ou image par défaut), `sitemap.xml` et `robots.txt`.
+- **Suppression** de `data/`, des images de `public/images/` et de l'ancien code du site : après confirmation de Taoufik.
+- **Recette** : `docs/recette_phase2.md`.
 
 ## 10. Critères d'acceptation phase 1
 

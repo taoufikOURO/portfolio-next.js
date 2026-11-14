@@ -1,0 +1,571 @@
+/* Site public (phase 2, E62). Ne scanne que le site : les classes de l'admin
+   n'y sont pas ajoutées (et inversement, voir app/admin/admin.css). */
+@import "tailwindcss" source(none);
+@source "./";
+@source "../../components/site";
+
+/* Palette publique relevée sur la référence (vidéo, pixels de la première
+   image) puis ajustée pour les contrastes WCAG AA. Aucune autre couleur.
+   Ratios vérifiés par `components/site/palette.test.ts`. */
+@theme {
+    --color-*: initial;
+
+    --color-paper: #ececec; /* fond (référence : #dcdcdc, éclairci pour le contraste du texte secondaire) */
+    --color-ink: #0f0f10; /* texte, contours, croix de repère, focus */
+    --color-muted: #5f636a; /* texte secondaire (5,11 sur le fond) */
+    --color-signal: #e0463a; /* rouge : bloc vertical et cartes d'accent (référence : #dc4b3a) ; jamais en texte */
+    --color-tile: #dcdcdc; /* fond des cartes et des images (jamais de texte secondaire dessus) */
+    --color-rule: #c4c4c8; /* filets décoratifs */
+    --color-white: #ffffff; /* surfaces de lecture (code, cartes de texte) */
+
+    --radius-card: 1.25rem;
+}
+
+/* Police : la variable de next/font est posée sur `.site-root` (pas sur :root),
+   d'où `@theme inline` (la classe `font-sans` lit la variable là où elle existe). */
+@theme inline {
+    --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+    body:has(.site-root) {
+        background: var(--color-paper);
+    }
+
+    .site-root {
+        font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+        color: var(--color-ink);
+        background: var(--color-paper);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: clip;
+        /* Marges horizontales cumulées d'un cadre (shell + cadre) : sert au calcul
+           de la taille des grands titres, pour qu'ils tiennent sur la largeur. */
+        --frame-pad: 3.5rem;
+    }
+    @media (min-width: 640px) {
+        .site-root {
+            --frame-pad: 9rem;
+        }
+    }
+
+    /* Sections de l'accueil : l'ancre ne passe pas sous la barre collante. */
+    .site-root [id] {
+        scroll-margin-top: 5.5rem;
+    }
+
+    .site-root :focus-visible {
+        outline: 2px solid var(--color-ink);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    .site-root ::selection {
+        background: var(--color-ink);
+        color: var(--color-paper);
+    }
+}
+
+@layer components {
+    /* Police large et grasse (Archivo, axe de largeur à 125 %). */
+    .site-wide {
+        font-stretch: 125%;
+        font-variation-settings: "wdth" 125;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+    }
+
+    /* Version contour des grands titres : purement décorative (aria-hidden). */
+    .site-outline {
+        color: transparent;
+        -webkit-text-stroke: 0.025em var(--color-ink);
+    }
+
+    /* Bloc sombre (contact) : contour et focus clairs. */
+    .site-outline-light {
+        -webkit-text-stroke-color: var(--color-paper);
+    }
+    .site-dark :focus-visible {
+        outline-color: var(--color-paper);
+    }
+
+    .site-shell {
+        width: 100%;
+        max-width: 84rem;
+        margin-inline: auto;
+        padding-inline: 1rem;
+    }
+    @media (min-width: 640px) {
+        .site-shell {
+            padding-inline: 2rem;
+        }
+    }
+
+    .skip-link {
+        position: absolute;
+        left: 1rem;
+        top: -4rem;
+        z-index: 60;
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        padding-inline: 1rem;
+        border-radius: 999px;
+        background: var(--color-ink);
+        color: var(--color-paper);
+        font-weight: 700;
+    }
+    .skip-link:focus {
+        top: 0.75rem;
+    }
+
+    /* Barre de progression de lecture (affichée seulement là où le défilement
+       peut piloter une animation, voir le bloc de mouvement). */
+    .site-progress {
+        display: none;
+        position: fixed;
+        inset: 0 0 auto 0;
+        height: 3px;
+        z-index: 70;
+        background: var(--color-signal);
+        transform-origin: 0 50%;
+        pointer-events: none;
+    }
+
+    /* Croix de repère « + » (décor). */
+    .site-cross {
+        position: absolute;
+        width: 0.875rem;
+        height: 0.875rem;
+        pointer-events: none;
+    }
+    .site-cross::before,
+    .site-cross::after {
+        content: "";
+        position: absolute;
+        background: var(--color-ink);
+    }
+    .site-cross::before {
+        left: 50%;
+        top: 0;
+        width: 1px;
+        height: 100%;
+    }
+    .site-cross::after {
+        top: 50%;
+        left: 0;
+        height: 1px;
+        width: 100%;
+    }
+
+    /* Boutons (pilules, 44 px). */
+    .site-button {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        gap: 0.5rem;
+        padding-inline: 1.25rem;
+        border-radius: 999px;
+        border: 1px solid var(--color-ink);
+        font-weight: 700;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .site-button-primary {
+        background: var(--color-ink);
+        color: var(--color-paper);
+    }
+    .site-button-secondary {
+        background: transparent;
+        color: var(--color-ink);
+    }
+
+    .site-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-height: 2rem;
+        padding-inline: 0.75rem;
+        border-radius: 999px;
+        border: 1px solid var(--color-ink);
+        font-size: 0.8125rem;
+        font-weight: 600;
+    }
+
+    .site-eyebrow {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-muted);
+    }
+
+    /* Carte inclinée (listes, profil). */
+    .site-card-face {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-card);
+        background: var(--color-tile);
+        box-shadow: 0 18px 40px -24px rgb(15 15 16 / 0.45);
+    }
+
+    /* Éventail de l'accueil : chaque carte tourne autour d'un pivot commun,
+       sous le centre de l'anneau. */
+    .site-fan {
+        --card-w: 8.5rem;
+        --card-h: 11.25rem;
+        --radius: 6.25rem;
+        --step: 13deg;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 0;
+        height: 0;
+    }
+    @media (min-width: 640px) {
+        .site-fan {
+            --card-w: 11rem;
+            --card-h: 14.5rem;
+            --radius: 8rem;
+            --step: 15deg;
+        }
+    }
+    @media (min-width: 1024px) {
+        .site-fan {
+            --card-w: 13.5rem;
+            --card-h: 18rem;
+            --radius: 9.5rem;
+            --step: 16deg;
+        }
+    }
+    .site-fan-card {
+        position: absolute;
+        left: calc(var(--card-w) / -2);
+        bottom: var(--radius);
+        width: var(--card-w);
+        height: var(--card-h);
+        transform-origin: 50% calc(100% + var(--radius));
+        transform: rotate(calc(var(--slot) * var(--step))) translateY(0);
+        z-index: calc(10 - var(--depth));
+        border-radius: var(--radius-card);
+    }
+    .site-fan-card:focus-visible {
+        z-index: 20;
+    }
+    .site-fan-face {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Corps des articles : Markdown rendu par `MarkdownPreview` (même moteur que l'admin). */
+    .site-prose {
+        font-size: 1.0625rem;
+        line-height: 1.75;
+    }
+    .site-prose > * + * {
+        margin-top: 1.1em;
+    }
+    .site-prose :is(h1, h2, h3, h4) {
+        font-stretch: 112%;
+        font-variation-settings: "wdth" 112;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-top: 2em;
+    }
+    .site-prose h1 {
+        font-size: 1.9rem;
+    }
+    .site-prose h2 {
+        font-size: 1.55rem;
+    }
+    .site-prose h3 {
+        font-size: 1.25rem;
+    }
+    .site-prose a {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+        text-decoration-thickness: 1px;
+    }
+    .site-prose :is(ul, ol) {
+        padding-left: 1.4em;
+    }
+    .site-prose ul {
+        list-style: square;
+    }
+    .site-prose ol {
+        list-style: decimal;
+    }
+    .site-prose li + li {
+        margin-top: 0.35em;
+    }
+    .site-prose li::marker {
+        color: var(--color-ink);
+    }
+    .site-prose blockquote {
+        border-left: 4px solid var(--color-signal);
+        padding-left: 1rem;
+        color: var(--color-muted);
+    }
+    .site-prose :not(pre) > code {
+        background: var(--color-white);
+        border-radius: 0.35rem;
+        padding: 0.1em 0.35em;
+        font-size: 0.9em;
+    }
+    .site-prose pre {
+        overflow-x: auto;
+        background: var(--color-white);
+        border: 1px solid var(--color-rule);
+        border-radius: 0.9rem;
+        padding: 1rem 1.25rem;
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+    .site-prose table {
+        display: block;
+        overflow-x: auto;
+        border-collapse: collapse;
+    }
+    .site-prose :is(th, td) {
+        border: 1px solid var(--color-rule);
+        padding: 0.4rem 0.7rem;
+    }
+    .site-prose hr {
+        border: 0;
+        border-top: 1px solid var(--color-rule);
+    }
+    /* Coloration du code : graisse et italique, dans la palette (texte sur blanc). */
+    .site-prose :is(.hljs-keyword, .hljs-built_in, .hljs-title, .hljs-section, .hljs-selector-tag, .hljs-type) {
+        font-weight: 700;
+    }
+    .site-prose :is(.hljs-comment, .hljs-quote) {
+        color: var(--color-muted);
+        font-style: italic;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Mouvement (E62, d'après la vidéo de référence)
+   - seulement transform et opacity ;
+   - entrées en `animation-fill-mode: backwards` : l'état final est l'état
+     normal de la page, lisible sans JavaScript ;
+   - 600 ms au plus, sauf l'ouverture de l'éventail (900 ms) ;
+   - une seule boucle infinie : la rotation lente de l'anneau ;
+   - tout est déclaré ici, sous `prefers-reduced-motion: no-preference` :
+     sous réduction, affichage direct, aucun déplacement.
+   Vérifié par `components/site/motion.test.ts`.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes site-letter-in {
+        from {
+            opacity: 0;
+            transform: translateY(0.45em) rotateX(-75deg);
+        }
+    }
+    @keyframes site-letter-in-reverse {
+        from {
+            opacity: 0;
+            transform: translateY(-0.45em) rotateX(75deg);
+        }
+    }
+    @keyframes site-reveal {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+    }
+    @keyframes site-block-in {
+        from {
+            opacity: 0;
+            transform: scaleY(0.2);
+        }
+    }
+    @keyframes site-fan-open {
+        from {
+            opacity: 0;
+            transform: rotate(0deg) translateY(2rem);
+        }
+    }
+    @keyframes site-ring-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Titre géant : lettres qui basculent à l'entrée, en vague (500 ms, 35 ms d'écart). */
+    .site-letter {
+        display: inline-block;
+        animation: site-letter-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        animation-delay: calc(var(--i, 0) * 35ms);
+    }
+    .site-outline .site-letter {
+        animation-name: site-letter-in-reverse;
+        animation-delay: calc(120ms + var(--i, 0) * 35ms);
+    }
+
+    /* Texte qui se révèle à l'entrée (500 ms, 70 ms d'écart). */
+    .site-reveal {
+        animation: site-reveal 500ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        animation-delay: calc(var(--order, 0) * 70ms);
+    }
+
+    /* Bloc rouge qui se déplie depuis le haut (600 ms). */
+    .site-block {
+        transform-origin: top;
+        animation: site-block-in 600ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    }
+
+    /* Éventail qui s'ouvre à l'arrivée (850 ms). */
+    .site-fan-card {
+        animation: site-fan-open 850ms cubic-bezier(0.2, 0.9, 0.25, 1) backwards;
+        animation-delay: 150ms;
+    }
+
+    /* Anneau de texte : seule boucle infinie (un tour en 40 s). */
+    .site-ring-spin {
+        animation: site-ring-spin 40s linear infinite;
+    }
+
+    /* Survol et focus : la carte se soulève et tourne légèrement (250 ms). */
+    .site-lift {
+        transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    a:is(:hover, :focus-visible) > .site-lift,
+    a:is(:hover, :focus-visible) .site-lift {
+        transform: translateY(-0.9rem) rotate(var(--tilt, 2deg));
+    }
+
+    /* Titre d'une ligne de projet : glisse légèrement au survol (250 ms). */
+    .site-nudge {
+        transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    a:is(:hover, :focus-visible) .site-nudge {
+        transform: translateX(0.6rem);
+    }
+
+    /* Défilement doux vers les sections de l'accueil. */
+    html:has(.site-root) {
+        scroll-behavior: smooth;
+    }
+
+    /* -----------------------------------------------------------------------
+       Apparition au défilement (E66). `components/site/ScrollReveal.tsx` passe
+       les éléments [data-reveal] encore sous la ligne de flottaison à
+       « pending », puis à « shown » quand ils entrent dans la fenêtre. Sans
+       JavaScript, ou sous réduction, rien n'est masqué.
+       --------------------------------------------------------------------- */
+    @keyframes site-slide-left {
+        from {
+            opacity: 0;
+            transform: translateX(-2.5rem);
+        }
+    }
+    @keyframes site-slide-right {
+        from {
+            opacity: 0;
+            transform: translateX(2.5rem);
+        }
+    }
+    @keyframes site-grow-y {
+        from {
+            transform: scaleY(0);
+        }
+    }
+    @keyframes site-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.6);
+        }
+    }
+
+    [data-reveal="pending"],
+    [data-reveal="pending"] .site-letter {
+        opacity: 0;
+        animation: none;
+    }
+    [data-reveal="shown"] {
+        animation: site-reveal 600ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        animation-delay: calc(var(--order, 0) * 80ms);
+    }
+    [data-reveal="shown"][data-from="left"] {
+        animation-name: site-slide-left;
+    }
+    [data-reveal="shown"][data-from="right"] {
+        animation-name: site-slide-right;
+    }
+    /* Grands titres de section : les lettres basculent quand le titre arrive. */
+    [data-reveal="shown"] .site-letter {
+        animation: site-letter-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        animation-delay: calc(100ms + var(--i, 0) * 35ms);
+    }
+    [data-reveal="shown"] .site-outline .site-letter {
+        animation-name: site-letter-in-reverse;
+        animation-delay: calc(220ms + var(--i, 0) * 35ms);
+    }
+    /* Frise du parcours : le trait se dessine, les repères apparaissent. */
+    [data-reveal="shown"] .site-timeline-line {
+        transform-origin: top;
+        animation: site-grow-y 600ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    }
+    [data-reveal="shown"] .site-timeline-dot {
+        animation: site-pop 400ms cubic-bezier(0.3, 1.4, 0.5, 1) backwards;
+        animation-delay: 200ms;
+    }
+
+    /* -----------------------------------------------------------------------
+       Mouvements liés au défilement (E66), là où le navigateur les permet :
+       barre de progression, dérive lente du titre et de l'éventail de
+       l'accueil, décalage du contour des titres de section. Ils suivent la
+       position de défilement (aucune durée) ; absents sans prise en charge.
+       --------------------------------------------------------------------- */
+    @supports (animation-timeline: view()) {
+        @keyframes site-progress {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
+        @keyframes site-drift-up {
+            to {
+                transform: translateY(-18%);
+            }
+        }
+        @keyframes site-drift-fan {
+            to {
+                transform: translateY(-4rem);
+            }
+        }
+        @keyframes site-outline-slide {
+            from {
+                transform: translateX(-3%);
+            }
+            to {
+                transform: translateX(3%);
+            }
+        }
+
+        .site-progress {
+            display: block;
+            animation: site-progress linear both;
+            animation-timeline: scroll(root);
+        }
+        .site-drift {
+            animation: site-drift-up linear both;
+            animation-timeline: view();
+            animation-range: exit 0% exit 100%;
+        }
+        .site-fan {
+            animation: site-drift-fan linear both;
+            animation-timeline: view();
+            animation-range: exit 0% exit 100%;
+        }
+        .site-heading-outline {
+            animation: site-outline-slide linear both;
+            animation-timeline: view();
+            animation-range: entry 0% exit 100%;
+        }
+    }
+}

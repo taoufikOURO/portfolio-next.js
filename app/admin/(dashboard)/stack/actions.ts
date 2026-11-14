@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { logUnexpectedError } from "@/lib/auth/log";
 import { requireSession } from "@/lib/auth/require-session";
+import { revalidatePublic } from "@/lib/public/revalidate";
 import { isRecordNotFound, isUniqueViolation } from "@/lib/prisma-errors";
 import { removeFile } from "@/lib/storage/remove";
 import { replaceFile } from "@/lib/storage/upload";
@@ -116,6 +117,8 @@ async function removeIcon(iconPath: string): Promise<boolean> {
 
 function revalidateSections() {
   revalidatePath(STACK_PATH, "layout");
+  // Phase 2 : pages publiques concernées (E64).
+  revalidatePublic("technologies");
 }
 
 /**

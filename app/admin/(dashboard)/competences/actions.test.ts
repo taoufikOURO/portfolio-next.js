@@ -96,7 +96,14 @@ describe("createSkillAction", () => {
     expect(fakeDb.skills).toEqual([
       { id: expect.any(String), name: "Développement Web", normalizedName: "developpement web" },
     ]);
-    expect(revalidatedPaths).toEqual(["/admin/competences (layout)", "/admin/formations (layout)"]);
+    expect(revalidatedPaths).toEqual([
+      "/admin/competences (layout)",
+      // Phase 2 (E64) : pages publiques des compétences et des formations.
+      "/competences",
+      "/formations",
+      "/",
+      "/admin/formations (layout)",
+    ]);
   });
 
   it.each(["développement web", "DEVELOPPEMENT WEB", "  Developpement  web ", "Développement Web"])(

@@ -12,6 +12,7 @@ import { isCurrentVersion, versionToken } from "@/lib/articles/rules";
 import { logUnexpectedError } from "@/lib/auth/log";
 import { requireSession } from "@/lib/auth/require-session";
 import type { BucketKey } from "@/lib/storage/rules";
+import { revalidatePublic } from "@/lib/public/revalidate";
 import { removeFile } from "@/lib/storage/remove";
 import { uploadFile } from "@/lib/storage/upload";
 import {
@@ -270,6 +271,8 @@ export async function publishArticleAction(
   }
 
   revalidateSection();
+  // Phase 2 : la version en ligne a pu changer (E64).
+  revalidatePublic("articles");
   redirect(`${articlePath(id)}?resultat=${result}`);
 }
 
@@ -339,5 +342,7 @@ export async function deleteArticleAction(
   }
 
   revalidateSection();
+  // Phase 2 : un article publié supprimé disparaît du site (E64).
+  revalidatePublic("articles");
   redirect(`${ARTICLES_PATH}?resultat=${result}`);
 }

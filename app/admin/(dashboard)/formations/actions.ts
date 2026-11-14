@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { logUnexpectedError } from "@/lib/auth/log";
 import { requireSession } from "@/lib/auth/require-session";
+import { revalidatePublic } from "@/lib/public/revalidate";
 import {
   createEducation,
   deleteEducation,
@@ -77,6 +78,8 @@ function saveFailureState(result: SaveEducationResult, values: EducationFormValu
 /** La page « Compétences » affiche les formations qui utilisent chaque compétence. */
 function revalidateSections() {
   revalidatePath(EDUCATIONS_PATH, "layout");
+  // Phase 2 : pages publiques concernées (E64).
+  revalidatePublic("educations", "skills");
   revalidatePath(SKILLS_PATH, "layout");
 }
 

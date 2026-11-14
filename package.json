@@ -16,6 +16,7 @@
     "db:studio": "prisma studio",
     "mail:test": "node --env-file=.env --conditions=react-server --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve-hook.mjs scripts/send-test-mail.ts",
     "storage:setup": "node --env-file=.env --conditions=react-server --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve-hook.mjs scripts/setup-storage.ts",
+    "content:import": "node --env-file=.env --conditions=react-server --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve-hook.mjs scripts/import-public-content.ts",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate"
   },

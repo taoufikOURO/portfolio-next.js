@@ -1,45 +1,20 @@
 import type { MetadataRoute } from "next";
-import { getAllArticles, getAllProjects } from "./lib/data";
-import { siteUrl } from "./lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const staticRoutes: MetadataRoute.Sitemap = [
-        {
-            url: siteUrl,
-            changeFrequency: "monthly",
-            priority: 1,
-        },
-        {
-            url: `${siteUrl}/projets`,
-            changeFrequency: "monthly",
-            priority: 0.8,
-        },
-        {
-            url: `${siteUrl}/articles`,
-            changeFrequency: "weekly",
-            priority: 0.7,
-        },
-        {
-            url: `${siteUrl}/formations`,
-            changeFrequency: "yearly",
-            priority: 0.6,
-        },
-    ];
+import { getPublicArticles, getPublicProjects } from "@/lib/public/queries";
+import { siteUrl } from "@/lib/public/site";
 
-    const projects: MetadataRoute.Sitemap = getAllProjects().map(
-        (project) => ({
-            url: `${siteUrl}/projets/${project.slug}`,
-            changeFrequency: "monthly",
-            priority: 0.8,
-        }),
-    );
+export const revalidate = 3600;
 
-    const articles: MetadataRoute.Sitemap = getAllArticles().map((article) => ({
-        url: `${siteUrl}/articles/${article.slug}`,
-        lastModified: new Date(article.date),
-        changeFrequency: "yearly",
-        priority: 0.6,
-    }));
-
-    return [...staticRoutes, ...projects, ...articles];
+/** Plan du site : pages fixes, projets publiés et articles publiés (lus depuis la base). */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [projects, articles] = await Promise.all([getPublicProjects(), getPublicArticles()]);
+  const pages = ["", "/projets", "/articles", "/formations", "/competences", "/profil"].map((path) => ({ url: `${siteUrl}${path}` }));
+  return [
+    ...pages,
+    ...projects.map((project) => ({ url: `${siteUrl}/projets/${project.slug}` })),
+    ...articles.map((article) => ({
+      url: `${siteUrl}/articles/${article.slug}`,
+      lastModified: article.updatedAt ?? article.publishedAt,
+    })),
+  ];
 }

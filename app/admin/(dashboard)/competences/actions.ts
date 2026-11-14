@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { logUnexpectedError } from "@/lib/auth/log";
 import { requireSession } from "@/lib/auth/require-session";
+import { revalidatePublic } from "@/lib/public/revalidate";
 import { createSkill, deleteSkill, renameSkill, type SkillUsage } from "@/lib/skills";
 import { firstFieldErrors, type ActionState } from "@/lib/validation/auth";
 import {
@@ -40,6 +41,8 @@ function nameValue(formData: FormData) {
 /** Les deux sections affichent les compétences : les deux sont rafraîchies. */
 function revalidateSections() {
   revalidatePath(SKILLS_PATH, "layout");
+  // Phase 2 : pages publiques concernées (E64).
+  revalidatePublic("skills", "educations");
   revalidatePath(EDUCATIONS_PATH, "layout");
 }
 

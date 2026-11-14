@@ -234,7 +234,15 @@ describe("création", () => {
     });
     // Doublon de la saisie (casse comprise) : un seul appel.
     expect(fakeGitHub.requests).toEqual(["octocat"]);
-    expect(revalidatedPaths).toEqual(["/admin/projets (layout)", "/admin/stack (layout)"]);
+    expect(revalidatedPaths).toEqual([
+      "/admin/projets (layout)",
+      // Phase 2 (E64) : accueil (éventail), liste, détail et plan du site.
+      "/",
+      "/projets",
+      "/(site)/projets/[slug] (page)",
+      "/sitemap.xml",
+      "/admin/stack (layout)",
+    ]);
   });
 
   it("envoie l'image dans dev-projets et enregistre son chemin", async () => {
