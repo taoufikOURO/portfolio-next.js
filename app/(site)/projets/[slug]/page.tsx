@@ -43,6 +43,8 @@ function Section({ title, order, children }: { title: string; order: number; chi
 export default async function ProjectPage({ params }: Props) {
   const project = await getPublicProject((await params).slug);
   if (!project) notFound();
+  // Sans image, la colonne (image et bloc rouge) n'est pas rendue : pas d'image par défaut.
+  const hasImage = !project.image.isDefault;
 
   return (
     <main id="contenu">
@@ -63,15 +65,23 @@ export default async function ProjectPage({ params }: Props) {
         </div>
       </header>
 
-      <div className="site-shell mt-8 grid gap-12 sm:mt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
-        <div className="relative">
-          <div aria-hidden="true" className="site-block absolute -left-2 -top-4 h-2/3 w-1/3 rounded-[1.25rem] bg-signal sm:-left-4 sm:-top-6" />
-          <div className="site-card-face site-reveal relative aspect-[4/5] -rotate-2" style={{ "--order": 2 } as CSSProperties}>
-            <SiteImage image={project.image} alt="" sizes="(min-width: 1024px) 640px, 100vw" eager />
+      <div
+        className={
+          hasImage
+            ? "site-shell mt-8 grid gap-12 sm:mt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16"
+            : "site-shell mt-8 sm:mt-12"
+        }
+      >
+        {hasImage ? (
+          <div className="relative">
+            <div aria-hidden="true" className="site-block absolute -left-2 -top-4 h-2/3 w-1/3 rounded-[1.25rem] bg-signal sm:-left-4 sm:-top-6" />
+            <div className="site-card-face site-reveal relative aspect-[4/5] -rotate-2" style={{ "--order": 2 } as CSSProperties}>
+              <SiteImage image={project.image} alt="" sizes="(min-width: 1024px) 640px, 100vw" eager />
+            </div>
           </div>
-        </div>
+        ) : null}
 
-        <div className="grid content-start gap-10">
+        <div className={hasImage ? "grid content-start gap-10" : "grid max-w-3xl content-start gap-10 sm:px-10"}>
           <Section title="Description" order={3}>
             <p className="whitespace-pre-line text-lg leading-relaxed [overflow-wrap:anywhere]">{project.description}</p>
           </Section>

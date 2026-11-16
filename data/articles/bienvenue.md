@@ -2,8 +2,6 @@
 
 Salut et bienvenue! Je suis ravi de vous accueillir sur ma plateforme de partage.
 
-![Description de l'image](/images/projets/default-project.svg)
-
 ## Qui suis-je?
 
 Je suis Taoufik, un développeur passionné par la technologie, l'innovation et la création. À travers ce blog, je partage mes expériences, mes apprentissages et mes projets.
