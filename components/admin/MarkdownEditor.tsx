@@ -3,6 +3,7 @@
 import {
   useDeferredValue,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -13,9 +14,10 @@ import { Bold, Code, Heading2, Italic, Link2, List, type LucideIcon } from "luci
 
 import { cn } from "@/lib/cn";
 
-import { FieldError, FieldHint, FieldLabel, controlClasses, describedBy } from "./field-parts";
+import { FOCUS_FADE, FieldError, FieldHint, FieldLabel, controlClasses, describedBy } from "./field-parts";
 import { applyFormat, type FormatAction } from "./markdown-format";
 import { MarkdownPreview } from "./MarkdownPreview";
+import { createScrollSync, scrollRatio, scrollTopForRatio } from "./scroll-sync";
 import { useHydrated } from "./use-hydrated";
 
 const TOOLS: { action: FormatAction; label: string; shortcut?: string; icon: LucideIcon }[] = [
@@ -29,6 +31,13 @@ const TOOLS: { action: FormatAction; label: string; shortcut?: string; icon: Luc
 
 /** Côte à côte à partir de 1024 px ; en dessous, onglets « Écrire » et « Aperçu ». */
 const WIDE_QUERY = "(min-width: 1024px)";
+
+/**
+ * Hauteur commune de la zone d'écriture et de l'aperçu : 60 % de la fenêtre,
+ * entre 18 rem (288 px) et 40 rem (640 px). Chacune défile dans son cadre : la
+ * page ne s'allonge plus avec l'article.
+ */
+const PANE_HEIGHT = "h-[clamp(18rem,60vh,40rem)]";
 
 function subscribeWide(callback: () => void) {
   const query = window.matchMedia(WIDE_QUERY);
@@ -63,7 +72,10 @@ export type MarkdownEditorProps = {
  * Éditeur Markdown : zone de texte native, petite barre d'outils (gras,
  * italique, titre, lien, code, liste) et aperçu (`MarkdownPreview`). Aperçu
  * côte à côte à partir de 1024 px ; en dessous, onglets « Écrire » et
- * « Aperçu ». Sans JavaScript : la zone de texte seule (envoyée avec le
+ * « Aperçu ». Les deux zones ont la même hauteur fixe (`PANE_HEIGHT`) et
+ * défilent chacune dans leur cadre, à la même proportion (`scroll-sync.ts`) :
+ * côte à côte, l'une suit l'autre ; en onglets, la zone affichée reprend la
+ * proportion de la précédente. Sans JavaScript : la zone de texte seule (envoyée avec le
  * formulaire), puis l'aperçu du texte enregistré, sans barre d'outils ni onglets.
  *
  * Clavier : la barre d'outils est un seul arrêt de tabulation (flèches gauche
@@ -91,6 +103,11 @@ export function MarkdownEditor({
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [activeTool, setActiveTool] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLElement>(null);
+  // Défilement synchronisé (proportion commune, écho ignoré : pas de boucle).
+  const [scrollSync] = useState(() => createScrollSync<HTMLElement>());
+  // Dernière proportion de défilement, reprise par la zone affichée au changement d'onglet.
+  const scrollRatioRef = useRef(0);
   const toolRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const baseId = useId();
   const ids = describedBy(id, hint, error);
@@ -98,6 +115,27 @@ export function MarkdownEditor({
   const previewTabId = `${baseId}-onglet-apercu`;
   const writePanelId = `${baseId}-ecrire`;
   const previewPanelId = `${baseId}-apercu`;
+  const previewLabelId = `${baseId}-apercu-libelle`;
+
+  function onPaneScroll(source: HTMLElement | null, target: HTMLElement | null) {
+    if (!source) return;
+    scrollRatioRef.current = scrollRatio(source);
+    // En onglets, l'autre zone est masquée : elle reprendra la proportion à l'affichage.
+    if (!tabs && target) scrollSync.sync(source, target);
+  }
+
+  // Changement d'onglet ou de disposition : la zone affichée reprend la dernière proportion.
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    const preview = previewRef.current;
+    if (!textarea || !preview) return;
+    if (!tabs) {
+      scrollSync.sync(textarea, preview);
+      return;
+    }
+    const visible = tab === "write" ? textarea : preview;
+    visible.scrollTop = scrollTopForRatio(scrollRatioRef.current, visible);
+  }, [tabs, tab, scrollSync]);
 
   function format(action: FormatAction) {
     const textarea = textareaRef.current;
@@ -234,28 +272,50 @@ export function MarkdownEditor({
             onChange={(event) => onChange(event.target.value)}
             onBlur={onBlur}
             onKeyDown={onTextareaKeyDown}
-            className={cn(controlClasses(Boolean(error)), "resize-y font-mono text-sm leading-relaxed")}
+            onScroll={() => onPaneScroll(textareaRef.current, previewRef.current)}
+            className={cn(
+              controlClasses(Boolean(error)),
+              PANE_HEIGHT,
+              "resize-none overflow-y-auto font-mono text-sm leading-relaxed",
+            )}
           />
         </div>
 
-        <section
+        <div
           id={previewPanelId}
           role={tabs ? "tabpanel" : undefined}
           aria-labelledby={tabs ? previewTabId : undefined}
-          aria-label={tabs ? undefined : hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}
           hidden={!showPreview}
-          tabIndex={tabs ? 0 : undefined}
-          className="min-w-0 rounded-[var(--radius-field)] border border-line bg-panel p-4"
+          className="flex min-w-0 flex-col gap-2"
         >
           {tabs ? null : (
-            <p className="mb-3 text-sm font-medium text-muted">{hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}</p>
+            // Hauteur de la barre d'outils : les deux cadres commencent à la même ligne.
+            <p
+              id={previewLabelId}
+              className={cn("text-sm font-medium text-muted", hydrated && "flex min-h-11 items-center")}
+            >
+              {hydrated ? "Aperçu" : "Aperçu du contenu enregistré"}
+            </p>
           )}
-          {previewValue.trim() === "" ? (
-            <p className="text-sm text-muted">Rien à afficher pour l’instant.</p>
-          ) : (
-            <MarkdownPreview content={previewValue} />
-          )}
-        </section>
+          {/* Région focalisable : défilement au clavier (flèches, Page suivante), nom « Aperçu ». */}
+          <section
+            ref={previewRef}
+            aria-labelledby={tabs ? previewTabId : previewLabelId}
+            tabIndex={0}
+            onScroll={() => onPaneScroll(previewRef.current, textareaRef.current)}
+            className={cn(
+              PANE_HEIGHT,
+              FOCUS_FADE,
+              "min-w-0 overflow-y-auto rounded-[var(--radius-field)] border border-line bg-panel p-4",
+            )}
+          >
+            {previewValue.trim() === "" ? (
+              <p className="text-sm text-muted">Rien à afficher pour l’instant.</p>
+            ) : (
+              <MarkdownPreview content={previewValue} />
+            )}
+          </section>
+        </div>
       </div>
       {error ? <FieldError id={ids.errorId!}>{error}</FieldError> : null}
     </div>

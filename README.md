@@ -72,7 +72,7 @@ Portfolio personnel en **Next.js 16**, avec un **site public** lu entièrement d
 | Tableau de bord | Comptes par type, articles publiés par mois, complétude du profil, derniers projets modifiés |
 | Profil | Identité, titre, bio, « À propos », liens GitHub et LinkedIn, photo, photo détourée, CV (lien ou PDF) |
 | Projets | Création, modification, ordre (monter / descendre), liens ordonnés, technologies, collaborateurs GitHub, image, publication avec confirmation |
-| Articles | Éditeur Markdown avec aperçu et enregistrement automatique, couverture, publication avec confirmation, abandon des modifications, suppression |
+| Articles | Éditeur Markdown avec aperçu (même hauteur fixe que la zone d'écriture, 60 vh entre 288 et 640 px, défilement synchronisé dans les deux sens ; en onglets sous 1024 px) et enregistrement automatique, couverture, publication avec confirmation, abandon des modifications, suppression |
 | Formations | Intitulé, établissement, lieu, dates au mois près, mention, moyenne, compétences liées, ordre |
 | Compétences | Liste, renommage, suppression (avec détachement des formations, après confirmation) |
 | Stack | Technologies avec icône (PNG, WebP ou SVG), ordre, suppression (avec détachement des projets, après confirmation) |
